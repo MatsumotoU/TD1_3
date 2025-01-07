@@ -12,8 +12,10 @@
 void SceneManager::Init() {
 
 	// シーン読み込み
-	//scene = new TitleScene();
-	scene = new GameStageScene();
+	scene = new TitleScene();
+	//scene = new SelectScene();
+	//scene = new GameStageScene();
+	//scene = new ResultScene();
 
 	scene->Init();
 	sceneTransition.Init();
@@ -21,7 +23,7 @@ void SceneManager::Init() {
 	frameCount = 0;
 	gameStage = 0;
 
-	
+
 }
 
 //==============================
@@ -37,7 +39,7 @@ void SceneManager::Update() {
 		// シーン更新処理
 		scene->Update();
 	}
-	
+
 
 	if (scene->GetIsTransition()) {
 
@@ -75,7 +77,7 @@ void SceneManager::Update() {
 
 			}
 		}
-		
+
 	}
 
 	// シーン遷移演出処理
@@ -122,7 +124,7 @@ void SceneManager::Draw() {
 
 	// シーン描画処理
 	scene->Draw();
-	
+
 	// シーン遷移演出
 	sceneTransition.Draw();
 
