@@ -60,6 +60,7 @@ void GameStageScene::ObjectUpdate() {
 
 void GameStageScene::ObjectCollision() {
 
+	// 敵の当たり判定
 	for (int e = 0; e < EMG::kMaxEnemy; e++) {
 		if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
 			// プレイヤー
@@ -121,6 +122,27 @@ void GameStageScene::ObjectCollision() {
 								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
 							}
 						}
+					}
+				}
+			}
+		}
+	}
+
+	// プレイヤーの当たり判定
+	if (player.GetDamageCoolDown() <= 0) {
+		// 弾
+		for (int b = 0; b < BMG::kBulletMax; b++) {
+			if (bulletManager.GetBullets()[b].GetIsShot()) {
+
+				// 爆発の当たり判定
+				if (bulletManager.GetBullets()[b].GetTag() == "exprosion") {
+
+					if (IsHitCollisionEllipse(
+						bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
+						bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
+
+						player.Damage();
+						player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
 					}
 				}
 			}

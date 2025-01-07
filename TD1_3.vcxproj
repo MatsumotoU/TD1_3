@@ -120,6 +120,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Class\Common\Camera.cpp" />
     <ClCompile Include="Class\Common\Collision2D.cpp" />
     <ClCompile Include="Class\Common\InputManager.cpp" />
+    <ClCompile Include="Class\Common\Mapchip.cpp" />
     <ClCompile Include="Class\Common\MyEasing.cpp" />
     <ClCompile Include="Class\Common\MyFileIO.cpp" />
     <ClCompile Include="Class\Common\MyMath.cpp" />
@@ -174,6 +175,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="Class\Common\Collision2D.h" />
     <ClInclude Include="Class\Common\GameObject.h" />
     <ClInclude Include="Class\Common\InputManager.h" />
+    <ClInclude Include="Class\Common\Mapchip.h" />
     <ClInclude Include="Class\Common\MyCommon.h" />
     <ClInclude Include="Class\Common\MyEasing.h" />
     <ClInclude Include="Class\Common\MyFileIO.h" />

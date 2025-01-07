@@ -11,6 +11,7 @@ namespace PLR {
 	const int kMaxSheatheCoolDown = 120;
 	const float kAttackReach = 32.0f;
 	const int kMaxAttackChance = 2;
+	const int kMaxDamageCoolDown = 120;
 }
 
 class Player : public GameObject
@@ -28,6 +29,7 @@ public:
 	void Dash();
 	void Attack();
 	void Sheathe();
+	void StateCheck();
 
 	void LoadVariables();
 	void SaveVariables();
@@ -45,9 +47,11 @@ public:
 	int GetIsDash();
 	int GetRemainAttackChance();
 	int GetCanAttack();
+	int GetDamageCoolDown();
 	Vector2 GetAttackPos();
 
 	void CountDownRemainAttackChance();
+	void Damage();
 
 private:
 
@@ -55,6 +59,7 @@ private:
 
 	int hp;
 	int maxHp;
+	int isAlive;
 	
 	int isMove;
 	int moveStackFrame;
@@ -71,6 +76,8 @@ private:
 
 	int isSheathe;
 	int sheatheCoolDown;
+
+	int damageCoolDown;
 
 	int isLockOn;
 	Vector2 targetPos;

@@ -1,10 +1,18 @@
 #pragma once
+#include <math.h>
+#include <stdlib.h>
+
 #include"Class/Common/MyMath/MathInclude.h"
 
 float Dot(Vector2 a, Vector2 b);
 float Cross(Vector2 a, Vector2 b);
 float Length(Vector2 a);
 Vector2 Normalize(Vector2 setVec);
+
+template <typename T>
+T Random(T max, T min) {
+	return  static_cast<T>(rand() % (static_cast<int>(max) - static_cast<int>(min) + 1) + static_cast<int>(min));
+}
 
 unsigned int ColorFade(unsigned int color, float alpha);
 
