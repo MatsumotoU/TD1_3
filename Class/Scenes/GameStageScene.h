@@ -3,6 +3,7 @@
 #include "Class/Player/Player.h"
 #include "Class/Bullet/BulletManager.h"
 #include "Class/Enemy/EnemyManager.h"
+#include "Class/Common/ParticlManager.h"
 
 class GameStageScene : public IScene {
 public:
@@ -34,6 +35,6 @@ private:
 	Player player;
 	BulletManager bulletManager;
 	EnemyManager enemyManager;
-	
+	ParticlManager particleManager;
 };
 

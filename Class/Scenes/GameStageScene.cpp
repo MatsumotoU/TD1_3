@@ -23,6 +23,8 @@ void GameStageScene::Init() {
 	enemyManager.SpawnEnemy({ 100.0f,100.0f }, { 64.0f,64.0f });
 	enemyManager.SpawnEnemy({ 200.0f,100.0f }, { 64.0f,64.0f });
 
+	particleManager.Init();
+	particleManager.SetCamera(&mainCamera);
 }
 
 void GameStageScene::Update() {
@@ -33,6 +35,7 @@ void GameStageScene::Update() {
 }
 
 void GameStageScene::Draw() {
+	particleManager.Draw();
 	player.Draw();
 	bulletManager.Draw();
 	enemyManager.Draw();
@@ -51,6 +54,8 @@ void GameStageScene::ObjectUpdate() {
 
 	enemyManager.Update();
 	ExprodeEnemy();
+
+	particleManager.Update();
 }
 
 void GameStageScene::ObjectCollision() {
