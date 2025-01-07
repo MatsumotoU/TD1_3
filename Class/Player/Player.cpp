@@ -14,6 +14,7 @@ Player::Player() {
 	camera = nullptr;
 	maxHp = 3;
 	hp = maxHp;
+	isAlive = true;
 
 	isMove = false;
 	moveStackFrame = 0;
@@ -37,6 +38,8 @@ Player::Player() {
 	remainAttackChance = PLR::kMaxAttackChance;
 
 	playerGH = 0;
+
+	damageCoolDown = 0;
 }
 
 void Player::Init() {
@@ -53,18 +56,25 @@ void Player::Update() {
 	Dash();
 	Attack();
 	Sheathe();
-	
-	physics.Update(&transform.pos);
+	StateCheck();
 }
 
 void Player::Draw() {
-	Render::DrawSprite(transform, *camera, GREEN, 0);
-	if (isDash) {
-		Render::DrawSprite(transform, *camera, RED, 0);
-	}
 
-	Render::DrawLine(transform.pos, transform.pos + input->GetControlDir() * 100.0f,*camera,RED);
-	Render::DrawLine(transform.pos, transform.pos + angleDir * 100.0f, *camera, GREEN);
+	if (isAlive) {
+		if (damageCoolDown % 6) {
+			Render::DrawSprite(transform, *camera, 0xFF0000AF, 0);
+
+		} else {
+			Render::DrawSprite(transform, *camera, GREEN, 0);
+			if (isDash) {
+				Render::DrawSprite(transform, *camera, RED, 0);
+			}
+		}
+
+		Render::DrawLine(transform.pos, transform.pos + input->GetControlDir() * 100.0f, *camera, RED);
+		Render::DrawLine(transform.pos, transform.pos + angleDir * 100.0f, *camera, GREEN);
+	}
 }
 
 void Player::Move() {
@@ -177,6 +187,23 @@ void Player::Sheathe() {
 	}
 }
 
+void Player::StateCheck() {
+	// 死亡判定
+	if (hp <= 0) {
+		if (isAlive) {
+			isAlive = false;
+		}
+	}
+	
+	// 無敵時間減少
+	if (damageCoolDown > 0) {
+		damageCoolDown--;
+	}
+
+	// 物理更新
+	physics.Update(&transform.pos);
+}
+
 void Player::LoadVariables() {
 	value = SJN::LoadJsonData(FPH::playerVariablesData);
 
@@ -264,6 +291,10 @@ int Player::GetCanAttack() {
 	return false;
 }
 
+int Player::GetDamageCoolDown() {
+	return damageCoolDown;
+}
+
 Vector2 Player::GetAttackPos() {
 	return transform.pos + angleDir * PLR::kAttackReach;
 }
@@ -272,5 +303,12 @@ void Player::CountDownRemainAttackChance() {
 	remainAttackChance--;
 	if (remainAttackChance <= 0) {
 		remainAttackChance = 0;
+	}
+}
+
+void Player::Damage() {
+	if (damageCoolDown <= 0) {
+		hp--;
+		damageCoolDown = PLR::kMaxDamageCoolDown;
 	}
 }
