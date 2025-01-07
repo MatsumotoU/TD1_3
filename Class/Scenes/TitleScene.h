@@ -1,5 +1,6 @@
 #pragma once
 #include "IScene.h"
+#include "Class/Common/ParticlManager.h"
 
 class TitleScene : public IScene {
 public:
@@ -22,5 +23,7 @@ public:
 
 private:
 
+	ParticlManager particleManager;
+	Camera mainCamera;
 };
 

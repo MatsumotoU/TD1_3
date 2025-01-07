@@ -124,6 +124,8 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Class\Common\MyFileIO.cpp" />
     <ClCompile Include="Class\Common\MyMath.cpp" />
     <ClCompile Include="Class\Common\MyPhysics2D.cpp" />
+    <ClCompile Include="Class\Common\Particl.cpp" />
+    <ClCompile Include="Class\Common\ParticlManager.cpp" />
     <ClCompile Include="Class\Common\Render.cpp" />
     <ClCompile Include="Class\Common\SceneTransition.cpp" />
     <ClCompile Include="Class\Common\SimpleJson.cpp" />
@@ -177,6 +179,8 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="Class\Common\MyFileIO.h" />
     <ClInclude Include="Class\Common\MyMath.h" />
     <ClInclude Include="Class\Common\MyPhysics2D.h" />
+    <ClInclude Include="Class\Common\Particl.h" />
+    <ClInclude Include="Class\Common\ParticlManager.h" />
     <ClInclude Include="Class\Common\Render.h" />
     <ClInclude Include="Class\Common\SceneTransition.h" />
     <ClInclude Include="Class\Common\SimpleJson.h" />
