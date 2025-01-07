@@ -1,5 +1,14 @@
 #pragma once
 #include "IScene.h"
+#include "Class/Common/ParticlManager.h"
+#include "Class/Common/InputManager.h"
+#include "Class/Common/MyEasing.h"
+
+// ステージの総数
+const int stageTotalCount = 3;
+
+// ミッションの星の総数
+const int starTotalCount = 3;
 
 class SelectScene : public IScene {
 public:
@@ -21,6 +30,12 @@ public:
 	int GetIsContinue() override { return true; };
 
 private:
+	Transform star[stageTotalCount][starTotalCount];
+	Transform stageIcon[stageTotalCount];
 
+	ParticlManager particleManager;
+
+	// キー入力受付クラス呼び出し
+	InputManager* input = InputManager::GetInstance();
 };
 
