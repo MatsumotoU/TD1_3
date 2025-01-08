@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "Class/Common/TimeManager.h"
 
-class Camera :private GameObject
+class Camera :public GameObject
 {
 public:
 
