@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "Class/Common/Render.h"
 #include "Class/Common/GameObject.h"
 
@@ -16,11 +17,14 @@ public:
 	void SetIsAlive(int set);
 	void SetIsHitAttack(int set);
 	void SetHitAttackDir(Vector2 set);
+	void SetPlayerRoute(std::vector<Vector2> set);
 
 	int GetIsAlive();
 	int GetIsHitAttack();
 	Vector2 GetHitDir();
 	Vector2* GetPosPtr();
+
+	void Move();
 
 private:
 
@@ -32,4 +36,9 @@ private:
 
 	int isHitAttack;
 	Vector2 hitDir;
+
+	float moveSpeed;
+
+	std::vector<Vector2> targetRoute;
+	int nextRouteNum;
 };
