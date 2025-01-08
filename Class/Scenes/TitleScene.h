@@ -23,6 +23,19 @@ public:
 
 private:
 
+	// タイトル用の変数
+	Transform logo[3];
+	Transform startLogo[2];
+	Transform endLogo[2];
+	Transform efect;
+	Vector2 efectDir;
+	float efectT;
+	float alphaValue = 0.0f;
+	int efectCoolTime;
+	int isEfectMove;
+	int isEaseStart;
+	unsigned int color = 0xFFFFFF00;
+
 	ParticlManager particleManager;
 	Camera mainCamera;
 };
