@@ -46,6 +46,8 @@ void GameStageScene::Update() {
 }
 
 void GameStageScene::Draw() {
+	Novice::DrawBox(0, 0, 1280, 720, 0.0f,0x222831FF, kFillModeSolid);
+
 	map.Draw(&mainCamera);
 	particleManager.Draw();
 	player.Draw();

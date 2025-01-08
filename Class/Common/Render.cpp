@@ -63,14 +63,14 @@ void Render::DrawSprite(Transform transform, Camera camera, unsigned int color, 
 
 		// スプライトのサイズ割り出し
 		QuadPos sizePos = {
-			{-(transform.size.x / 2.0f) * transform.scale.x ,
-			+(transform.size.y / 2.0f) * transform.scale.y},
-			{+(transform.size.x / 2.0f) * transform.scale.x,
-			+(transform.size.y / 2.0f) * transform.scale.y},
-			{-(transform.size.x / 2.0f) * transform.scale.x ,
-			-(transform.size.y / 2.0f) * transform.scale.y},
-			{+(transform.size.x / 2.0f) * transform.scale.x,
-			-(transform.size.y / 2.0f) * transform.scale.y},
+			{-(transform.size.x / 2.0f) ,
+			+(transform.size.y / 2.0f) },
+			{+(transform.size.x / 2.0f) ,
+			+(transform.size.y / 2.0f) },
+			{-(transform.size.x / 2.0f)  ,
+			-(transform.size.y / 2.0f)},
+			{+(transform.size.x / 2.0f),
+			-(transform.size.y / 2.0f)},
 		};
 
 		// カメラのvWVPVp行列取得
