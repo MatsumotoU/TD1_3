@@ -1,8 +1,6 @@
 #pragma once
 #include "IScene.h"
 #include "Class/Common/ParticlManager.h"
-#include "Class/Common/InputManager.h"
-#include "Class/Common/MyEasing.h"
 
 // ステージの総数
 const int stageTotalCount = 3;
@@ -30,12 +28,28 @@ public:
 	int GetIsContinue() override { return true; };
 
 private:
-	Transform star[stageTotalCount][starTotalCount];
+	IScene* nextScene;
+
+	Transform star[starTotalCount];
+	int isStarMoving[starTotalCount];
+	float starT[starTotalCount];
+
 	Transform stageIcon[stageTotalCount];
+	float stageIconT[stageTotalCount];
+
+	int shouldClearedMission[stageTotalCount][starTotalCount];
+
+	int shouldPressedRight;
+	int shouldPressedLeft;
+
+	//float timeMoveStageIcon;
+	//float timeMoveStar;
+	float movingFrameCount;
+
+	int starGraphHandle;
+
+	Vector2* cameraPos;
 
 	ParticlManager particleManager;
-
-	// キー入力受付クラス呼び出し
-	InputManager* input = InputManager::GetInstance();
 };
 
