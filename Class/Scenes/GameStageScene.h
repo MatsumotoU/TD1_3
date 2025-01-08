@@ -39,6 +39,8 @@ public:
 
 private:
 
+	int wave;
+
 	Player player;
 	BulletManager bulletManager;
 	EnemyManager enemyManager;

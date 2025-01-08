@@ -11,6 +11,7 @@
 
 void GameStageScene::Init() {
 	frameCount = 0;
+	wave = 0;
 	isTransition = false;
 	gameStage = 0;
 
@@ -26,8 +27,6 @@ void GameStageScene::Init() {
 	particleManager.Init();
 	particleManager.SetCamera(&mainCamera);
 
-	enemyManager.SpawnEnemy({ 100.0f,100.0f }, { 64.0f,64.0f });
-
 	map.LoadMap("Resources/Maps/stage1.txt");
 	map.SetPlayer(&player);
 	map.SetEnemyManager(&enemyManager);
@@ -37,7 +36,7 @@ void GameStageScene::Init() {
 }
 
 void GameStageScene::Update() {
-	
+
 	frameCount++;
 
 	ObjectUpdate();
