@@ -4,6 +4,7 @@
 #include "Class/Bullet/BulletManager.h"
 #include "Class/Enemy/EnemyManager.h"
 #include "Class/Common/ParticlManager.h"
+#include "Class/Common/Mapchip.h"
 
 class GameStageScene : public IScene {
 public:
@@ -26,9 +27,12 @@ public:
 
 	void ObjectUpdate();
 	void ObjectCollision();
+
 	void Attack();
 	void PlayerLockOn();
 	void ExprodeEnemy();
+
+	void CameraUpdate();
 
 private:
 
@@ -36,5 +40,6 @@ private:
 	BulletManager bulletManager;
 	EnemyManager enemyManager;
 	ParticlManager particleManager;
+	Mapchip map;
 };
 

@@ -8,6 +8,8 @@ const Vector2 kMapChipSize = { 64.0f,64.0f };
 const float kMapChipNum = 10;
 
 class Player;
+class EnemyManager;
+class BulletManager;
 
 class Mapchip
 {
@@ -17,6 +19,14 @@ public:
 
 	int GetIsHit(Vector2 pos);
 	int GetMapNum(Vector2 pos);
+
+	void SetPlayer(Player* set);
+	void SetEnemyManager(EnemyManager* set);
+	void SetBulletManager(BulletManager* set);
+
+	void PlayerMapCollision();
+	void EnemyMapCollision();
+	void BulletMapCollision();
 
 	void LoadMap(std::string setFilePath);
 	void SetMap(int setMap[kMapSizeY][kMapSizeX]);
@@ -31,5 +41,9 @@ private:
 	int map[kMapSizeY][kMapSizeX];
 
 	MyFileIO file;
+
+	Player* player;
+	EnemyManager* enemyManager;
+	BulletManager* bulletManager;
 };
 

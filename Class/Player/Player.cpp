@@ -3,6 +3,8 @@
 #include <imgui.h>
 
 Player::Player() {
+	frameCount = 0;
+
 	transform.pos = { 0.0f,0.0f };
 	transform.angle = 0.0f;
 	transform.scale = { 1.0f,1.0f };
@@ -23,6 +25,8 @@ Player::Player() {
 	isDash = false;
 	dashCoolDown = 0;
 	dashPower = 100.0f;
+	dashAfterimageRemainFrame = 10;
+	dashAfterimageRemainInterval = 20;
 
 	isAttack = false;
 	attackCoolDown = 0;
@@ -40,26 +44,39 @@ Player::Player() {
 	playerGH = 0;
 
 	damageCoolDown = 0;
+
+	particleManager.Init();
+	particleManager.SetCamera(camera);
 }
 
 void Player::Init() {
+	frameCount = 0;
+	physics.Init();
+	particleManager.Init();
+	particleManager.SetCamera(camera);
 
 	LoadVariables();
 }
 
 void Player::Update() {
 	
+	frameCount++;
+
+	particleManager.SetCamera(camera);
+	particleManager.Update();
 	angleDir = { cosf(transform.angle),sinf(transform.angle) };
 
 	Move();
 	LockOn();
 	Dash();
-	Attack();
+	//Attack();
 	Sheathe();
 	StateCheck();
 }
 
 void Player::Draw() {
+	
+	particleManager.Draw();
 
 	if (isAlive) {
 		if (damageCoolDown % 6) {
@@ -67,7 +84,7 @@ void Player::Draw() {
 
 		} else {
 			Render::DrawSprite(transform, *camera, GREEN, 0);
-			if (isDash) {
+			if (isAttack) {
 				Render::DrawSprite(transform, *camera, RED, 0);
 			}
 		}
@@ -134,6 +151,7 @@ void Player::Dash() {
 			}
 
 			isDash = true;
+			isAttack = true;
 		}
 	}
 
@@ -143,8 +161,23 @@ void Player::Dash() {
 	}
 
 	if (isDash) {
-		if (dashCoolDown <= PLR::kMaxDashCoolDown / 2.0f) {
+		if (dashCoolDown <= 0) {
 			isDash = false;
+		}
+	}
+
+	// ダッシュの攻撃判定
+	if (isAttack) {
+		if (dashCoolDown <= PLR::kMaxDashCoolDown / 5.0f) {
+			isAttack = false;
+		}
+	}
+
+	// ダッシュ中なら残像を残す
+	if (isDash) {
+
+		if (frameCount % (60 / (dashAfterimageRemainInterval + 1)) == 0) {
+			particleManager.SpriteEffect(transform.pos, transform.size, transform.angle, dashAfterimageRemainFrame, playerGH);
 		}
 	}
 }
@@ -210,10 +243,14 @@ void Player::LoadVariables() {
 	transform.pos.x = static_cast<float>(value["transform"]["pos"]["x"]);
 	transform.pos.y = static_cast<float>(value["transform"]["pos"]["y"]);
 	moveSpeed = static_cast<float>(value["moveSpeed"]);
+	dashAfterimageRemainFrame = static_cast<int>(value["dashAfterimageRemainFrame"]);
+	dashAfterimageRemainInterval = static_cast<int>(value["dashAfterimageRemainInterval"]);
 }
 
 void Player::SaveVariables() {
 	value["moveSpeed"] = moveSpeed;
+	value["dashAfterimageRemainFrame"] = dashAfterimageRemainFrame;
+	value["dashAfterimageRemainInterval"] = dashAfterimageRemainInterval;
 
 	SJN::SaveJsonData("Player", value);
 }
@@ -228,7 +265,9 @@ void Player::UpdateImGui() {
 		ImGui::TreePop();
 	}
 
-	ImGui::InputFloat("moveSpeed", &moveSpeed);
+	ImGui::InputFloat("moveSpeed", &moveSpeed); 
+	ImGui::InputInt("dashAfterimageRemainFrame", &dashAfterimageRemainFrame);
+	ImGui::InputInt("dashAfterimageRemainInterval", &dashAfterimageRemainInterval);
 
 	if (ImGui::TreeNode("data")) {
 		if (ImGui::Button("save")) {
@@ -268,6 +307,10 @@ void Player::SetRemainAttackChance(int set) {
 	remainAttackChance = set;
 }
 
+void Player::SetIsDash(int set) {
+	isDash = set;
+}
+
 int Player::GetIsAttack() {
 	return isAttack;
 }
@@ -297,6 +340,10 @@ int Player::GetDamageCoolDown() {
 
 Vector2 Player::GetAttackPos() {
 	return transform.pos + angleDir * PLR::kAttackReach;
+}
+
+Vector2* Player::GetPosPtr() {
+	return &transform.pos;
 }
 
 void Player::CountDownRemainAttackChance() {

@@ -2,6 +2,7 @@
 #include "Class/Common/GameObject.h"
 #include "Class/Common/InputManager.h"
 #include "Class/Common/Render.h"
+#include "Class/Common/ParticlManager.h"
 
 // プレイヤーで使う定数
 namespace PLR {
@@ -41,6 +42,7 @@ public:
 	void SetIsAttack(int set);
 	void SetIsSheathe(int set);
 	void SetRemainAttackChance(int set);
+	void SetIsDash(int set);
 
 	int GetIsAttack();
 	int GetIsSheathe();
@@ -49,11 +51,13 @@ public:
 	int GetCanAttack();
 	int GetDamageCoolDown();
 	Vector2 GetAttackPos();
+	Vector2* GetPosPtr();
 
 	void CountDownRemainAttackChance();
 	void Damage();
 
 private:
+	int frameCount;
 
 	int playerGH;
 
@@ -69,6 +73,8 @@ private:
 	int isDash;
 	int dashCoolDown;
 	float dashPower;
+	int dashAfterimageRemainFrame;
+	int dashAfterimageRemainInterval;
 
 	int isAttack;
 	int attackCoolDown;
@@ -83,6 +89,8 @@ private:
 	Vector2 targetPos;
 
 	Camera* camera;
+
+	ParticlManager particleManager;
 
 	// キー入力受付クラス呼び出し
 	InputManager* input = InputManager::GetInstance();

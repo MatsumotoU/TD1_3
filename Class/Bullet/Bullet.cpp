@@ -83,3 +83,7 @@ int Bullet::GetIsShot() {
 std::string Bullet::GetTag() {
 	return tag;
 }
+
+Vector2* Bullet::GetPosPtr() {
+	return &transform.pos;
+}
