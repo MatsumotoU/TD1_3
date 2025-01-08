@@ -32,6 +32,8 @@ void SelectScene::Init() {
 	}
 
 	// ステージアイコンの変数
+	stageIconTheta = 0.0f;
+	notSelectedStageScale = 0.6f;
 	for (int i = 0; i < stageTotalCount; ++i) {
 		stageIcon[i] = {
 			{ 640.0f + i * 640.0f, 256.0f },
@@ -41,9 +43,11 @@ void SelectScene::Init() {
 		};
 
 		stageIconT[i] = 0.0f;
-	}
 
-	stageIconTheta = 0.0f;
+		if (gameStage != i) {
+			stageIcon[i].scale = { notSelectedStageScale,notSelectedStageScale };
+		}
+	}
 
 	// ミッションをクリアしたか
 	for (int i = 0; i < stageTotalCount; ++i) {
@@ -53,7 +57,7 @@ void SelectScene::Init() {
 	}
 
 	// 左右キーを押したときステージアイコンなどが動く時間
-	movingFrameCount = 30.0f;
+	movingFrameCount = 25.0f;
 
 	shouldPressedRight = false;
 	shouldPressedLeft = false;
@@ -79,10 +83,13 @@ void SelectScene::Update() {
 					for (int i = 0; i < starTotalCount; ++i) {
 						starT[i] = 0.0f;
 						isStarMoving[i] = true;
+						star[i].scale = { 3.0f,3.0f };
 					}
 
 					for (int i = 0; i < stageTotalCount; ++i) {
 						stageIconT[i] = 0.0f;
+						stageIcon[i].pos.y = 256.0f;
+						stageIconTheta = 0.0f;
 					}
 				}
 			}
@@ -98,10 +105,13 @@ void SelectScene::Update() {
 					for (int i = 0; i < starTotalCount; ++i) {
 						starT[i] = 0.0f;
 						isStarMoving[i] = true;
+						star[i].scale = { 3.0f,3.0f };
 					}
 
 					for (int i = 0; i < stageTotalCount; ++i) {
 						stageIconT[i] = 0.0f;
+						stageIcon[i].pos.y = 256.0f;
+						stageIconTheta = 0.0f;
 					}
 				}
 			}
@@ -138,6 +148,14 @@ void SelectScene::Update() {
 					(640.0f * stageTotalCount - (gameStage + 1.0f) * 640.0f) + (i * 640.0f),
 					(640.0f * stageTotalCount - (gameStage + 2.0f) * 640.0f) + (i * 640.0f)
 				);
+
+			if (gameStage == i) {
+				stageIcon[i].scale.x = Eas::EaseInOutQuart(stageIconT[i], notSelectedStageScale, 1.0f);
+				stageIcon[i].scale.y = Eas::EaseInOutQuart(stageIconT[i], notSelectedStageScale, 1.0f);
+			} else if (gameStage - 1 == i) {
+				stageIcon[i].scale.x = Eas::EaseInOutQuart(stageIconT[i], 1.0f, notSelectedStageScale);
+				stageIcon[i].scale.y = Eas::EaseInOutQuart(stageIconT[i], 1.0f, notSelectedStageScale);
+			}
 		}
 	}
 
@@ -159,13 +177,23 @@ void SelectScene::Update() {
 					(640.0f * stageTotalCount - (gameStage + 3.0f) * 640.0f) + (i * 640.0f),
 					(640.0f * stageTotalCount - (gameStage + 2.0f) * 640.0f) + (i * 640.0f)
 				);
+
+			if (gameStage == i) {
+				stageIcon[i].scale.x = Eas::EaseInOutQuart(stageIconT[i], notSelectedStageScale, 1.0f);
+				stageIcon[i].scale.y = Eas::EaseInOutQuart(stageIconT[i], notSelectedStageScale, 1.0f);
+			} else  if (gameStage + 1 == i) {
+				stageIcon[i].scale.x = Eas::EaseInOutQuart(stageIconT[i], 1.0f, notSelectedStageScale);
+				stageIcon[i].scale.y = Eas::EaseInOutQuart(stageIconT[i], 1.0f, notSelectedStageScale);
+			}
 		}
 	}
 
 	for (int i = 0; i < stageTotalCount; ++i) {
 		if (gameStage == i) {
-			stageIconTheta += 1.0f / 90.0f * static_cast<float>(M_PI);
-			stageIcon[i].pos.y = 256.0f + sinf(stageIconTheta) * 8.0f;
+			if (!shouldPressedLeft && !shouldPressedRight) {
+				stageIconTheta += 1.0f / 90.0f * static_cast<float>(M_PI);
+				stageIcon[i].pos.y = 256.0f + sinf(stageIconTheta) * 8.0f;
+			}
 		}
 	}
 
@@ -193,13 +221,16 @@ void SelectScene::Update() {
 			if (starT[i] < 0.8f) {
 				star[i].angle += 1.0f / 20.0f * static_cast<float>(M_PI);
 			} else if (starT[i] < 0.9f) {
-				star[i].angle += 1.0f / 60.0f * static_cast<float>(M_PI);
+				star[i].angle += 1.0f / 50.0f * static_cast<float>(M_PI);
 			} else {
 				star[i].angle += 1.0f / 120.0f * static_cast<float>(M_PI);
 			}
 
+			star[i].scale.x = Eas::EaseInOutQuart(starT[i], 3.0f, 1.0f);
+			star[i].scale.y = Eas::EaseInOutQuart(starT[i], 3.0f, 1.0f);
+
 			star[i].pos.x = Eas::EaseInOutQuart(starT[i], i * 640.0f, 320.0f + i * 320.0f);
-			star[i].pos.y = Eas::EaseInOutQuart(starT[i], 848.0f, 560.0f);
+			star[i].pos.y = Eas::EaseInOutQuart(starT[i], 1104.0f, 560.0f);
 		} else {
 			star[i].angle += 1.0f / 180.0f * static_cast<float>(M_PI);
 			star[i].pos.y = 560.0f + sinf(star[i].angle * 3.0f) * 8.0f;

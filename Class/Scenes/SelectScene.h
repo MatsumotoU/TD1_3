@@ -43,6 +43,7 @@ private:
 	int shouldPressedLeft;
 
 	float stageIconTheta;
+	float notSelectedStageScale;
 
 	//float timeMoveStageIcon;
 	//float timeMoveStar;
