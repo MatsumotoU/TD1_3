@@ -47,12 +47,13 @@ Player::Player() {
 
 	remainAttackChance = PLR::kMaxAttackChance;
 
-	playerGH = 0;
-
 	damageCoolDown = 0;
 
 	particleManager.Init();
 	particleManager.SetCamera(camera);
+	
+	playerGH = Novice::LoadTexture("./Resources/Images/player.png");
+	
 }
 
 void Player::Init() {
@@ -67,6 +68,8 @@ void Player::Init() {
 void Player::Update() {
 	
 	frameCount++;
+
+	transform.scale = { sinf(static_cast<float>(frameCount)*0.1f),sinf(static_cast<float>(frameCount)*0.1f) };
 
 	particleManager.SetCamera(camera);
 	particleManager.Update();
@@ -86,12 +89,12 @@ void Player::Draw() {
 
 	if (isAlive) {
 		if (damageCoolDown % 6) {
-			Render::DrawSprite(transform, *camera, 0xFF0000AF, 0);
+			Render::DrawSprite(transform, *camera, 0xFF0000AF, playerGH);
 
 		} else {
-			Render::DrawSprite(transform, *camera, GREEN, 0);
+			Render::DrawSprite(transform, *camera, WHITE, playerGH);
 			if (isAttack) {
-				Render::DrawSprite(transform, *camera, RED, 0);
+				Render::DrawSprite(transform, *camera, RED, playerGH);
 			}
 		}
 

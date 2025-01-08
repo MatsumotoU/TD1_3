@@ -33,6 +33,7 @@ public:
 	void Attack();
 	void PlayerLockOn();
 	void ExprodeEnemy();
+	void EnemyMoveToPlayer();
 
 	void CameraUpdate();
 
