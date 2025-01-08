@@ -23,8 +23,8 @@ void SelectScene::Init() {
 		star[i] = {
 			{ 320.0f + i * 320.0f, 560.0f }, // 位置
 			{ 256.0f, 256.0f }, // 大きさ
-			{ 1.0f, -1.0f }, // 比率
-			0.0f // 角度
+			{ 1.0f, 1.0f }, // 比率
+			2.0f * static_cast<float>(M_PI) / 3.0f * i // 角度
 		};
 
 		isStarMoving[i] = false;
@@ -43,6 +43,8 @@ void SelectScene::Init() {
 		stageIconT[i] = 0.0f;
 	}
 
+	stageIconTheta = 0.0f;
+
 	// ミッションをクリアしたか
 	for (int i = 0; i < stageTotalCount; ++i) {
 		for (int j = 0; j < starTotalCount; ++j) {
@@ -51,7 +53,7 @@ void SelectScene::Init() {
 	}
 
 	// 左右キーを押したときステージアイコンなどが動く時間
-	movingFrameCount = 20.0f;
+	movingFrameCount = 30.0f;
 
 	shouldPressedRight = false;
 	shouldPressedLeft = false;
@@ -60,11 +62,13 @@ void SelectScene::Init() {
 	*cameraPos = { 640.0f,360.0f };
 
 	starGraphHandle = Novice::LoadTexture("./Resources/Images/missionStar.png");
-
-
 }
 
 void SelectScene::Update() {
+	frameCount++;
+	if (frameCount >= 60) {
+		frameCount = 0;
+	}
 
 	if (input->GetControl(RIGHT, Press)) {
 		if (!shouldPressedRight) {
@@ -158,52 +162,85 @@ void SelectScene::Update() {
 		}
 	}
 
+	for (int i = 0; i < stageTotalCount; ++i) {
+		if (gameStage == i) {
+			stageIconTheta += 1.0f / 90.0f * static_cast<float>(M_PI);
+			stageIcon[i].pos.y = 256.0f + sinf(stageIconTheta) * 8.0f;
+		}
+	}
+
 	//================================================================
 	// 星の更新処理
 	//================================================================
 
-	for (int i = 0; i < stageTotalCount; ++i) {
-		for (int j = 0; j < starTotalCount; ++j) {
-			// ミッションをクリアしているか
-			if (shouldClearedMission[i][j]) {
-				// 星の縮小の処理
-				if (isStarMoving[j]) {
+	for (int i = 0; i < starTotalCount; ++i) {
+		// 星の縮小の処理
+		if (isStarMoving[i]) {
 
-					// tに値を加算
-					if (starT[j] < 1.0f) {
-						starT[j] += 1.0f / 20.0f;
-					}
+			// tに値を加算
+			if (starT[i] < 1.0f) {
+				starT[i] += 1.0f / movingFrameCount;
+			}
 
-					if (starT[j] >= 1.0f) {
-						starT[j] = 1.0f;
+			if (starT[i] >= 1.0f) {
+				starT[i] = 1.0f;
 
-						if (isStarMoving[j]) {
-							isStarMoving[j] = false;
-						}
-					}
-
-					star[j].scale.x = Eas::EaseInOutQuart(starT[j], 10.0f, 1.0f);
-					star[j].scale.y = Eas::EaseInOutQuart(starT[j], 10.0f, 1.0f);
+				if (isStarMoving[i]) {
+					isStarMoving[i] = false;
 				}
+			}
+
+			if (starT[i] < 0.8f) {
+				star[i].angle += 1.0f / 20.0f * static_cast<float>(M_PI);
+			} else if (starT[i] < 0.9f) {
+				star[i].angle += 1.0f / 60.0f * static_cast<float>(M_PI);
+			} else {
+				star[i].angle += 1.0f / 120.0f * static_cast<float>(M_PI);
+			}
+
+			star[i].pos.x = Eas::EaseInOutQuart(starT[i], i * 640.0f, 320.0f + i * 320.0f);
+			star[i].pos.y = Eas::EaseInOutQuart(starT[i], 848.0f, 560.0f);
+		} else {
+			star[i].angle += 1.0f / 180.0f * static_cast<float>(M_PI);
+			star[i].pos.y = 560.0f + sinf(star[i].angle * 3.0f) * 8.0f;
+		}
+
+		if (frameCount % 5 == 0) {
+			// ===================================================================================//
+			if (shouldClearedMission[gameStage][i]) { //ミッションをクリアしたか
+				//====================================================================================//
+				particleManager.PointEffect(
+					{ star[i].pos.x + Random(90.0f,0.0f) * cosf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)),
+					  star[i].pos.y + Random(90.0f,0.0f) * sinf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)) },
+					20, 0
+				);
 			}
 		}
 	}
+
+	//shouldClearedMission[0][0] = false;
 
 	particleManager.Update();
 }
 
 void SelectScene::Draw() {
+	particleManager.Draw();
+
 	for (int i = 0; i < stageTotalCount; ++i) {
 		Render::DrawSprite(stageIcon[i], mainCamera, 0xff0000ff, 0);
 	}
 
 	for (int i = 0; i < starTotalCount; ++i) {
-		Render::DrawSprite(star[i], mainCamera, 0xffffffff, starGraphHandle);
+		// ===================================================================================//
+		if (shouldClearedMission[gameStage][i]) { //ミッションをクリアしたか
+			//====================================================================================//
+			Render::DrawSprite(star[i], mainCamera, 0xffffffff, starGraphHandle);
+		} else {
+			Render::DrawSprite(star[i], mainCamera, 0x222222ff, starGraphHandle);
+		}
 	}
-
-	particleManager.Draw();
 }
 
 IScene* SelectScene::GetNextScene() {
-	return nullptr;
+	return nextScene;
 }

@@ -42,6 +42,8 @@ private:
 	int shouldPressedRight;
 	int shouldPressedLeft;
 
+	float stageIconTheta;
+
 	//float timeMoveStageIcon;
 	//float timeMoveStar;
 	float movingFrameCount;
