@@ -6,31 +6,19 @@ float Eas::Liner(float transitionRate, float startValue, float endValue) {
 	return ((1.0f - transitionRate) * startValue) + (endValue * transitionRate);
 }
 
-// イーズイン
-float Eas::EaseIn(float transitionRate, float startValue, float endValue) {
-
-	return  (((1.0f - powf(transitionRate, 2.0f)) * startValue) + (endValue * powf(transitionRate, 2.0f)));
-
+float Eas::EaseIn(float transitionRate, float exponent, float startValue, float endValue) {
+	return (1.0f - powf(transitionRate, exponent)) * startValue + powf(transitionRate, exponent) * endValue;
 }
 
-float Eas::EaseOut(float transitionRate, float startValue, float endValue) {
-
-	return  ((1.0f - powf(1.0f - transitionRate, 10.0f) * startValue) + (endValue * powf(1.0f - transitionRate, 10.0f)));
-
-	//return  (powf((1.0f - transitionRate), 10.0f) * startValue) + (endValue * powf(transitionRate, 10.0f));
-
+float Eas::EaseOut(float transitionRate, float exponent, float startValue, float endValue) {
+	return  (1.0f - (1.0f - powf(1.0f - transitionRate, exponent))) * startValue + (1.0f - powf(1.0f - transitionRate, exponent)) * endValue;
 }
 
-float Eas::EaseInOut(float transitionRate, float startValue, float endValue) {
-
-	if (transitionRate >= 0.5f) {
-
-		return Eas::EaseIn(transitionRate, endValue + startValue, endValue);
-
+float Eas::EaseInOutQuart(float transitionRate, float startValue, float endValue) {
+	if (transitionRate < 0.5f) {
+		return  (1.0f - powf(transitionRate, 4.0f) * 8.0f) * startValue + powf(transitionRate, 4.0f) * 8.0f * endValue;
 	} else {
-
-		return Eas::EaseOut(transitionRate, startValue, endValue - startValue);
-
+		return  (1.0f - (1.0f - powf(-2.0f * transitionRate + 2.0f, 4.0f) / 2.0f)) * startValue + (1.0f - powf(-2.0f * transitionRate + 2.0f, 4.0f) / 2.0f) * endValue;
 	}
 }
 
@@ -41,7 +29,7 @@ void Eas::SimpleEaseIn(float* value, float endValue, float transitionSpeed) {
 	if (fabsf(*value - endValue) <= 0.01f) {
 		*value = endValue;
 	}
-	
+
 }
 
 void Eas::SimpleFadeOut(unsigned int* color) {
