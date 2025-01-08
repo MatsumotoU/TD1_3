@@ -6,6 +6,27 @@
 #include "Class/Enemy/EnemyManager.h"
 #include "Class/Bullet/BulletManager.h"
 
+#ifdef _DEBUG
+#include <imgui.h>
+#endif // _DEBUG
+
+
+Mapchip::Mapchip() {
+	frameCount = 0;
+	isTransition = nullptr;
+
+	mapchipGH[0] = 0;
+	mapchipGH[1] = 0;
+	mapchipGH[2] = 0;
+	mapchipGH[3] = 0;
+	mapchipGH[4] = 0;
+	mapchipGH[5] = 0;
+	mapchipGH[6] = 0;
+	mapchipGH[7] = 0;
+	mapchipGH[8] = 0;
+	mapchipGH[9] = 0;
+}
+
 void Mapchip::SetIsTransition(int* set) {
 	isTransition = set;
 }
@@ -149,9 +170,6 @@ void Mapchip::LoadMap(std::string setFilePath) {
 			map[y][x] = file.GetArr2DData()[(kMapSizeY - 1) - y][x];
 		}
 	}
-
-	frameCount = 0;
-	isTransition = nullptr;
 }
 
 void Mapchip::SetMap(int setMap[kMapSizeY][kMapSizeX]) {
@@ -186,7 +204,7 @@ void Mapchip::Draw(Camera* camera) {
 						blockTransform.pos = {
 							(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x),
 							(kMapChipSize.y * 0.5f) + kMapChipSize.y * static_cast<float>(y) };
-						Render::DrawSprite(blockTransform, *camera, WHITE, 0);
+						Render::DrawSprite(blockTransform, *camera, WHITE, mapchipGH[map[y][x] % kMapChipGraphHandleNumMax]);
 					}
 				}
 			}
@@ -196,4 +214,94 @@ void Mapchip::Draw(Camera* camera) {
 
 void Mapchip::Update() {
 	frameCount++;
+}
+
+void Mapchip::ImGuiUpdate() {
+#ifdef _DEBUG
+
+
+
+#endif // _DEBUG
+}
+
+std::vector<Vector2> Mapchip::GetMapStoG(Vector2 start, Vector2 goal) {
+	std::vector<Vector2> result;
+
+	int startMapPosX = static_cast<int>((start.x) / kMapChipSize.x);
+	int startMapPosY = static_cast<int>((start.y) / kMapChipSize.y);
+
+	int goalMapPosX = static_cast<int>((goal.x) / kMapChipSize.x);
+	int goalMapPosY = static_cast<int>((goal.y) / kMapChipSize.y);
+
+	// ほぼ同じ位置なら目標地点を返す
+	if (startMapPosX == goalMapPosX && startMapPosY == goalMapPosY) {
+		result.push_back(goal);
+		return result;
+	}
+
+	// 判定しない部分作成
+	int mapRoute[kMapSizeY][kMapSizeX] = { 0 };
+	for (int y = 0; y < kMapSizeY; y++) {
+		for (int x = 0; x < kMapSizeX; x++) {
+			mapRoute[y][x] = -1;
+		}
+	}
+
+	// スタート地点を0手に設定
+	mapRoute[startMapPosY][startMapPosX] = 0;
+
+	// 移動できるマスと距離を出す
+	int searchCount = 0;
+	while (searchCount < 100)
+	{
+		for (int y = 0; y < kMapSizeY; y++) {
+			for (int x = 0; x < kMapSizeX; x++) {
+
+				// 進める道探索
+				if (mapRoute[y][x] == searchCount) {
+
+					// 右の探索
+					if (x + 1 < kMapSizeX && map[y][x + 1] == 0 && mapRoute[y][x + 1] == -1) {
+						mapRoute[y][x + 1] = searchCount + 1;
+					}
+					// 左の探索
+					if (x - 1 > 0 && map[y][x - 1] == 0 && mapRoute[y][x - 1] == -1) {
+						mapRoute[y][x - 1] = searchCount + 1;
+					}
+					// 上の探索
+					if (y + 1 < kMapSizeY && map[y + 1][x] == 0 && mapRoute[y + 1][x] == -1) {
+						mapRoute[y + 1][x] = searchCount + 1;
+					}
+					// 下の探索
+					if (y - 1 > 0 && map[y - 1][x] == 0 && mapRoute[y - 1][x] == -1) {
+						mapRoute[y - 1][x] = searchCount + 1;
+					}
+				}
+			}
+		}
+		searchCount++;
+	}
+
+	// ゴールまでの道を作成
+	int goalSteps = mapRoute[goalMapPosY][goalMapPosX];
+	int stepX = goalMapPosX;
+	int stepY = goalMapPosY;
+	for (int i = goalSteps; i >= 0; i--) {
+
+		if (stepX + 1 < kMapSizeX && mapRoute[stepY][stepX + 1] == i) {// 右の探索
+			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX + 1) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY) * kMapChipSize.y });
+			stepX++;
+		} else if (stepX - 1 > 0 && mapRoute[stepY][stepX - 1] == i) {// 左の探索
+			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX + 1) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY) * kMapChipSize.y });
+			stepX--;
+		} else if (stepY + 1 < kMapSizeY && mapRoute[stepY + 1][stepX] == i) {// 上の探索
+			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX + 1) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY) * kMapChipSize.y });
+			stepY++;
+		} else if (stepY - 1 > 0 && mapRoute[stepY - 1][stepX] == i) {// 下の探索
+			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX + 1) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY) * kMapChipSize.y });
+			stepY--;
+		}
+	}
+
+	return result;
 }

@@ -1,11 +1,17 @@
 #include "Player.h"
 #include "Resources/ConstantVariables/filePath.h"
+#include "Class/Common/Mapchip.h"
+
+#ifdef _DEBUG
 #include <imgui.h>
+#endif // DEBUG
+
+
 
 Player::Player() {
 	frameCount = 0;
 
-	transform.pos = { 0.0f,0.0f };
+	transform.pos = kMapCenter;
 	transform.angle = 0.0f;
 	transform.scale = { 1.0f,1.0f };
 	transform.size = { 32.0f,32.0f };
@@ -256,6 +262,7 @@ void Player::SaveVariables() {
 }
 
 void Player::UpdateImGui() {
+#ifdef _DEBUG
 	ImGui::Begin("Player");
 
 	if (ImGui::TreeNode("transform")) {
@@ -265,7 +272,7 @@ void Player::UpdateImGui() {
 		ImGui::TreePop();
 	}
 
-	ImGui::InputFloat("moveSpeed", &moveSpeed); 
+	ImGui::InputFloat("moveSpeed", &moveSpeed);
 	ImGui::InputInt("dashAfterimageRemainFrame", &dashAfterimageRemainFrame);
 	ImGui::InputInt("dashAfterimageRemainInterval", &dashAfterimageRemainInterval);
 
@@ -281,6 +288,7 @@ void Player::UpdateImGui() {
 	}
 
 	ImGui::End();
+#endif // DEBUG
 }
 
 void Player::SetIsLockOn(int set) {

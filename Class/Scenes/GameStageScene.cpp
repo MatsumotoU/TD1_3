@@ -3,6 +3,10 @@
 #include "SelectScene.h"
 #include "ResultScene.h"
 
+#ifdef _DEBUG
+#include <imgui.h>
+#endif // _DEBUG
+
 #include "Class/Common/Collision2D.h"
 
 void GameStageScene::Init() {
@@ -19,24 +23,24 @@ void GameStageScene::Init() {
 	enemyManager.Init();
 	enemyManager.SetCamera(&mainCamera);
 
-	enemyManager.SpawnEnemy({ 0.0f,100.0f }, { 64.0f,64.0f });
-	enemyManager.SpawnEnemy({ 100.0f,100.0f }, { 64.0f,64.0f });
-	enemyManager.SpawnEnemy({ 200.0f,100.0f }, { 64.0f,64.0f });
-
 	particleManager.Init();
 	particleManager.SetCamera(&mainCamera);
+
+	enemyManager.SpawnEnemy({ 100.0f,100.0f }, { 64.0f,64.0f });
 
 	map.LoadMap("Resources/Maps/stage1.txt");
 	map.SetPlayer(&player);
 	map.SetEnemyManager(&enemyManager);
 	map.SetBulletManager(&bulletManager);
 	
+	testPopEnemyPos = { 1024.0f,1024.0f };
 }
 
 void GameStageScene::Update() {
 	
 	ObjectUpdate();
 	ObjectCollision();
+	ImGuiUpdate();
 	
 }
 
@@ -46,6 +50,30 @@ void GameStageScene::Draw() {
 	player.Draw();
 	bulletManager.Draw();
 	enemyManager.Draw();
+}
+
+void GameStageScene::ImGuiUpdate() {
+#ifdef _DEBUG
+
+	ImGui::Begin("GameScene");
+
+	ImGui::InputFloat("x", &testPopEnemyPos.x);
+	ImGui::InputFloat("y", &testPopEnemyPos.y);
+	if (ImGui::Button("PopEnemy")) {
+		enemyManager.SpawnEnemy(testPopEnemyPos, { 64.0f,64.0f });
+	}
+
+	if (ImGui::Button("CreateEnemyRoute")) {
+		for (int e = 0; e < EMG::kMaxEnemy; e++) {
+			if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
+				enemyManager.GetEnemyes()[e].SetPlayerRoute(map.GetMapStoG(enemyManager.GetEnemyes()[e].GetPos(), player.GetPos()));
+			}
+		}
+	}
+
+	ImGui::End();
+
+#endif // _DEBUG
 }
 
 IScene* GameStageScene::GetNextScene() {

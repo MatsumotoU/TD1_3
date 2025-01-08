@@ -14,6 +14,8 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	void ImGuiUpdate();
+
 	// ゲームシーン取得用
 	IScene* GetNextScene() override;
 
@@ -41,5 +43,7 @@ private:
 	EnemyManager enemyManager;
 	ParticlManager particleManager;
 	Mapchip map;
+
+	Vector2 testPopEnemyPos;
 };
 
