@@ -62,3 +62,7 @@ int Enemy::GetIsHitAttack() {
 Vector2 Enemy::GetHitDir() {
 	return hitDir;
 }
+
+Vector2* Enemy::GetPosPtr() {
+	return &transform.pos;
+}

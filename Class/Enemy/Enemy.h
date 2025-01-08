@@ -20,6 +20,7 @@ public:
 	int GetIsAlive();
 	int GetIsHitAttack();
 	Vector2 GetHitDir();
+	Vector2* GetPosPtr();
 
 private:
 

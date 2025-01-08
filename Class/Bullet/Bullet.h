@@ -25,6 +25,7 @@ public:
 
 	int GetIsShot();
 	std::string GetTag();
+	Vector2* GetPosPtr();
 
 private:
 

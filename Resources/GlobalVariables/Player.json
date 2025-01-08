@@ -1,9 +1,11 @@
 {
+    "dashAfterimageRemainFrame": 5,
+    "dashAfterimageRemainInterval": 15,
     "moveSpeed": 0.800000011920929,
     "transform": {
         "pos": {
-            "x": 0.0,
-            "y": 0.0
+            "x": 100.0,
+            "y": 100.0
         }
     }
 }

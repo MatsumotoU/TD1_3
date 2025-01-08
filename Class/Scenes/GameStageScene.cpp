@@ -25,6 +25,12 @@ void GameStageScene::Init() {
 
 	particleManager.Init();
 	particleManager.SetCamera(&mainCamera);
+
+	map.LoadMap("Resources/Maps/stage1.txt");
+	map.SetPlayer(&player);
+	map.SetEnemyManager(&enemyManager);
+	map.SetBulletManager(&bulletManager);
+	
 }
 
 void GameStageScene::Update() {
@@ -35,6 +41,7 @@ void GameStageScene::Update() {
 }
 
 void GameStageScene::Draw() {
+	map.Draw(&mainCamera);
 	particleManager.Draw();
 	player.Draw();
 	bulletManager.Draw();
@@ -55,6 +62,8 @@ void GameStageScene::ObjectUpdate() {
 	enemyManager.Update();
 	ExprodeEnemy();
 
+	CameraUpdate();
+
 	particleManager.Update();
 }
 
@@ -64,7 +73,7 @@ void GameStageScene::ObjectCollision() {
 	for (int e = 0; e < EMG::kMaxEnemy; e++) {
 		if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
 			// プレイヤー
-			if (player.GetIsDash()) {
+			if (player.GetIsAttack()) {
 				if (IsHitCollisionEllipse(
 					player.GetPos(), enemyManager.GetEnemyes()[e].GetPos(),
 					player.GetSize().x * 0.5f, enemyManager.GetEnemyes()[e].GetSize().x * 0.5f)) {
@@ -74,11 +83,20 @@ void GameStageScene::ObjectCollision() {
 						enemyManager.GetEnemyes()[e].SetHitAttackDir(
 							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
 						player.CountDownRemainAttackChance();
+
+						particleManager.SlashEffect(
+							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
+							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 10.0f, 5, 30, 5, 0);
 					} else {
 
 						enemyManager.GetEnemyes()[e].GetPhysics()->AddForce(player.GetPhysics()->GetVelocity() * 20.0f, IMPACT);
 						player.GetPhysics()->InversVelocity();
+
+						particleManager.SlashEffect(
+							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
+							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()), 10.0f, 5, 30, 5, 0);
 					}
+					player.SetIsAttack(false);
 				}
 			}
 
@@ -127,6 +145,7 @@ void GameStageScene::ObjectCollision() {
 			}
 		}
 	}
+	map.EnemyMapCollision();
 
 	// プレイヤーの当たり判定
 	if (player.GetDamageCoolDown() <= 0) {
@@ -147,7 +166,12 @@ void GameStageScene::ObjectCollision() {
 				}
 			}
 		}
+
+		map.PlayerMapCollision();
 	}
+
+	// 弾の当たり判定
+	map.BulletMapCollision();
 }
 
 void GameStageScene::Attack() {
@@ -190,4 +214,9 @@ void GameStageScene::ExprodeEnemy() {
 			player.SetIsSheathe(false);
 			player.SetRemainAttackChance(PLR::kMaxAttackChance);
 		}
+}
+
+void GameStageScene::CameraUpdate() {
+	Vector2* cameraPos = mainCamera.GetPosPtr();
+	*cameraPos = player.GetPos();
 }
