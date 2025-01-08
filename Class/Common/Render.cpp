@@ -16,8 +16,8 @@ void Render::DrawLine(Vector2 pos1, Vector2 pos2, Camera camera, unsigned int co
 void Render::DrawBox(Transform transform, Camera camera, unsigned int color, FillMode fillMode) {
 	// ローカル座標計算
 	Vector2 leftTopPos = {
-		-(transform.size.x * transform.scale.x) * 0.5f,
-		(transform.size.y * transform.scale.y) * 0.5f,
+		-(transform.size.x  * 0.5f),
+		(transform.size.y  * 0.5f),
 	};
 	// スクリーン座標計算
 	Vector2 drawPos = leftTopPos * camera.GetWvpVpMatrix(transform.pos, transform.scale, transform.angle);
@@ -64,13 +64,13 @@ void Render::DrawSprite(Transform transform, Camera camera, unsigned int color, 
 		// スプライトのサイズ割り出し
 		QuadPos sizePos = {
 			{-(transform.size.x / 2.0f) * transform.scale.x ,
-			-(transform.size.y / 2.0f) * transform.scale.y},
+			+(transform.size.y / 2.0f) * transform.scale.y},
 			{+(transform.size.x / 2.0f) * transform.scale.x,
-			-(transform.size.y / 2.0f) * transform.scale.y},
+			+(transform.size.y / 2.0f) * transform.scale.y},
 			{-(transform.size.x / 2.0f) * transform.scale.x ,
-			+(transform.size.y / 2.0f) * transform.scale.y},
+			-(transform.size.y / 2.0f) * transform.scale.y},
 			{+(transform.size.x / 2.0f) * transform.scale.x,
-			+(transform.size.y / 2.0f) * transform.scale.y},
+			-(transform.size.y / 2.0f) * transform.scale.y},
 		};
 
 		// カメラのvWVPVp行列取得

@@ -38,6 +38,8 @@ void GameStageScene::Init() {
 
 void GameStageScene::Update() {
 	
+	frameCount++;
+
 	ObjectUpdate();
 	ObjectCollision();
 	ImGuiUpdate();
@@ -89,6 +91,7 @@ void GameStageScene::ObjectUpdate() {
 
 	enemyManager.Update();
 	ExprodeEnemy();
+	EnemyMoveToPlayer();
 
 	CameraUpdate();
 
@@ -242,6 +245,17 @@ void GameStageScene::ExprodeEnemy() {
 			player.SetIsSheathe(false);
 			player.SetRemainAttackChance(PLR::kMaxAttackChance);
 		}
+}
+
+void GameStageScene::EnemyMoveToPlayer() {
+	if (frameCount % (60 + 1) == 0) {
+
+		for (int e = 0; e < EMG::kMaxEnemy; e++) {
+			if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
+				enemyManager.GetEnemyes()[e].SetPlayerRoute(map.GetMapStoG(enemyManager.GetEnemyes()[e].GetPos(), player.GetPos()));
+			}
+		}
+	}
 }
 
 void GameStageScene::CameraUpdate() {
