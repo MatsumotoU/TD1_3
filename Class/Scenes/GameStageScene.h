@@ -27,6 +27,9 @@ public:
 	void SetGameStage(int setGameStage) override { setGameStage; };
 	int GetIsContinue() override { return false; };
 
+	void WaveManager();
+	void LoadWave();
+
 	void ObjectUpdate();
 	void ObjectCollision();
 
@@ -34,12 +37,24 @@ public:
 	void PlayerLockOn();
 	void ExprodeEnemy();
 	void EnemyMoveToPlayer();
+	void WaveUiDraw();
 
 	void CameraUpdate();
 
 private:
 
 	int wave;
+	int isChangeWave;
+
+	Transform balancePoleTransform;
+	int balancePoleGH;
+	Transform balanceBasketTransform[2];
+	float balanceBasketSwingWidth;
+	int balanceBasketGH;
+	float balanceAngle;
+
+	Transform waveStringTransform;
+	int waveStringGH;
 
 	Player player;
 	BulletManager bulletManager;
@@ -48,5 +63,9 @@ private:
 	Mapchip map;
 
 	Vector2 testPopEnemyPos;
+
+	Camera uiCamera;
+
+	IScene* nextScene;
 };
 

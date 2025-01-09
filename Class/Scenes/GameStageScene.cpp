@@ -7,6 +7,7 @@
 #include <imgui.h>
 #endif // _DEBUG
 
+#include "Class/Common/MyEasing.h"
 #include "Class/Common/Collision2D.h"
 
 void GameStageScene::Init() {
@@ -14,6 +15,7 @@ void GameStageScene::Init() {
 	wave = 0;
 	isTransition = false;
 	gameStage = 0;
+	nextScene = nullptr;
 
 	mainCamera.Init();
 
@@ -27,22 +29,55 @@ void GameStageScene::Init() {
 	particleManager.Init();
 	particleManager.SetCamera(&mainCamera);
 
-	map.LoadMap("Resources/Maps/stage1.txt");
 	map.SetPlayer(&player);
 	map.SetEnemyManager(&enemyManager);
 	map.SetBulletManager(&bulletManager);
 	
 	testPopEnemyPos = { 1024.0f,1024.0f };
+	isChangeWave = false;
+
+	balanceAngle = 0.0f;
+	balancePoleTransform = {
+		{0.0f,-64.0f},
+		{300.0f,400.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+	balanceBasketTransform[0] = {
+		{180.0f,-64.0f},
+		{256.0f,256.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+	balanceBasketTransform[1] = {
+		{-180.0f,-64.0f},
+		{256.0f,256.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+	balanceBasketGH = Novice::LoadTexture("./Resources/Images/balanceBasket.png");
+	balancePoleGH = Novice::LoadTexture("./Resources/Images/balancePole.png");
+
+	waveStringTransform = {
+		{0.0f,256.0f},
+		{512.0f,256.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+	waveStringGH = Novice::LoadTexture("./Resources/Images/wave.png");
 }
 
 void GameStageScene::Update() {
 
 	frameCount++;
 
-	ObjectUpdate();
-	ObjectCollision();
+	WaveManager();
+
+	if (!isChangeWave) {
+		ObjectUpdate();
+		ObjectCollision();
+	}
 	ImGuiUpdate();
-	
 }
 
 void GameStageScene::Draw() {
@@ -53,15 +88,17 @@ void GameStageScene::Draw() {
 	player.Draw();
 	bulletManager.Draw();
 	enemyManager.Draw();
+	WaveUiDraw();
 }
 
 void GameStageScene::ImGuiUpdate() {
 #ifdef _DEBUG
 
 	ImGui::Begin("GameScene");
-
+	ImGui::Text("GameStage = %d Wave = %d",gameStage,wave);
 	ImGui::InputFloat("x", &testPopEnemyPos.x);
 	ImGui::InputFloat("y", &testPopEnemyPos.y);
+	ImGui::SliderFloat("balanceAngle", &balanceAngle, -3.14f, 3.14f);
 	if (ImGui::Button("PopEnemy")) {
 		enemyManager.SpawnEnemy(testPopEnemyPos, { 64.0f,64.0f });
 	}
@@ -80,7 +117,105 @@ void GameStageScene::ImGuiUpdate() {
 }
 
 IScene* GameStageScene::GetNextScene() {
-	return nullptr;
+	return nextScene;
+}
+
+void GameStageScene::WaveManager() {
+
+	if (enemyManager.GetRemainEnemies() <= 0) {
+		if (!isChangeWave) {
+			isChangeWave = true;
+			wave++;
+			balancePoleTransform.pos = { 0.0f,100.0f };
+			balancePoleTransform.scale = { 0.0f,0.0f };
+			balanceBasketTransform[0].scale = { 0.0f,0.0f };
+			balanceBasketTransform[1].scale = { 0.0f,0.0f };
+			balanceBasketSwingWidth = 1.0f;
+			//balancePoleTransform.angle = 2.0f;
+			frameCount = 0;
+		}
+	}
+
+	if (isChangeWave) {
+
+		// 天秤のかご傾き処理
+		balanceBasketTransform[0] = {
+			{220.0f,0.0f},
+			{256.0f,256.0f},
+			{1.0f,1.0f},
+			0.0f
+		};
+		balanceBasketTransform[1] = {
+			{-220.0f,0.0f},
+			{256.0f,256.0f},
+			{1.0f,1.0f},
+			0.0f
+		};
+		balanceBasketTransform[0].pos = balanceBasketTransform[0].pos * MakeRotateMatrix(balanceAngle);
+		balanceBasketTransform[1].pos = balanceBasketTransform[1].pos * MakeRotateMatrix(balanceAngle);
+		balanceBasketTransform[0].pos.y -= 64.0f;
+		balanceBasketTransform[1].pos.y -= 64.0f;
+
+		// 天秤が上下にちょっと揺れる
+		balancePoleTransform.pos.y += sinf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
+		balanceBasketTransform[0].pos.y += cosf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
+		balanceBasketTransform[1].pos.y += cosf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
+		waveStringTransform.pos.y += sinf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
+
+		// 天秤の柱召喚
+		Eas::SimpleEaseIn(&balancePoleTransform.pos.y, -64.0f, 0.3f);
+		Eas::SimpleEaseIn(&balancePoleTransform.scale.x, 1.0f, 0.2f);
+		Eas::SimpleEaseIn(&balancePoleTransform.scale.y, 1.0f, 0.2f);
+		
+		// 天秤のかご召喚
+		if (balancePoleTransform.scale.x >= 1.0f) {
+			Eas::SimpleEaseIn(&balanceBasketTransform[0].scale.x, 1.0f, 0.2f);
+			Eas::SimpleEaseIn(&balanceBasketTransform[0].scale.y, 1.0f, 0.2f);
+			Eas::SimpleEaseIn(&balanceBasketTransform[1].scale.x, 1.0f, 0.2f);
+			Eas::SimpleEaseIn(&balanceBasketTransform[1].scale.y, 1.0f, 0.2f);
+
+			balanceBasketTransform[0].angle = sinf(static_cast<float>(frameCount) * 0.2f) * balanceBasketSwingWidth;
+			balanceBasketTransform[1].angle = cosf(static_cast<float>(frameCount) * 0.2f) * balanceBasketSwingWidth;
+			balanceBasketSwingWidth *= 0.92f;
+		}
+
+		
+		if (balanceBasketTransform[0].scale.x >= 1.0f) {
+
+			
+		}
+
+		// プレイヤー召喚
+		if (frameCount >= 180 || wave >= 4) {
+			LoadWave();
+			isChangeWave = false;
+		}
+	}
+}
+
+void GameStageScene::LoadWave() {
+	player.Init();
+	player.SetCamera(&mainCamera);
+	bulletManager.Init();
+	bulletManager.SetCamera(&mainCamera);
+	enemyManager.Init();
+	enemyManager.SetCamera(&mainCamera);
+	particleManager.Init();
+	particleManager.SetCamera(&mainCamera);
+
+	// ステージ切り替え
+	if (wave == 1) {
+		map.LoadMap("Resources/Maps/stage1w1.txt");
+	} else if (wave == 2) {
+		map.LoadMap("Resources/Maps/stage1w2.txt");
+	} else if (wave == 3) {
+		map.LoadMap("Resources/Maps/stage1w3.txt");
+	} else {
+		// stageClear
+		nextScene = new ResultScene();
+		isTransition = true;
+	}
+	map.SpawnEnemy();
 }
 
 void GameStageScene::ObjectUpdate() {
@@ -259,7 +394,19 @@ void GameStageScene::EnemyMoveToPlayer() {
 	}
 }
 
+void GameStageScene::WaveUiDraw() {
+	if (isChangeWave) {
+		Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x000000DF, kFillModeSolid);
+		Render::DrawSprite(balancePoleTransform, uiCamera, WHITE, balancePoleGH);
+		Render::DrawSprite(balanceBasketTransform[0], uiCamera, WHITE, balanceBasketGH);
+		Render::DrawSprite(balanceBasketTransform[1], uiCamera, WHITE, balanceBasketGH);
+		Render::DrawSprite(waveStringTransform, uiCamera, WHITE, waveStringGH);
+	}
+}
+
 void GameStageScene::CameraUpdate() {
 	Vector2* cameraPos = mainCamera.GetPosPtr();
 	*cameraPos = player.GetPos();
+
+	mainCamera.CameraMoveLimit({ 640.0f,370.0f }, { 1408.0f,1678.0f });
 }

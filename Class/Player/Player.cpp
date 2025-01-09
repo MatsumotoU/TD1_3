@@ -6,8 +6,6 @@
 #include <imgui.h>
 #endif // DEBUG
 
-
-
 Player::Player() {
 	frameCount = 0;
 
@@ -68,8 +66,6 @@ void Player::Init() {
 void Player::Update() {
 	
 	frameCount++;
-
-	transform.scale = { sinf(static_cast<float>(frameCount)*0.1f),sinf(static_cast<float>(frameCount)*0.1f) };
 
 	particleManager.SetCamera(camera);
 	particleManager.Update();

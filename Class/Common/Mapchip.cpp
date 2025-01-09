@@ -160,6 +160,16 @@ void Mapchip::BulletMapCollision() {
 	}
 }
 
+void Mapchip::SpawnEnemy() {
+	for (int y = 0; y < kMapSizeY; y++) {
+		for (int x = 0; x < kMapSizeX; x++) {
+			if (map[y][x] == 2) {
+				enemyManager->SpawnEnemy({ 32.0f + 64.0f * static_cast<float>(x),32.0f + 64.0f * static_cast<float>(y) }, { 64.0f,64.0f });
+			}
+		}
+	}
+}
+
 void Mapchip::LoadMap(std::string setFilePath) {
 	file.LoadFilePath(setFilePath);
 	file.LoadArr2DData();
@@ -261,19 +271,19 @@ std::vector<Vector2> Mapchip::GetMapStoG(Vector2 start, Vector2 goal) {
 				if (mapRoute[y][x] == searchCount) {
 
 					// 右の探索
-					if (x + 1 < kMapSizeX && map[y][x + 1] == 0 && mapRoute[y][x + 1] == -1) {
+					if (x + 1 < kMapSizeX && map[y][x + 1] != 1 && mapRoute[y][x + 1] == -1) {
 						mapRoute[y][x + 1] = searchCount + 1;
 					}
 					// 左の探索
-					if (x - 1 > 0 && map[y][x - 1] == 0 && mapRoute[y][x - 1] == -1) {
+					if (x - 1 > 0 && map[y][x - 1] != 1 && mapRoute[y][x - 1] == -1) {
 						mapRoute[y][x - 1] = searchCount + 1;
 					}
 					// 上の探索
-					if (y + 1 < kMapSizeY && map[y + 1][x] == 0 && mapRoute[y + 1][x] == -1) {
+					if (y + 1 < kMapSizeY && map[y + 1][x] != 1 && mapRoute[y + 1][x] == -1) {
 						mapRoute[y + 1][x] = searchCount + 1;
 					}
 					// 下の探索
-					if (y - 1 > 0 && map[y - 1][x] == 0 && mapRoute[y - 1][x] == -1) {
+					if (y - 1 > 0 && map[y - 1][x] != 1 && mapRoute[y - 1][x] == -1) {
 						mapRoute[y - 1][x] = searchCount + 1;
 					}
 				}

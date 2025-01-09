@@ -17,6 +17,7 @@ public:
 
 	void SetCamera(Camera* set);
 
+	int GetRemainEnemies();
 	Enemy* GetEnemyes();
 
 	void SpawnEnemy(Vector2 pos, Vector2 size);
