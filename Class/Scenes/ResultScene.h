@@ -1,5 +1,6 @@
 #pragma once
 #include "IScene.h"
+#include "Class/Common/ParticlManager.h"
 
 class ResultScene : public IScene {
 public:
@@ -21,6 +22,35 @@ public:
 	int GetIsContinue() override { return true; };
 
 private:
+	IScene* nextScene;
 
+	Transform star[starTotalCount];
+	int isStarMoving[starTotalCount];
+	float starT[starTotalCount];
+
+	Transform missionUI[starTotalCount];
+	int isMissionUIMoving[starTotalCount];
+	float missionUIT[starTotalCount];
+
+	Transform button[2];
+	int isButtonMoving[2];
+	float buttonT[2];
+
+	int movingOrder;
+
+	int shouldClearedMission[starTotalCount];
+
+	int shouldPressedRight;
+	int shouldPressedLeft;
+
+	float movingFrameCount;
+
+	int starGraphHandle;
+	int missionUIGraphHandle[starTotalCount];
+
+	Vector2 cameraZoom;
+	Vector2* cameraPos;
+
+	ParticlManager particleManager;
 };
 
