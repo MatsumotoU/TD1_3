@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Render.h"
+#include "Class/Common/MyEasing.h"
 
 #include <Novice.h>
 #include <math.h>
@@ -15,6 +16,7 @@ Camera::Camera() {
 
 	angleShake = 0.0f;
 	angleShakeRange = 0.0f;
+	panRange = 0.0f;
 }
 
 int Camera::IsInScreen(Vector2 pos, Vector2 size) {
@@ -137,6 +139,7 @@ void Camera::Init() {
 
 void Camera::Update() {
 
+	// 画面揺れ
 	shakeRange.x *= 0.9f;
 	shakeRange.y *= 0.9f;
 
@@ -152,11 +155,21 @@ void Camera::Update() {
 		shake.y = 0.0f;
 	}
 
+	// 画面角度揺れ
 	angleShakeRange *= 0.9f;
 	if (angleShakeRange <= 0.0f) {
 		angleShakeRange = 0.0f;
 	}
 	angleShake = sinf(time->frameCount * 0.1f) * (angleShakeRange * 0.01f);
+
+	// パン
+	panRange *= 0.9f;
+	if (fabsf(panRange) > 0.1f) {
+		transform.scale = {1.0f + panRange,1.0f + panRange};
+	} else {
+		Eas::SimpleEaseIn(&transform.scale.x, 1.0f, 0.1f);
+		Eas::SimpleEaseIn(&transform.scale.y, 1.0f, 0.1f);
+	}
 }
 
 void Camera::Draw() {

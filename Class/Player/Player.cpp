@@ -80,6 +80,11 @@ Player::Player() {
 	isLockOn = false;
 	targetPos = { 0.0f,0.0f };
 	lockOnGH = Novice::LoadTexture("./Resources/Images/lockOn.png");
+	targetTransform = {
+		{0.0f,0.0f},
+		{64.0f,64.0f},
+		{1.2f,1.2f},
+		0.0f };
 
 	remainAttackChance = PLR::kMaxAttackChance;
 
@@ -193,6 +198,12 @@ void Player::LockOn() {
 			transform.angle -= Length(angleDir - Normalize(targetPos - transform.pos)) * 0.35f;
 		}
 
+		targetTransform.pos = targetPos;
+		targetTransform.angle += 0.1f;
+		targetTransform.scale = { 1.5f,1.5f };
+		targetTransform.scale.x += sinf(static_cast<float>(frameCount)*0.2f)*0.5f;
+		targetTransform.scale.y += sinf(static_cast<float>(frameCount) * 0.2f) * 0.5f;
+
 	} else {
 
 		// 移動方向を見る
@@ -229,6 +240,7 @@ void Player::Dash() {
 			particleManager.SlashEffect(transform.pos, {32.0f,32.0f}, -angleDir, 1.0f, 100, 30, 2, featherGH);
 
 			camera->shakeRange += angleDir * 5.0f;
+			camera->panRange -= 0.2f;
 		}
 	}
 
@@ -304,6 +316,8 @@ void Player::Sheathe() {
 
 				particleManager.FromToEffect(haloTransform.pos, &transform.pos,{32.0f,32.0f}, PLR::kMaxSheatheCoolDown, 10, orangeLightGH, WHITE);
 				particleManager.AnimEffect(haloTransform.pos, { 256.0f,256.0f },Random(6.28f,0.0f), 4, 3, false, haloExprosionGH);
+
+				camera->panRange -= 0.2f;
 			}
 		}
 	}

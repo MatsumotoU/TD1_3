@@ -18,7 +18,7 @@ void GameStageScene::Init() {
 	nextScene = nullptr;
 	mainCamera.Init();
 
-	mainCamera.Init();
+	stopObjectUpdateFrame = 0;
 
 	player.Init();
 	player.SetCamera(&mainCamera);
@@ -77,8 +77,12 @@ void GameStageScene::Update() {
 	WaveManager();
 
 	if (!isChangeWave) {
-		ObjectUpdate();
-		ObjectCollision();
+		if (stopObjectUpdateFrame <= 0) {
+			ObjectUpdate();
+			ObjectCollision();
+		} else {
+			stopObjectUpdateFrame--;
+		}
 	}
 	ImGuiUpdate();
 }
@@ -257,6 +261,9 @@ void GameStageScene::ObjectCollision() {
 						particleManager.SlashEffect(
 							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
 							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 10.0f, 5, 30, 5, 0);
+
+						// カメラを揺らす
+						mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 100.0f;
 					} else {
 
 						enemyManager.GetEnemyes()[e].GetPhysics()->AddForce(player.GetPhysics()->GetVelocity() * 20.0f, IMPACT);
@@ -265,8 +272,12 @@ void GameStageScene::ObjectCollision() {
 						particleManager.SlashEffect(
 							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
 							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()), 10.0f, 5, 30, 5, 0);
+
+						// カメラを揺らす
+						mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 30.0f;
 					}
 					player.SetIsAttack(false);
+					enemyManager.GetEnemyes()[e].Stun();
 				}
 			}
 
@@ -309,6 +320,11 @@ void GameStageScene::ObjectCollision() {
 									-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", 0);
 								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
 							}
+
+							mainCamera.shakeRange += {10.0f, 10.0f};
+							stopObjectUpdateFrame = 15;
+							mainCamera.SetPos(enemyManager.GetEnemyes()[e].GetPos());
+							mainCamera.panRange = -0.5f;
 						}
 					}
 				}
@@ -332,6 +348,9 @@ void GameStageScene::ObjectCollision() {
 
 						player.Damage();
 						player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
+
+						// カメラを揺らす
+						mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
 					}
 				}
 			}
