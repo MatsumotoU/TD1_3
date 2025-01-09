@@ -27,16 +27,30 @@ private:
 	Transform logo[3];
 	Transform startLogo[2];
 	Transform endLogo[2];
-	Transform efect;
-	Vector2 efectDir;
-	float efectT;
-	float alphaValue = 0.0f;
+	Transform button[3];
+	Transform startButton[2];
+	Transform endButton[2];
+	Transform efect[2];
+	float efectT[2];
+	float alphaValue[2];
 	int efectCoolTime;
 	int isEfectMove;
 	int isEaseStart;
-	unsigned int color = 0xFFFFFF00;
+	int isUnderEfectMove;
+	int isMoveEnd;
+	int blinkTimer;
+	int efectNum;
+	unsigned int color[2];
+	unsigned int returnColor[2];
 
 	ParticlManager particleManager;
 	Camera mainCamera;
+	Vector2* cameraPos;
+
+	// 画像のグラフハンドル
+	int titleLogoGh[3];
+	int buttonGh[3];
+	int bigEfectGh[9];
+	int smallEfectGh[9];
 };
 
