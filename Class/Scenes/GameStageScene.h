@@ -46,6 +46,8 @@ private:
 	int wave;
 	int isChangeWave;
 
+	int stopObjectUpdateFrame;
+
 	Transform balancePoleTransform;
 	int balancePoleGH;
 	Transform balanceBasketTransform[2];

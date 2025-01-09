@@ -26,6 +26,7 @@ public:
 
 	float angleShakeRange;
 	Vector2 shakeRange;
+	float panRange;
 
 private:
 

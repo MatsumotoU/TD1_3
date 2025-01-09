@@ -15,7 +15,7 @@ void EnemyManager::Init() {
 
 void EnemyManager::Update() {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
-		if (enemyes[i].GetIsActive() && enemyes[i].GetIsAlive()) {
+		if (enemyes[i].GetIsActive()) {
 
 			enemyes[i].Update();
 		}
@@ -25,7 +25,7 @@ void EnemyManager::Update() {
 
 void EnemyManager::Draw() {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
-		if (enemyes[i].GetIsActive() && enemyes[i].GetIsAlive()) {
+		if (enemyes[i].GetIsActive()) {
 
 			enemyes[i].Draw();
 		}
@@ -34,10 +34,7 @@ void EnemyManager::Draw() {
 
 void EnemyManager::SetCamera(Camera* set) {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
-		if (enemyes[i].GetIsActive() && !enemyes[i].GetIsAlive()) {
-
-			enemyes[i].SetCamera(set);
-		}
+		enemyes[i].SetCamera(set);
 	}
 }
 
@@ -74,8 +71,10 @@ void EnemyManager::EnemyCollision() {
 
 void EnemyManager::SpawnEnemy(Vector2 pos, Vector2 size) {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
-		if (enemyes[i].GetIsActive() && !enemyes[i].GetIsAlive()) {
+		if (!enemyes[i].GetIsActive() && !enemyes[i].GetIsAlive()) {
 
+			enemyes[i].SetIsActive(true);
+			enemyes[i].SetDeathFrame(ENM::kMaxDeathFrame);
 			enemyes[i].SetPos(pos);
 			enemyes[i].SetSize(size);
 			enemyes[i].SetIsAlive(true);

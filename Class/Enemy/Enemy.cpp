@@ -6,15 +6,17 @@ Enemy::Enemy() {
 	transform.scale = { 1.0f,1.0f };
 	transform.size = { 32.0f,32.0f };
 
+	drawTransform = transform;
+
 	physics.Init();
-	isActive = true;
+	isActive = false;
 
 	isAlive = false;
 	enemyGH = 0;
 	color = WHITE;
 
 	isHitAttack = false;
-	hitDir = {0.0f,0.0f};
+	hitDir = { 0.0f,0.0f };
 
 	isExprosion = false;
 
@@ -22,28 +24,43 @@ Enemy::Enemy() {
 	nextRouteNum = 0;
 
 	moveSpeed = 0.5f;
+
+	deathFrame = 60;
+
+	stunFrame = 0;
+	angleDir = { 1.0f,0.0f };
+	moveDir = { 0.0f,0.0f };
+	enemyGH = Novice::LoadTexture("./Resources/Images/enemy.png");
 }
 
 void Enemy::Init() {
+	stunFrame = 0;
 }
 
 void Enemy::Update() {
-	Move();
+	if (isAlive) {
+		Move();
+		LockOn();
+	}
+	StateCheck();
 
 	physics.Update(&transform.pos);
 }
 
 void Enemy::Draw() {
-	Render::DrawSprite(transform, *camera, color, enemyGH);
+	Render::DrawSprite(drawTransform, *camera, color, enemyGH);
 
 	if (isHitAttack) {
 		Render::DrawLine(transform.pos, transform.pos + hitDir * 100.0f, *camera, RED);
 		Render::DrawLine(transform.pos, transform.pos + -hitDir * 100.0f, *camera, RED);
 	}
 
+#ifdef _DEBUG
 	for (int i = static_cast<int>(targetRoute.size() - 1); i > 0; i--) {
 		Render::DrawLine(targetRoute[i], targetRoute[i - 1], *camera, RED);
 	}
+#endif // _DEBUG
+	
 }
 
 void Enemy::SetCamera(Camera* set) {
@@ -68,6 +85,10 @@ void Enemy::SetPlayerRoute(std::vector<Vector2> set) {
 	nextRouteNum = static_cast<int>(targetRoute.size());
 }
 
+void Enemy::SetDeathFrame(int set) {
+	deathFrame = set;
+}
+
 int Enemy::GetIsAlive() {
 	return isAlive;
 }
@@ -85,13 +106,68 @@ Vector2* Enemy::GetPosPtr() {
 }
 
 void Enemy::Move() {
+	// スタンしてたら動かない
+	if (stunFrame > 0) {
+		stunFrame--;
+		return;
+	}
+
+	// ラインに沿って動く
 	if (nextRouteNum > 0) {
-		Vector2 moveDir = -Normalize(transform.pos - targetRoute[nextRouteNum-1]);
+		moveDir = -Normalize(transform.pos - targetRoute[nextRouteNum - 1]);
 		physics.AddForce(moveDir * moveSpeed, IMPACT);
 
-		if (Length(transform.pos - targetRoute[nextRouteNum-1]) <= 32.0f) {
-			
+		if (Length(transform.pos - targetRoute[nextRouteNum - 1]) <= 32.0f) {
+
 			nextRouteNum--;
 		}
 	}
+}
+
+void Enemy::LockOn() {
+
+	// 移動方向を見る
+	angleDir = { cosf(transform.angle),sinf(transform.angle) };
+	if (Cross(angleDir, moveDir) >= 0.0f) {
+		transform.angle += Length(angleDir - moveDir) * 0.2f;
+	} else {
+		transform.angle -= Length(angleDir - moveDir) * 0.2f;
+	}
+
+}
+
+void Enemy::StateCheck() {
+	// スタン値
+	drawTransform = transform;
+	if (stunFrame <= 0) {
+		if (isHitAttack) {
+			isHitAttack = false;
+			hitDir = { 0.0f,0.0f };
+		}
+
+		drawTransform = transform;
+	} else {
+
+		float shakeEnm = static_cast<float>(stunFrame) / static_cast<float>(ENM::kMaxStunFrame);
+
+		drawTransform.pos += {
+			Random(transform.size.x * 0.5f * shakeEnm, -transform.size.x * 0.5f * shakeEnm),
+				Random(transform.size.y * 0.5f * shakeEnm, -transform.size.y * 0.5f * shakeEnm)};
+	}
+
+	if (!isAlive) {
+		if (deathFrame > 0) {
+			deathFrame--;
+			drawTransform.scale = {
+				powf(static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame),3.0f) ,
+				powf(static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame),3.0f) };
+			drawTransform.angle += (static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame));
+		} else {
+			isActive = false;
+		}
+	}
+}
+
+void Enemy::Stun() {
+	stunFrame = ENM::kMaxStunFrame;
 }

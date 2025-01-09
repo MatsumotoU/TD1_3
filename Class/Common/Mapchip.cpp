@@ -16,7 +16,7 @@ Mapchip::Mapchip() {
 	isTransition = nullptr;
 
 	mapchipGH[0] = 0;
-	mapchipGH[1] = 0;
+	mapchipGH[1] = Novice::LoadTexture("./Resources/Images/block1.png");
 	mapchipGH[2] = 0;
 	mapchipGH[3] = 0;
 	mapchipGH[4] = 0;
