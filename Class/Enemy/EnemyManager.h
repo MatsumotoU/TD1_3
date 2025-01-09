@@ -20,6 +20,7 @@ public:
 	int GetRemainEnemies();
 	Enemy* GetEnemyes();
 
+	void EnemyCollision();
 	void SpawnEnemy(Vector2 pos, Vector2 size);
 	Vector2 NearEnemy(Vector2 targetPos);
 

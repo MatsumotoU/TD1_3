@@ -145,7 +145,7 @@ void ParticlManager::ShowerEffect(Vector2 pos, Vector2 dir, int diffusivity, int
 	}
 }
 
-void ParticlManager::FromToEffect(Vector2 fromPos, Vector2 toPos, int stackFrame, int particlCap, int gh,unsigned int color) {
+void ParticlManager::FromToEffect(Vector2 fromPos, Vector2* toPos, Vector2 size, int stackFrame, int particlCap, int gh,unsigned int color) {
 
 	for (int i = 0; i < particlCap; i++) {
 
@@ -160,9 +160,9 @@ void ParticlManager::FromToEffect(Vector2 fromPos, Vector2 toPos, int stackFrame
 				particls[p].SetIsTarget(true);
 				particls[p].SetStackFrame(stackFrame);
 				particls[p].SetIsActive(true);
+				particls[p].SetSize(size);
 				particls[p].SetPos(fromPos);
 				particls[p].SetTargetPos(toPos);
-				particls[p].SetSize({ 16.0f,16.0f });
 				particls[p].GetPhysics2D()->AddForce({ static_cast<float>(rand() % 30 - 15) * 0.4f,static_cast<float>(rand() % 30 - 15) * 0.4f }, IMPACT);
 				particls[p].SetRotateDir(static_cast<float>(rand() % 10 - 5) * 0.1f);
 				particls[p].SetGraphHandle(gh);
@@ -244,4 +244,29 @@ void ParticlManager::SlashEffect(Vector2 pos, Vector2 size, Vector2 dir, float p
 			}
 		}
 	}
+}
+
+void ParticlManager::AnimEffect(Vector2 pos, Vector2 size, float angle, int animMaxFrame, int animSpeed, int isLoop, int* gh) {
+
+	for (int p = 0; p < kPlarticlMax; p++) {
+
+		if (!particls[p].GetIsActive()) {
+
+			particls[p].Init();
+			particls[p].SetCamera(camera);
+			particls[p].SetIsActive(true);
+			particls[p].SetPos(pos);
+			particls[p].SetSize(size);
+			particls[p].SetGraphHandle(gh[0]);
+			particls[p].SetAngle(angle);
+
+			particls[p].SetIsAnim(true);
+			particls[p].SetAnimSpeed(animSpeed);
+			particls[p].SetMaxAnimFrame(animMaxFrame);
+			particls[p].SetAnimGH(gh);
+			particls[p].SetIsLoop(isLoop);
+			break;
+		}
+	}
+
 }

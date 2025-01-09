@@ -28,6 +28,7 @@ public:
 	int GetIsHit(Vector2 pos);
 	int GetMapNum(Vector2 pos);
 
+	void SetCamera(Camera* set);
 	void SetPlayer(Player* set);
 	void SetEnemyManager(EnemyManager* set);
 	void SetBulletManager(BulletManager* set);
@@ -39,7 +40,7 @@ public:
 	void SpawnEnemy();
 	void LoadMap(std::string setFilePath);
 	void SetMap(int setMap[kMapSizeY][kMapSizeX]);
-	void Draw(Camera* camera);
+	void Draw();
 	void Update();
 
 	void ImGuiUpdate();
@@ -59,5 +60,6 @@ private:
 	Player* player;
 	EnemyManager* enemyManager;
 	BulletManager* bulletManager;
+	Camera* camera;
 };
 

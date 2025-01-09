@@ -76,6 +76,10 @@ Vector2* Camera::GetPosPtr() {
 	return &transform.pos;
 }
 
+Transform* Camera::GetTransformPtr() {
+	return &transform;
+}
+
 void Camera::SetScreenSize(Vector2 set) {
 	screenSize = set;
 }

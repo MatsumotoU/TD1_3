@@ -3,6 +3,8 @@
 #include "Class/Common/MyEasing.h"
 
 void Particl::Init() {
+	outCameraAliveFrame = 300;
+
 	pos = { 0.0f,0.0f };
 	size = { 16.0f,16.0f };
 	scale = { 1.0f,1.0f };
@@ -19,6 +21,11 @@ void Particl::Init() {
 	maxFadeFrame = fadeFrame;
 	aliveFrame = 1;
 	stackFrame = 1;
+	isAnim = false;
+	maxAnimFrame = 0;
+	animSpeed = 0;
+	animCount = 0;
+	animGH = nullptr;
 
 	physics2D.Init();
 	physics2D.SetResistance(1.0f);
@@ -34,7 +41,7 @@ void Particl::Init() {
 	transform.angle = angle;
 	transform.scale = scale;
 	transform.size = size;
-
+	targetPos = nullptr;
 	gh = 0;
 }
 
@@ -59,8 +66,11 @@ void Particl::Update() {
 		// 画面外に行ったら描画停止
 		if (!camera->IsInScreen(pos,size)) {
 
-			//Novice::ConsolePrintf("%f,%f\n", draw->GetScreenPos(pos).x, draw->GetScreenPos(pos).y);
-			isActive = false;
+			if (outCameraAliveFrame > 0) {
+				outCameraAliveFrame--;
+			} else {
+				isActive = false;
+			}
 		}
 
 		// フェードアウト
@@ -98,16 +108,16 @@ void Particl::Update() {
 
 			if (stackFrame <= 0) {
 
-				Eas::SimpleEaseIn(&size.x, 0.0f, 0.05f);
-				Eas::SimpleEaseIn(&size.y, 0.0f, 0.05f);
+				Eas::SimpleEaseIn(&scale.x, 0.0f, 0.05f);
+				Eas::SimpleEaseIn(&scale.y, 0.0f, 0.05f);
 
-				Eas::SimpleEaseIn(&pos.x, targetPos.x, 0.1f);
-				Eas::SimpleEaseIn(&pos.y, targetPos.y, 0.1f);
+				Eas::SimpleEaseIn(&pos.x, targetPos->x, 0.5f);
+				Eas::SimpleEaseIn(&pos.y, targetPos->y, 0.5f);
 			} else {
 				stackFrame--;
 			}
 			
-			if (pos.x == targetPos.x && pos.y == targetPos.y) {
+			if (pos.x == targetPos->x && pos.y == targetPos->y) {
 				isActive = false;
 			}
 		}
@@ -115,6 +125,23 @@ void Particl::Update() {
 		// 消滅時間設定
 		if (aliveFrame <= 0) {
 			isActive = false;
+		}
+
+		// アニメーション
+		if (isAnim) {
+
+			if (frameCount % (animSpeed + 1) == 0) {
+				animCount++;
+			}
+
+			if (!isLoop) {
+				if (animCount >= maxAnimFrame) {
+					isActive = false;
+					return;
+				}
+			}
+
+			particlGH = animGH[animCount % maxAnimFrame];
 		}
 	}
 
@@ -126,7 +153,7 @@ void Particl::Update() {
 
 void Particl::Draw() {
 	if (isActive) {
-		Render::DrawSprite(transform, *camera, color, gh);
+		Render::DrawSprite(transform, *camera, color, particlGH);
 	}
 }
 
@@ -138,7 +165,7 @@ void Particl::SetSize(Vector2 set) {
 	size = set;
 }
 
-void Particl::SetTargetPos(Vector2 set) {
+void Particl::SetTargetPos(Vector2* set) {
 	targetPos = set;
 }
 
@@ -197,6 +224,26 @@ void Particl::SetColor(unsigned int set) {
 
 void Particl::SetCamera(Camera* set) {
 	camera = set;
+}
+
+void Particl::SetIsAnim(int set) {
+	isAnim = set;
+}
+
+void Particl::SetMaxAnimFrame(int set) {
+	maxAnimFrame = set;
+}
+
+void Particl::SetAnimSpeed(int set) {
+	animSpeed = set;
+}
+
+void Particl::SetIsLoop(int set) {
+	isLoop = set;
+}
+
+void Particl::SetAnimGH(int* set) {
+	animGH = set;
 }
 
 Vector2 Particl::GetPos() {

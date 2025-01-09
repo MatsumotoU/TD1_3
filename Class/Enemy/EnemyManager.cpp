@@ -1,4 +1,5 @@
 #include "EnemyManager.h"
+#include "Class/Common/Collision2D.h"
 
 EnemyManager::EnemyManager() {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
@@ -19,6 +20,7 @@ void EnemyManager::Update() {
 			enemyes[i].Update();
 		}
 	}
+	EnemyCollision();
 }
 
 void EnemyManager::Draw() {
@@ -51,6 +53,23 @@ int EnemyManager::GetRemainEnemies() {
 
 Enemy* EnemyManager::GetEnemyes() {
 	return enemyes;
+}
+
+void EnemyManager::EnemyCollision() {
+	for (int i = 0; i < EMG::kMaxEnemy; i++) {
+		if (enemyes[i].GetIsActive() && enemyes[i].GetIsAlive()) {
+			
+			for (int e = 0; e < EMG::kMaxEnemy; e++) {
+				if (enemyes[e].GetIsActive() && enemyes[e].GetIsAlive()) {
+					
+					if (e != i) {
+
+						CollisionRectangle(enemyes[i].GetPosPtr(), enemyes[i].GetSize(), enemyes[e].GetPos(), enemyes[e].GetSize(), true, true);
+					}
+				}
+			}
+		}
+	}
 }
 
 void EnemyManager::SpawnEnemy(Vector2 pos, Vector2 size) {

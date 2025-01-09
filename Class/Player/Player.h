@@ -32,6 +32,13 @@ public:
 	void Sheathe();
 	void StateCheck();
 
+	void HaloMove();
+	void WingMove();
+	void WingDraw();
+
+	void UpdateHpUi();
+	void DrawHpUi();
+
 	void LoadVariables();
 	void SaveVariables();
 	void UpdateImGui();
@@ -58,6 +65,21 @@ public:
 
 private:
 	int frameCount;
+
+	int hpUiDrawFrame;
+	Transform hpTransform[3];
+	int hpGH;
+
+	Transform haloTransform;
+	int haloGH;
+	int haloExprosionGH[4];
+	int orangeLightGH;
+
+	float flapping;
+	Transform leftWingTransform;
+	Transform rightWingTransform;
+	int wingGH;
+	int featherGH;
 
 	int playerGH;
 
@@ -87,6 +109,8 @@ private:
 
 	int isLockOn;
 	Vector2 targetPos;
+	Transform targetTransform;
+	int lockOnGH;
 
 	Camera* camera;
 
