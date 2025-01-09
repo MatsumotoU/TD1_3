@@ -36,6 +36,7 @@ public:
 	void EnemyMapCollision();
 	void BulletMapCollision();
 
+	void SpawnEnemy();
 	void LoadMap(std::string setFilePath);
 	void SetMap(int setMap[kMapSizeY][kMapSizeX]);
 	void Draw(Camera* camera);

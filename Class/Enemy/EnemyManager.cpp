@@ -39,6 +39,16 @@ void EnemyManager::SetCamera(Camera* set) {
 	}
 }
 
+int EnemyManager::GetRemainEnemies() {
+	int count = 0;
+	for (int i = 0; i < EMG::kMaxEnemy; i++) {
+		if (enemyes[i].GetIsActive() && enemyes[i].GetIsAlive()) {
+			count++;
+		}
+	}
+	return count;
+}
+
 Enemy* EnemyManager::GetEnemyes() {
 	return enemyes;
 }
