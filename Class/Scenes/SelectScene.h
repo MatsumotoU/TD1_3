@@ -37,6 +37,9 @@ private:
 	Transform stageIcon[stageTotalCount];
 	float stageIconT[stageTotalCount];
 
+	Transform arrow[2];
+	float arrowTheta[2];
+
 	int shouldClearedMission[stageTotalCount][starTotalCount];
 
 	int shouldPressedRight;
@@ -50,6 +53,7 @@ private:
 	float movingFrameCount;
 
 	int starGraphHandle;
+	int arrowGraphHandle[2];
 
 	Vector2* cameraPos;
 

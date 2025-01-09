@@ -49,6 +49,20 @@ void SelectScene::Init() {
 		}
 	}
 
+	// AとDの矢印のUIの変数
+	for (int i = 0; i < 2; ++i) {
+		arrow[i] = {
+			{250.0f + i * 780.0f,256.0f},
+			{160.0f,160.0f},
+			{1.0f,1.0f},
+			0.0f
+		};
+
+		arrowTheta[i] = 0.0f;
+	}
+
+	arrow[0].scale = { 0.0f,0.0f };
+
 	// ミッションをクリアしたか
 	for (int i = 0; i < stageTotalCount; ++i) {
 		for (int j = 0; j < starTotalCount; ++j) {
@@ -66,6 +80,9 @@ void SelectScene::Init() {
 	*cameraPos = { 640.0f,360.0f };
 
 	starGraphHandle = Novice::LoadTexture("./Resources/Images/missionStar.png");
+
+	arrowGraphHandle[0] = Novice::LoadTexture("./Resources/Images/stageSelectArrow1.png");
+	arrowGraphHandle[1] = Novice::LoadTexture("./Resources/Images/stageSelectArrow2.png");
 }
 
 void SelectScene::Update() {
@@ -83,13 +100,18 @@ void SelectScene::Update() {
 					for (int i = 0; i < starTotalCount; ++i) {
 						starT[i] = 0.0f;
 						isStarMoving[i] = true;
-						star[i].scale = { 3.0f,3.0f };
+						star[i].scale = { 6.0f,6.0f };
 					}
 
 					for (int i = 0; i < stageTotalCount; ++i) {
 						stageIconT[i] = 0.0f;
 						stageIcon[i].pos.y = 256.0f;
 						stageIconTheta = 0.0f;
+					}
+
+					for (int i = 0; i < 2; ++i) {
+						arrowTheta[i] = 0.0f;
+						arrow[i].angle = 0.0f;
 					}
 				}
 			}
@@ -105,13 +127,18 @@ void SelectScene::Update() {
 					for (int i = 0; i < starTotalCount; ++i) {
 						starT[i] = 0.0f;
 						isStarMoving[i] = true;
-						star[i].scale = { 3.0f,3.0f };
+						star[i].scale = { 6.0f,6.0f };
 					}
 
 					for (int i = 0; i < stageTotalCount; ++i) {
 						stageIconT[i] = 0.0f;
 						stageIcon[i].pos.y = 256.0f;
 						stageIconTheta = 0.0f;
+					}
+
+					for (int i = 0; i < 2; ++i) {
+						arrowTheta[i] = 0.0f;
+						arrow[i].angle = 0.0f;
 					}
 				}
 			}
@@ -156,6 +183,30 @@ void SelectScene::Update() {
 				stageIcon[i].scale.x = Eas::EaseInOutQuart(stageIconT[i], 1.0f, notSelectedStageScale);
 				stageIcon[i].scale.y = Eas::EaseInOutQuart(stageIconT[i], 1.0f, notSelectedStageScale);
 			}
+
+		}
+
+		arrowTheta[1] += 1.0f / movingFrameCount * static_cast<float>(M_PI);
+		arrow[1].pos.y = 256.0f + sinf(arrowTheta[1]) * 32.0f;
+
+		if (gameStage == stageTotalCount - 1) {
+			arrow[1].scale.x = Eas::EaseInOutQuart(stageIconT[0], 1.3f, 0.0f);
+			arrow[1].scale.y = Eas::EaseInOutQuart(stageIconT[0], 1.3f, 0.0f);
+			if (stageIconT[0] < 0.7f) {
+				arrow[1].angle -= 1.0f / 8.0f * static_cast<float>(M_PI);
+			} else if (stageIconT[0] < 0.8f) {
+				arrow[1].angle -= 1.0f / 4.0f * static_cast<float>(M_PI);
+			} else {
+				arrow[1].angle -= 1.0f / 1.5f * static_cast<float>(M_PI);
+			}
+		} else {
+			arrow[1].scale.x = Eas::EaseInOutQuart(stageIconT[0], 1.3f, 1.0f);
+			arrow[1].scale.y = Eas::EaseInOutQuart(stageIconT[0], 1.3f, 1.0f);
+		}
+
+		if (gameStage == 1) {
+			arrow[0].scale.x = Eas::EaseInOutQuart(stageIconT[0], 0.0f, 1.0f);
+			arrow[0].scale.y = Eas::EaseInOutQuart(stageIconT[0], 0.0f, 1.0f);
 		}
 	}
 
@@ -186,14 +237,44 @@ void SelectScene::Update() {
 				stageIcon[i].scale.y = Eas::EaseInOutQuart(stageIconT[i], 1.0f, notSelectedStageScale);
 			}
 		}
+
+		arrowTheta[0] += 1.0f / movingFrameCount * static_cast<float>(M_PI);
+		arrow[0].pos.y = 256.0f + sinf(arrowTheta[0]) * 32.0f;
+
+		if (gameStage == 0) {
+			arrow[0].scale.x = Eas::EaseInOutQuart(stageIconT[0], 1.3f, 0.0f);
+			arrow[0].scale.y = Eas::EaseInOutQuart(stageIconT[0], 1.3f, 0.0f);
+			if (stageIconT[0] < 0.7f) {
+				arrow[0].angle += 1.0f / 8.0f * static_cast<float>(M_PI);
+			} else if (stageIconT[0] < 0.8f) {
+				arrow[0].angle += 1.0f / 4.0f * static_cast<float>(M_PI);
+			} else {
+				arrow[0].angle += 1.0f / 1.5f * static_cast<float>(M_PI);
+			}
+		} else {
+			arrow[0].scale.x = Eas::EaseInOutQuart(stageIconT[0], 1.3f, 1.0f);
+			arrow[0].scale.y = Eas::EaseInOutQuart(stageIconT[0], 1.3f, 1.0f);
+		}
+
+		if (gameStage == stageTotalCount - 2) {
+			arrow[1].scale.x = Eas::EaseInOutQuart(stageIconT[0], 0.0f, 1.0f);
+			arrow[1].scale.y = Eas::EaseInOutQuart(stageIconT[0], 0.0f, 1.0f);
+		}
 	}
 
 	for (int i = 0; i < stageTotalCount; ++i) {
 		if (gameStage == i) {
 			if (!shouldPressedLeft && !shouldPressedRight) {
-				stageIconTheta += 1.0f / 90.0f * static_cast<float>(M_PI);
+				stageIconTheta -= 1.0f / 90.0f * static_cast<float>(M_PI);
 				stageIcon[i].pos.y = 256.0f + sinf(stageIconTheta) * 8.0f;
 			}
+		}
+	}
+
+	for (int i = 0; i < 2; ++i) {
+		if (!shouldPressedLeft && !shouldPressedRight) {
+			arrowTheta[i] += 1.0f / 90.0f * static_cast<float>(M_PI);
+			arrow[i].pos.y = 256.0f + sinf(arrowTheta[i]) * 4.0f;
 		}
 	}
 
@@ -219,18 +300,18 @@ void SelectScene::Update() {
 			}
 
 			if (starT[i] < 0.8f) {
-				star[i].angle += 1.0f / 20.0f * static_cast<float>(M_PI);
+				star[i].angle += 1.0f / 10.0f * static_cast<float>(M_PI);
 			} else if (starT[i] < 0.9f) {
-				star[i].angle += 1.0f / 50.0f * static_cast<float>(M_PI);
+				star[i].angle += 1.0f / 60.0f * static_cast<float>(M_PI);
 			} else {
 				star[i].angle += 1.0f / 120.0f * static_cast<float>(M_PI);
 			}
 
-			star[i].scale.x = Eas::EaseInOutQuart(starT[i], 3.0f, 1.0f);
-			star[i].scale.y = Eas::EaseInOutQuart(starT[i], 3.0f, 1.0f);
+			star[i].scale.x = Eas::EaseInOutQuart(starT[i], 6.0f, 1.0f);
+			star[i].scale.y = Eas::EaseInOutQuart(starT[i], 6.0f, 1.0f);
 
 			star[i].pos.x = Eas::EaseInOutQuart(starT[i], i * 640.0f, 320.0f + i * 320.0f);
-			star[i].pos.y = Eas::EaseInOutQuart(starT[i], 1104.0f, 560.0f);
+			star[i].pos.y = Eas::EaseInOutQuart(starT[i], 1488.0f, 560.0f);
 		} else {
 			star[i].angle += 1.0f / 180.0f * static_cast<float>(M_PI);
 			star[i].pos.y = 560.0f + sinf(star[i].angle * 3.0f) * 8.0f;
@@ -255,20 +336,26 @@ void SelectScene::Update() {
 }
 
 void SelectScene::Draw() {
+	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
+
 	particleManager.Draw();
 
 	for (int i = 0; i < stageTotalCount; ++i) {
-		Render::DrawSprite(stageIcon[i], mainCamera, 0xff0000ff, 0);
+		Render::DrawSprite(stageIcon[i], mainCamera, 0xD65A31FF, 0);
 	}
 
 	for (int i = 0; i < starTotalCount; ++i) {
 		// ===================================================================================//
 		if (shouldClearedMission[gameStage][i]) { //ミッションをクリアしたか
 			//====================================================================================//
-			Render::DrawSprite(star[i], mainCamera, 0xffffffff, starGraphHandle);
+			Render::DrawSprite(star[i], mainCamera, 0xEEEEEEFF, starGraphHandle);
 		} else {
-			Render::DrawSprite(star[i], mainCamera, 0x222222ff, starGraphHandle);
+			Render::DrawSprite(star[i], mainCamera, 0x393E46FF, starGraphHandle);
 		}
+	}
+
+	for (int i = 0; i < 2; ++i) {
+		Render::DrawSprite(arrow[i], mainCamera, 0xffffffff, arrowGraphHandle[i]);
 	}
 }
 
