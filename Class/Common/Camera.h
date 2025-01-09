@@ -16,6 +16,7 @@ public:
 	Matrix3x3 GetWvpVpMatrix(Vector2 setPos, Vector2 setScale, float setAngle);
 	Vector2 GetScreenSize();
 	Vector2* GetPosPtr();
+	Transform* GetTransformPtr();
 
 	void SetScreenSize(Vector2 set);
 

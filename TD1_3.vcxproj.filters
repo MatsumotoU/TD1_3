@@ -101,13 +101,13 @@
     <ClCompile Include="Class\Enemy\EnemyManager.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
-    <ClCompile Include="Class\Common\Particl.cpp">
-      <Filter>KamataEngine</Filter>
-    </ClCompile>
     <ClCompile Include="Class\Common\ParticlManager.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
     <ClCompile Include="Class\Common\Mapchip.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Class\Common\Particl.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -210,8 +210,8 @@
     <ClInclude Include="Class\Bullet\Bullet.h" />
     <ClInclude Include="Class\Enemy\Enemy.h" />
     <ClInclude Include="Class\Enemy\EnemyManager.h" />
-    <ClInclude Include="Class\Common\Particl.h" />
     <ClInclude Include="Class\Common\ParticlManager.h" />
     <ClInclude Include="Class\Common\Mapchip.h" />
+    <ClInclude Include="Class\Common\Particl.h" />
   </ItemGroup>
 </Project>

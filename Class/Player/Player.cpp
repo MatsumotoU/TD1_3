@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Resources/ConstantVariables/filePath.h"
 #include "Class/Common/Mapchip.h"
+#include "Class/Common/MyEasing.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -9,11 +10,47 @@
 Player::Player() {
 	frameCount = 0;
 
+	hpUiDrawFrame = 0;
+	for (int i = 0; i < maxHp; i++) {
+		hpTransform[0] = {
+		{0.0f,64.0f},
+		{16.0f,16.0f},
+		{1.0f,1.0f},
+		0.0f };
+	}
+	hpGH = Novice::LoadTexture("./Resources/Images/hp.png");
+
+	haloTransform = {
+		{-16.0f,0.0f},
+		{32.0f,32.0f},
+		{1.0f,1.0f},
+		0.0f };
+	haloGH = Novice::LoadTexture("./Resources/Images/playerHalo.png");
+	orangeLightGH = Novice::LoadTexture("./Resources/Images/orangeLight.png");
+	haloExprosionGH[0] = Novice::LoadTexture("./Resources/Images/haloExprosion1.png");
+	haloExprosionGH[1] = Novice::LoadTexture("./Resources/Images/haloExprosion2.png");
+	haloExprosionGH[2] = Novice::LoadTexture("./Resources/Images/haloExprosion3.png");
+	haloExprosionGH[3] = Novice::LoadTexture("./Resources/Images/haloExprosion4.png");
+
+	flapping = 0.0f;
+	leftWingTransform = {
+		{-16.0f,16.0f},
+		{32.0f,32.0f},
+		{1.0f,1.0f},
+		0.0f };
+	rightWingTransform = {
+		{-16.0f,-16.0f},
+		{32.0f,32.0f},
+		{1.0f,-1.0f},
+		0.0f };
+	wingGH = Novice::LoadTexture("./Resources/Images/playerWing.png");
+	featherGH = Novice::LoadTexture("./Resources/Images/feather.png");
+
 	transform.pos = kMapCenter;
 	transform.angle = 0.0f;
 	transform.scale = { 1.0f,1.0f };
 	transform.size = { 32.0f,32.0f };
-	
+
 	physics.Init();
 	isActive = true;
 
@@ -42,6 +79,7 @@ Player::Player() {
 
 	isLockOn = false;
 	targetPos = { 0.0f,0.0f };
+	lockOnGH = Novice::LoadTexture("./Resources/Images/lockOn.png");
 
 	remainAttackChance = PLR::kMaxAttackChance;
 
@@ -49,9 +87,9 @@ Player::Player() {
 
 	particleManager.Init();
 	particleManager.SetCamera(camera);
-	
+
 	playerGH = Novice::LoadTexture("./Resources/Images/player.png");
-	
+
 }
 
 void Player::Init() {
@@ -64,7 +102,7 @@ void Player::Init() {
 }
 
 void Player::Update() {
-	
+
 	frameCount++;
 
 	particleManager.SetCamera(camera);
@@ -74,28 +112,54 @@ void Player::Update() {
 	Move();
 	LockOn();
 	Dash();
-	//Attack();
 	Sheathe();
 	StateCheck();
+
+	HaloMove();
+	WingMove();
+
+	UpdateHpUi();
 }
 
 void Player::Draw() {
-	
+
 	particleManager.Draw();
 
 	if (isAlive) {
+
+		// ダッシュ可能円
+		Render::DrawEllipse(transform.pos,
+			{ 64.0f * Eas::EaseInOutQuart(flapping,0.0f,1.0f),64.0f * Eas::EaseInOutQuart(flapping,0.0f,1.0f) },
+			0.0f, *camera, 0xEEEEEEFF, kFillModeWireFrame);
+
+		// 本体
 		if (damageCoolDown % 6) {
 			Render::DrawSprite(transform, *camera, 0xFF0000AF, playerGH);
 
 		} else {
 			Render::DrawSprite(transform, *camera, WHITE, playerGH);
-			if (isAttack) {
+			/*if (isAttack) {
 				Render::DrawSprite(transform, *camera, RED, playerGH);
-			}
+			}*/
 		}
 
-		Render::DrawLine(transform.pos, transform.pos + input->GetControlDir() * 100.0f, *camera, RED);
-		Render::DrawLine(transform.pos, transform.pos + angleDir * 100.0f, *camera, GREEN);
+		WingDraw();
+
+		// ヘイロー
+		if (damageCoolDown % 6) {
+			Render::DrawSprite(haloTransform, *camera, 0xFF0000AF, haloGH);
+		} else {
+			Render::DrawSprite(haloTransform, *camera, WHITE, haloGH);
+		}
+
+		DrawHpUi();
+
+		//Render::DrawLine(transform.pos, transform.pos + input->GetControlDir() * 100.0f, *camera, RED);
+		//Render::DrawLine(transform.pos, transform.pos + angleDir * 100.0f, *camera, GREEN);
+
+		if (isLockOn) {
+			Render::DrawSprite(targetTransform, *camera, WHITE, lockOnGH);
+		}
 	}
 }
 
@@ -157,6 +221,14 @@ void Player::Dash() {
 
 			isDash = true;
 			isAttack = true;
+
+			transform.scale = { 2.0f,0.5f };
+			leftWingTransform.scale = { 2.0f,2.0f };
+			rightWingTransform.scale = { 2.0f,-2.0f };
+
+			particleManager.SlashEffect(transform.pos, {32.0f,32.0f}, -angleDir, 1.0f, 100, 30, 2, featherGH);
+
+			camera->shakeRange += angleDir * 5.0f;
 		}
 	}
 
@@ -180,11 +252,25 @@ void Player::Dash() {
 
 	// ダッシュ中なら残像を残す
 	if (isDash) {
-
 		if (frameCount % (60 / (dashAfterimageRemainInterval + 1)) == 0) {
 			particleManager.SpriteEffect(transform.pos, transform.size, transform.angle, dashAfterimageRemainFrame, playerGH);
+			particleManager.SpriteEffect(rightWingTransform.pos, rightWingTransform.size, rightWingTransform.angle, dashAfterimageRemainFrame, wingGH);
+			particleManager.SpriteEffect(leftWingTransform.pos, leftWingTransform.size, leftWingTransform.angle, dashAfterimageRemainFrame, wingGH);
+			particleManager.SpriteEffect(haloTransform.pos, haloTransform.size, haloTransform.angle, dashAfterimageRemainFrame, haloGH);
+		}
+
+		if (frameCount % 5 == 0) {
+			particleManager.SlashEffect(transform.pos, { 32.0f,32.0f }, -angleDir, 1.0f, 50, 30, 1, featherGH);
 		}
 	}
+
+	// ダッシュ中の変形
+	Eas::SimpleEaseIn(&transform.scale.x, 1.0f, 0.1f);
+	Eas::SimpleEaseIn(&transform.scale.y, 1.0f, 0.1f);
+	Eas::SimpleEaseIn(&leftWingTransform.scale.x, 1.0f, 0.1f);
+	Eas::SimpleEaseIn(&leftWingTransform.scale.y, 1.0f, 0.1f);
+	Eas::SimpleEaseIn(&rightWingTransform.scale.x, 1.0f, 0.1f);
+	Eas::SimpleEaseIn(&rightWingTransform.scale.y, -1.0f, 0.1f);
 }
 
 void Player::Attack() {
@@ -208,13 +294,16 @@ void Player::Attack() {
 
 void Player::Sheathe() {
 	// 納刀する処理
-	if (input->GetTriger(DIK_E) || input->GetControl(ATTACK,Triger)) {
+	if (input->GetTriger(DIK_E) || input->GetControl(ATTACK, Triger)) {
 		if (sheatheCoolDown <= 0) {
 			if (!isSheathe && !isAttack) {
 
-				moveStackFrame = PLR::kMaxMoveStackFrame*3;
+				moveStackFrame = PLR::kMaxMoveStackFrame * 3;
 				sheatheCoolDown = PLR::kMaxSheatheCoolDown;
 				isSheathe = true;
+
+				particleManager.FromToEffect(haloTransform.pos, &transform.pos,{32.0f,32.0f}, PLR::kMaxSheatheCoolDown, 10, orangeLightGH, WHITE);
+				particleManager.AnimEffect(haloTransform.pos, { 256.0f,256.0f },Random(6.28f,0.0f), 4, 3, false, haloExprosionGH);
 			}
 		}
 	}
@@ -232,7 +321,7 @@ void Player::StateCheck() {
 			isAlive = false;
 		}
 	}
-	
+
 	// 無敵時間減少
 	if (damageCoolDown > 0) {
 		damageCoolDown--;
@@ -240,6 +329,68 @@ void Player::StateCheck() {
 
 	// 物理更新
 	physics.Update(&transform.pos);
+}
+
+void Player::HaloMove() {
+	haloTransform = {
+		{-16.0f,0.0f},
+		{32.0f,32.0f},
+		{1.0f,1.0f},
+		0.0f };
+	float sheatheCoolT = 1.0f - (static_cast<float>(sheatheCoolDown) / static_cast<float>(PLR::kMaxSheatheCoolDown));
+	haloTransform.scale = { powf(sheatheCoolT,3.0f) ,powf(sheatheCoolT,3.0f) };
+	haloTransform.pos = haloTransform.pos * MakeAffineMatrix(transform.scale, transform.angle, transform.pos);
+}
+
+void Player::WingMove() {
+	flapping = static_cast<float>(dashCoolDown) / static_cast<float> (PLR::kMaxDashCoolDown);
+
+	leftWingTransform.pos = { -16.0f,24.0f };
+	leftWingTransform.pos = leftWingTransform.pos * MakeAffineMatrix(transform.scale, transform.angle + (sinf(static_cast<float>(frameCount) * 0.2f) * 0.1f) + (flapping * 0.5f), transform.pos);
+	leftWingTransform.angle = transform.angle + sinf(static_cast<float>(frameCount) * 0.2f) * 0.1f + (flapping * 1.2f);
+
+	rightWingTransform.pos = { -16.0f,-24.0f };
+	rightWingTransform.pos = rightWingTransform.pos * MakeAffineMatrix(transform.scale, transform.angle + (-sinf(static_cast<float>(frameCount) * 0.2f) * 0.1f) + (-flapping * 0.5f), transform.pos);
+	rightWingTransform.angle = transform.angle - sinf(static_cast<float>(frameCount) * 0.2f) * 0.1f + (-flapping * 1.2f);
+
+}
+
+void Player::WingDraw() {
+	if (damageCoolDown % 6) {
+		Render::DrawSprite(leftWingTransform, *camera, 0xFF0000AF, wingGH);
+		Render::DrawSprite(rightWingTransform, *camera, 0xFF0000AF, wingGH);
+	} else {
+		Render::DrawSprite(leftWingTransform, *camera, ColorFade(WHITE, 1.0f - flapping), wingGH);
+		Render::DrawSprite(rightWingTransform, *camera, ColorFade(WHITE, 1.0f - flapping), wingGH);
+	}
+}
+
+void Player::UpdateHpUi() {
+	
+	for (int i = 0; i < hp; i++) {
+		hpTransform[i].pos = { 0.0f, 64.0f };
+		hpTransform[i].pos += transform.pos;
+	}
+
+	if (hpUiDrawFrame > 0) {
+		for (int i = 0; i < hp; i++) {
+			Eas::SimpleEaseIn(&hpTransform[i].scale.x, 1.0f, 0.2f);
+			Eas::SimpleEaseIn(&hpTransform[i].scale.y, 1.0f, 0.2f);
+		}
+	} else {
+		for (int i = 0; i < hp; i++) {
+			Eas::SimpleEaseIn(&hpTransform[i].scale.x, 0.0f, 0.2f);
+			Eas::SimpleEaseIn(&hpTransform[i].scale.y, 0.0f, 0.2f);
+		}
+	}
+}
+
+void Player::DrawHpUi() {
+	for (int i = 0; i < hp; i++) {
+		if (Length(hpTransform[i].scale) >= 0.1f) {
+			Render::DrawSprite(hpTransform[i], *camera, WHITE, wingGH);
+		}
+	}
 }
 
 void Player::LoadVariables() {
@@ -364,5 +515,6 @@ void Player::Damage() {
 	if (damageCoolDown <= 0) {
 		hp--;
 		damageCoolDown = PLR::kMaxDamageCoolDown;
+		hpUiDrawFrame = 120;
 	}
 }

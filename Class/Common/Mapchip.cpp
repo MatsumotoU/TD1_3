@@ -25,6 +25,8 @@ Mapchip::Mapchip() {
 	mapchipGH[7] = 0;
 	mapchipGH[8] = 0;
 	mapchipGH[9] = 0;
+
+	camera = nullptr;
 }
 
 void Mapchip::SetIsTransition(int* set) {
@@ -62,6 +64,10 @@ int Mapchip::GetMapNum(Vector2 pos) {
 	return map[mapY][mapX];
 }
 
+void Mapchip::SetCamera(Camera* set) {
+	camera = set;
+}
+
 void Mapchip::SetPlayer(Player* set) {
 	player = set;
 }
@@ -94,6 +100,12 @@ void Mapchip::PlayerMapCollision() {
 					if (IsHitRectangle(player->GetPos(), player->GetSize(), blockPos, kMapChipSize)) {
 
 						CollisionRectangle(player->GetPosPtr(), player->GetSize(), blockPos, kMapChipSize, true, true);
+
+						if (player->GetIsDash()) {
+							camera->shakeRange += player->GetPhysics()->GetVelocity();
+							player->SetIsDash(false);
+							
+						}
 					}
 				}
 			}
@@ -193,7 +205,7 @@ void Mapchip::SetMap(int setMap[kMapSizeY][kMapSizeX]) {
 	}
 }
 
-void Mapchip::Draw(Camera* camera) {
+void Mapchip::Draw() {
 	for (int y = 0; y < kMapSizeY; y++) {
 
 		for (int x = 0; x < kMapSizeX; x++) {
@@ -302,13 +314,13 @@ std::vector<Vector2> Mapchip::GetMapStoG(Vector2 start, Vector2 goal) {
 			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX + 1) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY) * kMapChipSize.y });
 			stepX++;
 		} else if (stepX - 1 > 0 && mapRoute[stepY][stepX - 1] == i) {// 左の探索
-			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX + 1) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY) * kMapChipSize.y });
+			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX - 1) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY) * kMapChipSize.y });
 			stepX--;
 		} else if (stepY + 1 < kMapSizeY && mapRoute[stepY + 1][stepX] == i) {// 上の探索
-			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX + 1) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY) * kMapChipSize.y });
+			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY + 1) * kMapChipSize.y });
 			stepY++;
 		} else if (stepY - 1 > 0 && mapRoute[stepY - 1][stepX] == i) {// 下の探索
-			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX + 1) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY) * kMapChipSize.y });
+			result.push_back({ kMapChipSize.x * 0.5f + static_cast<float>(stepX) * kMapChipSize.x ,kMapChipSize.y * 0.5f + static_cast<float>(stepY - 1) * kMapChipSize.y });
 			stepY--;
 		}
 	}

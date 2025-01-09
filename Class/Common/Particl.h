@@ -13,7 +13,7 @@ public:
 
 	void SetPos(Vector2 set);
 	void SetSize(Vector2 set);
-	void SetTargetPos(Vector2 set);
+	void SetTargetPos(Vector2* set);
 	void SetAngle(float set);
 	void SetIsActive(int set);
 	void SetIsFalling(int set);
@@ -28,6 +28,11 @@ public:
 	void SetIsShirink(int set);
 	void SetColor(unsigned int set);
 	void SetCamera(Camera* set);
+	void SetIsAnim(int set);
+	void SetMaxAnimFrame(int set);
+	void SetAnimSpeed(int set);
+	void SetIsLoop(int set);
+	void SetAnimGH(int* set);
 
 	Vector2 GetPos();
 	Vector2* GetPosPtr();
@@ -42,8 +47,9 @@ public:
 
 private:
 
+	int outCameraAliveFrame;
 	Transform transform;
-	Vector2 targetPos;
+	Vector2* targetPos;
 	Vector2 pos;
 	Vector2 size;
 	Vector2 scale;
@@ -60,6 +66,12 @@ private:
 	int fadeFrame;
 	int aliveFrame;
 	int stackFrame;
+	int isAnim;
+	int maxAnimFrame;
+	int animSpeed;
+	int isLoop;
+	int* animGH;
+	int animCount;
 	int frameCount;
 	int gh;
 

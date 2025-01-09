@@ -16,6 +16,7 @@ void GameStageScene::Init() {
 	isTransition = false;
 	gameStage = 0;
 	nextScene = nullptr;
+	mainCamera.Init();
 
 	mainCamera.Init();
 
@@ -29,6 +30,7 @@ void GameStageScene::Init() {
 	particleManager.Init();
 	particleManager.SetCamera(&mainCamera);
 
+	map.SetCamera(&mainCamera);
 	map.SetPlayer(&player);
 	map.SetEnemyManager(&enemyManager);
 	map.SetBulletManager(&bulletManager);
@@ -69,6 +71,7 @@ void GameStageScene::Init() {
 
 void GameStageScene::Update() {
 
+	mainCamera.Update();
 	frameCount++;
 
 	WaveManager();
@@ -83,7 +86,7 @@ void GameStageScene::Update() {
 void GameStageScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f,0x222831FF, kFillModeSolid);
 
-	map.Draw(&mainCamera);
+	map.Draw();
 	particleManager.Draw();
 	player.Draw();
 	bulletManager.Draw();
