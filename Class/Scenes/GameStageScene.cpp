@@ -19,6 +19,7 @@ void GameStageScene::Init() {
 	mainCamera.Init();
 
 	stopObjectUpdateFrame = 0;
+	exprosionHitStopFrame = 6;
 
 	player.Init();
 	player.SetCamera(&mainCamera);
@@ -321,8 +322,8 @@ void GameStageScene::ObjectCollision() {
 								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
 							}
 
-							mainCamera.shakeRange += {10.0f, 10.0f};
-							stopObjectUpdateFrame = 15;
+							mainCamera.shakeRange = {10.0f, 10.0f};
+							stopObjectUpdateFrame = exprosionHitStopFrame;
 							mainCamera.SetPos(enemyManager.GetEnemyes()[e].GetPos());
 							mainCamera.panRange = -0.5f;
 						}
