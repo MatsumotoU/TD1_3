@@ -38,6 +38,7 @@ public:
 	void PlayerLockOn();
 	void ExprodeEnemy();
 	void EnemyMoveToPlayer();
+	void EnemyAttack();
 	void WaveUiDraw();
 
 	void CameraUpdate();

@@ -28,6 +28,7 @@ public:
 	int GetIsHit(Vector2 pos);
 	int GetMapNum(Vector2 pos);
 	int GetEnemyNum();
+	int GetIsFromToVisionClear(Vector2 from, Vector2 to);
 
 	void SetCamera(Camera* set);
 	void SetPlayer(Player* set);

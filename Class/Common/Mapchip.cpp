@@ -77,6 +77,19 @@ int Mapchip::GetEnemyNum() {
 	return count;
 }
 
+int Mapchip::GetIsFromToVisionClear(Vector2 from, Vector2 to) {
+	for (float i = 0.0f; i <= 1.0f; i += 0.1f) {
+
+		int x = static_cast<int>(((from.x * i) + (to.x * (1.0f - i))) / kMapChipSize.y);
+		int y = static_cast<int>(((from.y * i) + (to.y * (1.0f - i))) / kMapChipSize.y);
+
+		if (map[y][x] == 1) {
+			return false;
+		}
+	}
+	return true;
+}
+
 void Mapchip::SetCamera(Camera* set) {
 	camera = set;
 }
@@ -189,7 +202,13 @@ void Mapchip::SpawnEnemy() {
 	for (int y = 0; y < kMapSizeY; y++) {
 		for (int x = 0; x < kMapSizeX; x++) {
 			if (map[y][x] == 2) {
-				enemyManager->SpawnEnemy({ 32.0f + 64.0f * static_cast<float>(x),32.0f + 64.0f * static_cast<float>(y) }, { 64.0f,64.0f });
+				enemyManager->SpawnEnemy({ 32.0f + 64.0f * static_cast<float>(x),32.0f + 64.0f * static_cast<float>(y) },ENM::Melee);
+			}
+			if (map[y][x] == 3) {
+				enemyManager->SpawnEnemy({ 32.0f + 64.0f * static_cast<float>(x),32.0f + 64.0f * static_cast<float>(y) }, ENM::Shot);
+			}
+			if (map[y][x] == 4) {
+				enemyManager->SpawnEnemy({ 32.0f + 64.0f * static_cast<float>(x),32.0f + 64.0f * static_cast<float>(y) }, ENM::Shield);
 			}
 		}
 	}
