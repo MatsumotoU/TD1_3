@@ -15,7 +15,7 @@ Bullet::Bullet() {
 	isShot = false;
 	tag = "none";
 	bulletGH = 0;
-	color = RED;
+	color = WHITE;
 }
 
 void Bullet::Init() {

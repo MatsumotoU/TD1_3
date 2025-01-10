@@ -5,6 +5,7 @@
 #include "Class/Enemy/EnemyManager.h"
 #include "Class/Common/ParticlManager.h"
 #include "Class/Common/Mapchip.h"
+#include "Class/Balance/BalanceObject.h"
 
 class GameStageScene : public IScene {
 public:
@@ -49,12 +50,19 @@ private:
 	int exprosionHitStopFrame;
 	int stopObjectUpdateFrame;
 
+	int slashGH;
+
+	BalanceObject baranceObjects[EMG::kMaxEnemy + 1];
 	Transform balancePoleTransform;
 	int balancePoleGH;
 	Transform balanceBasketTransform[2];
 	float balanceBasketSwingWidth;
 	int balanceBasketGH;
 	float balanceAngle;
+	float rightWeight;
+	float leftWeight;
+	int playerWeightGH;
+	int enemyWeightGH;
 
 	Transform waveStringTransform;
 	int waveStringGH;

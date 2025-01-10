@@ -105,6 +105,10 @@ Vector2* Enemy::GetPosPtr() {
 	return &transform.pos;
 }
 
+int Enemy::GetGraphHandle() {
+	return enemyGH;
+}
+
 void Enemy::Move() {
 	// スタンしてたら動かない
 	if (stunFrame > 0) {

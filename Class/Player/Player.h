@@ -59,6 +59,7 @@ public:
 	int GetDamageCoolDown();
 	Vector2 GetAttackPos();
 	Vector2* GetPosPtr();
+	int GetGraphHandle();
 
 	void CountDownRemainAttackChance();
 	void Damage();
@@ -69,6 +70,7 @@ private:
 	int hpUiDrawFrame;
 	Transform hpTransform[3];
 	int hpGH;
+	int lostHpGH;
 
 	Transform haloTransform;
 	int haloGH;
