@@ -38,6 +38,7 @@ public:
 
 	void UpdateHpUi();
 	void DrawHpUi();
+	void DrawSword();
 
 	void LoadVariables();
 	void SaveVariables();
@@ -66,6 +67,10 @@ public:
 
 private:
 	int frameCount;
+
+	Transform rightArm;
+	Transform leftArm;
+	int swordGH;
 
 	int hpUiDrawFrame;
 	Transform hpTransform[3];
