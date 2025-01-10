@@ -49,6 +49,7 @@ void BulletManager::ShotBullet(Vector2 pos, Vector2 size, Vector2 shotDir, float
 			bullets[i].SetGH(bulletGH);
 			bullets[i].SetTag(tag);
 			bullets[i].SetAliveFrame(aliveFrame);
+			bullets[i].SetAngle(atan2f(shotDir.y, shotDir.x));
 			break;
 		}
 	}

@@ -1,6 +1,8 @@
 #pragma once
 #include "Matrix3x3.h"
 
+#define ZeroVector2 {0.0f,0.0f}
+
 struct Vector2 {
 
 	float x;

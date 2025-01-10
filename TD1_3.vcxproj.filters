@@ -110,6 +110,9 @@
     <ClCompile Include="Class\Common\Particl.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="Class\Balance\BalanceObject.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -213,5 +216,6 @@
     <ClInclude Include="Class\Common\ParticlManager.h" />
     <ClInclude Include="Class\Common\Mapchip.h" />
     <ClInclude Include="Class\Common\Particl.h" />
+    <ClInclude Include="Class\Balance\BalanceObject.h" />
   </ItemGroup>
 </Project>

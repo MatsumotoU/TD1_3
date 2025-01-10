@@ -14,11 +14,12 @@ Player::Player() {
 	for (int i = 0; i < maxHp; i++) {
 		hpTransform[0] = {
 		{0.0f,64.0f},
-		{16.0f,16.0f},
+		{32.0f,32.0f},
 		{1.0f,1.0f},
 		0.0f };
 	}
 	hpGH = Novice::LoadTexture("./Resources/Images/hp.png");
+	lostHpGH = 0;
 
 	haloTransform = {
 		{-16.0f,0.0f},
@@ -99,9 +100,92 @@ Player::Player() {
 
 void Player::Init() {
 	frameCount = 0;
+
+	hpUiDrawFrame = 0;
+	for (int i = 0; i < maxHp; i++) {
+		hpTransform[i] = {
+		{0.0f + 16.0f * static_cast<float>(i),64.0f},
+		{32.0f,32.0f},
+		{1.0f,1.0f},
+		0.0f };
+	}
+	hpGH = Novice::LoadTexture("./Resources/Images/hp.png");
+	lostHpGH = Novice::LoadTexture("./Resources/Images/lostHp.png");
+
+	haloTransform = {
+		{-16.0f,0.0f},
+		{32.0f,32.0f},
+		{1.0f,1.0f},
+		0.0f };
+	haloGH = Novice::LoadTexture("./Resources/Images/playerHalo.png");
+	orangeLightGH = Novice::LoadTexture("./Resources/Images/orangeLight.png");
+	haloExprosionGH[0] = Novice::LoadTexture("./Resources/Images/haloExprosion1.png");
+	haloExprosionGH[1] = Novice::LoadTexture("./Resources/Images/haloExprosion2.png");
+	haloExprosionGH[2] = Novice::LoadTexture("./Resources/Images/haloExprosion3.png");
+	haloExprosionGH[3] = Novice::LoadTexture("./Resources/Images/haloExprosion4.png");
+
+	flapping = 0.0f;
+	leftWingTransform = {
+		{-16.0f,16.0f},
+		{32.0f,32.0f},
+		{1.0f,1.0f},
+		0.0f };
+	rightWingTransform = {
+		{-16.0f,-16.0f},
+		{32.0f,32.0f},
+		{1.0f,-1.0f},
+		0.0f };
+	wingGH = Novice::LoadTexture("./Resources/Images/playerWing.png");
+	featherGH = Novice::LoadTexture("./Resources/Images/feather.png");
+
+	transform.pos = kMapCenter;
+	transform.angle = 0.0f;
+	transform.scale = { 1.0f,1.0f };
+	transform.size = { 32.0f,32.0f };
+
 	physics.Init();
+	isActive = true;
+
+	camera = nullptr;
+	maxHp = 3;
+	hp = maxHp;
+	isAlive = true;
+
+	isMove = false;
+	moveStackFrame = 0;
+	moveSpeed = 2.0f;
+
+	isDash = false;
+	dashCoolDown = 0;
+	dashPower = 100.0f;
+	dashAfterimageRemainFrame = 10;
+	dashAfterimageRemainInterval = 20;
+
+	isAttack = false;
+	attackCoolDown = 0;
+
+	isSheathe = false;
+	sheatheCoolDown = 0;
+
+	angleDir = { cosf(transform.angle),sinf(transform.angle) };
+
+	isLockOn = false;
+	targetPos = { 0.0f,0.0f };
+	lockOnGH = Novice::LoadTexture("./Resources/Images/lockOn.png");
+	targetTransform = {
+		{0.0f,0.0f},
+		{64.0f,64.0f},
+		{1.2f,1.2f},
+		0.0f };
+
+	remainAttackChance = PLR::kMaxAttackChance;
+
+	damageCoolDown = 0;
+
 	particleManager.Init();
 	particleManager.SetCamera(camera);
+
+	playerGH = Novice::LoadTexture("./Resources/Images/player.png");
 
 	LoadVariables();
 }
@@ -124,6 +208,10 @@ void Player::Update() {
 	WingMove();
 
 	UpdateHpUi();
+
+	if (input->GetTriger(DIK_F)) {
+		Damage();
+	}
 }
 
 void Player::Draw() {
@@ -381,18 +469,33 @@ void Player::WingDraw() {
 
 void Player::UpdateHpUi() {
 	
-	for (int i = 0; i < hp; i++) {
-		hpTransform[i].pos = { 0.0f, 64.0f };
+	if (hp == 1) {
+		hpUiDrawFrame = 60;
+	}
+
+	for (int i = 0; i < maxHp; i++) {
+		hpTransform[i].pos = { 0.0f, 48.0f * hpTransform[i].scale.x };
+		if (hp <= i) {
+			hpTransform[i].pos += {Random(3.0f, -3.0f), Random(3.0f, -3.0f)};
+		}
+		hpTransform[i].pos.y += sinf(static_cast<float>(frameCount) * 0.1f) * 8.0f;
+		hpTransform[i].pos = hpTransform[i].pos * MakeRotateMatrix(2.0f * static_cast<float>(i) + Length(hpTransform[i].scale) - 1.414f );
 		hpTransform[i].pos += transform.pos;
+		hpTransform[i].angle = 2.0f * static_cast<float>(i) + Length(hpTransform[i].scale) - 1.414f;
+
+		if (hp == 1 && frameCount % 60 == 0) {
+			hpTransform[0].scale = { 1.2f,1.2f };
+		}
 	}
 
 	if (hpUiDrawFrame > 0) {
-		for (int i = 0; i < hp; i++) {
+		hpUiDrawFrame--;
+		for (int i = 0; i < maxHp; i++) {
 			Eas::SimpleEaseIn(&hpTransform[i].scale.x, 1.0f, 0.2f);
 			Eas::SimpleEaseIn(&hpTransform[i].scale.y, 1.0f, 0.2f);
 		}
 	} else {
-		for (int i = 0; i < hp; i++) {
+		for (int i = 0; i < maxHp; i++) {
 			Eas::SimpleEaseIn(&hpTransform[i].scale.x, 0.0f, 0.2f);
 			Eas::SimpleEaseIn(&hpTransform[i].scale.y, 0.0f, 0.2f);
 		}
@@ -402,7 +505,13 @@ void Player::UpdateHpUi() {
 void Player::DrawHpUi() {
 	for (int i = 0; i < hp; i++) {
 		if (Length(hpTransform[i].scale) >= 0.1f) {
-			Render::DrawSprite(hpTransform[i], *camera, WHITE, wingGH);
+			Render::DrawSprite(hpTransform[i], *camera, WHITE, hpGH);
+		}
+	}
+
+	for (int i = hp; i < maxHp; i++) {
+		if (Length(hpTransform[i].scale) >= 0.1f) {
+			Render::DrawSprite(hpTransform[i], *camera, WHITE, lostHpGH);
 		}
 	}
 }
@@ -518,6 +627,10 @@ Vector2* Player::GetPosPtr() {
 	return &transform.pos;
 }
 
+int Player::GetGraphHandle() {
+	return playerGH;
+}
+
 void Player::CountDownRemainAttackChance() {
 	remainAttackChance--;
 	if (remainAttackChance <= 0) {
@@ -530,5 +643,6 @@ void Player::Damage() {
 		hp--;
 		damageCoolDown = PLR::kMaxDamageCoolDown;
 		hpUiDrawFrame = 120;
+		camera->panRange -= 0.5f;
 	}
 }

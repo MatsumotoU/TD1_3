@@ -64,6 +64,19 @@ int Mapchip::GetMapNum(Vector2 pos) {
 	return map[mapY][mapX];
 }
 
+int Mapchip::GetEnemyNum() {
+	int count = 0;
+	for (int y = 0; y < kMapSizeY; y++) {
+		for (int x = 0; x < kMapSizeX; x++) {
+
+			if (map[y][x] >= 2) {
+				count++;
+			}
+		}
+	}
+	return count;
+}
+
 void Mapchip::SetCamera(Camera* set) {
 	camera = set;
 }

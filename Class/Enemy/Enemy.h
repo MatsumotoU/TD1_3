@@ -29,6 +29,7 @@ public:
 	int GetIsHitAttack();
 	Vector2 GetHitDir();
 	Vector2* GetPosPtr();
+	int GetGraphHandle();
 
 	void Move();
 	void LockOn();

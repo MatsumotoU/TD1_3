@@ -35,10 +35,15 @@ void GameStageScene::Init() {
 	map.SetPlayer(&player);
 	map.SetEnemyManager(&enemyManager);
 	map.SetBulletManager(&bulletManager);
+	map.LoadMap("Resources/Maps/stage1w1.txt");
 	
 	testPopEnemyPos = { 1024.0f,1024.0f };
 	isChangeWave = false;
 
+	for (int i = 0; i < EMG::kMaxEnemy + 1; i++) {
+		baranceObjects[i].Init();
+		baranceObjects[i].SetCamera(&mainCamera);
+	}
 	balanceAngle = 0.0f;
 	balancePoleTransform = {
 		{0.0f,-64.0f},
@@ -68,6 +73,11 @@ void GameStageScene::Init() {
 		0.0f
 	};
 	waveStringGH = Novice::LoadTexture("./Resources/Images/wave.png");
+
+	playerWeightGH = Novice::LoadTexture("./Resources/Images/playerWeight.png");
+	enemyWeightGH = Novice::LoadTexture("./Resources/Images/enemyWeight.png");
+
+	slashGH = Novice::LoadTexture("./Resources/Images/slash.png");
 }
 
 void GameStageScene::Update() {
@@ -93,9 +103,9 @@ void GameStageScene::Draw() {
 
 	map.Draw();
 	particleManager.Draw();
-	player.Draw();
 	bulletManager.Draw();
 	enemyManager.Draw();
+	player.Draw();
 	WaveUiDraw();
 }
 
@@ -132,6 +142,7 @@ void GameStageScene::WaveManager() {
 
 	if (enemyManager.GetRemainEnemies() <= 0) {
 		if (!isChangeWave) {
+
 			isChangeWave = true;
 			wave++;
 			balancePoleTransform.pos = { 0.0f,100.0f };
@@ -141,12 +152,41 @@ void GameStageScene::WaveManager() {
 			balanceBasketSwingWidth = 1.0f;
 			//balancePoleTransform.angle = 2.0f;
 			frameCount = 0;
+
+			// ステージ切り替え
+			if (wave == 1) {
+				map.LoadMap("Resources/Maps/stage1w1.txt");
+			} else if (wave == 2) {
+				map.LoadMap("Resources/Maps/stage1w2.txt");
+			} else if (wave == 3) {
+				map.LoadMap("Resources/Maps/stage1w3.txt");
+			}
+
+			// 天秤に乗るオブジェクト初期化
+			for (int i = 0; i < map.GetEnemyNum(); i++) {
+				baranceObjects[i % EMG::kMaxEnemy].Init();
+				baranceObjects[i % EMG::kMaxEnemy].SetCamera(&uiCamera);
+			}
+			baranceObjects[0].SetPos({ -220.0f,400.0f });
+			baranceObjects[0].SetSize({ 64.0f,64.0f });
+			baranceObjects[0].SetIsActive(true);
+			baranceObjects[0].SetGraphHandle(playerWeightGH);
+			for (int i = 1; i < map.GetEnemyNum()+1; i++) {
+				baranceObjects[i].SetIsActive(true);
+				baranceObjects[i].SetPos({ 220.0f + Random(80.0f,-80.0f),400.0f + Random(300.0f,0.0f) });
+				baranceObjects[i].SetGraphHandle(enemyWeightGH);
+			}
+			balanceAngle = 0.0f;
+			rightWeight = 0.0f;
+			leftWeight = 0.0f;
 		}
 	}
 
 	if (isChangeWave) {
 
 		// 天秤のかご傾き処理
+		Eas::SimpleEaseIn(&balanceAngle, rightWeight - leftWeight * 0.25f, 0.01f);
+		balanceAngle = Clamp(balanceAngle, -0.3f, 0.3f);
 		balanceBasketTransform[0] = {
 			{220.0f,0.0f},
 			{256.0f,256.0f},
@@ -187,14 +227,69 @@ void GameStageScene::WaveManager() {
 			balanceBasketSwingWidth *= 0.92f;
 		}
 
-		
+		// プレイヤー召喚
 		if (balanceBasketTransform[0].scale.x >= 1.0f) {
-
+			if (baranceObjects[0].GetIsActive()) {
+				baranceObjects[0].Update();
+			}
 			
+			if (IsHitRectangle(
+				baranceObjects[0].GetPos(), baranceObjects[0].GetSize(),
+				{ balanceBasketTransform[1].pos.x,balanceBasketTransform[1].pos.y - balanceBasketTransform[1].size.y * 0.5f },
+				{ balanceBasketTransform[1].size.x,balanceBasketTransform[1].size.y * 0.3f })) {
+
+				baranceObjects[0].SetFalling(false);
+				baranceObjects[0].GetPhysics()->SetVelocity(ZeroVector2);
+				baranceObjects[0].GetPhysics()->SetAcceleration(ZeroVector2);
+				baranceObjects[0].ParentObject(&balanceBasketTransform[1]);
+				rightWeight = 1.2f;
+			}
 		}
 
-		// プレイヤー召喚
-		if (frameCount >= 180 || wave >= 4) {
+		if (!baranceObjects[0].GetFalling()) {
+			for (int i = 1; i < EMG::kMaxEnemy+1; i++) {
+
+				if (baranceObjects[i].GetIsActive()) {
+					baranceObjects[i].Update();
+				}
+
+				if (IsHitRectangle(
+					baranceObjects[i].GetPos(), baranceObjects[i].GetSize(),
+					{ balanceBasketTransform[0].pos.x,balanceBasketTransform[0].pos.y - balanceBasketTransform[0].size.y * 0.5f },
+					{ balanceBasketTransform[0].size.x,balanceBasketTransform[0].size.y * 0.3f })) {
+
+					baranceObjects[i].GetPhysics()->SetVelocity(ZeroVector2);
+					baranceObjects[i].GetPhysics()->SetAcceleration(ZeroVector2);
+					baranceObjects[i].ParentObject(&balanceBasketTransform[0]);
+
+					if (baranceObjects[i].GetFalling()) {
+						leftWeight += 0.1f;
+						baranceObjects[i].SetFalling(false);
+					}
+				}
+
+				if (i < EMG::kMaxEnemy + 1) {
+					if (IsHitRectangle(
+						baranceObjects[i].GetPos(), baranceObjects[i].GetSize(),
+						baranceObjects[i + 1].GetPos(), baranceObjects[i + 1].GetSize())) {
+						if (!baranceObjects[i + 1].GetFalling()) {
+
+							baranceObjects[i].GetPhysics()->SetVelocity(ZeroVector2);
+							baranceObjects[i].GetPhysics()->SetAcceleration(ZeroVector2);
+							baranceObjects[i].ParentObject(&balanceBasketTransform[0]);
+
+							if (baranceObjects[i].GetFalling()) {
+								leftWeight += 3.0f;
+								baranceObjects[i].SetFalling(false);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// ウェーブ管理処理演出終了
+		if (wave >= 4 || (input->GetControl(ENTER, Triger) && frameCount >= 30)) {
 			LoadWave();
 			isChangeWave = false;
 		}
@@ -315,10 +410,10 @@ void GameStageScene::ObjectCollision() {
 							if (!enemyManager.GetEnemyes()[e].GetIsHitAttack()) {
 								bulletManager.ShotBullet(
 									enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
-									enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", 0);
+									enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
 								bulletManager.ShotBullet(
 									enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
-									-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", 0);
+									-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
 								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
 							}
 
@@ -392,10 +487,10 @@ void GameStageScene::ExprodeEnemy() {
 
 					bulletManager.ShotBullet(
 						enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
-						enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", 0);
+						enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
 					bulletManager.ShotBullet(
 						enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
-						-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", 0);
+						-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
 				}
 			}
 		}
@@ -421,6 +516,14 @@ void GameStageScene::WaveUiDraw() {
 	if (isChangeWave) {
 		Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x000000DF, kFillModeSolid);
 		Render::DrawSprite(balancePoleTransform, uiCamera, WHITE, balancePoleGH);
+
+		for (int i = 0; i < EMG::kMaxEnemy + 1; i++) {
+
+			if (baranceObjects[i].GetIsActive()) {
+				baranceObjects[i].Draw();
+			}
+		}
+
 		Render::DrawSprite(balanceBasketTransform[0], uiCamera, WHITE, balanceBasketGH);
 		Render::DrawSprite(balanceBasketTransform[1], uiCamera, WHITE, balanceBasketGH);
 		Render::DrawSprite(waveStringTransform, uiCamera, WHITE, waveStringGH);
