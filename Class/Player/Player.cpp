@@ -10,6 +10,8 @@
 Player::Player() {
 	frameCount = 0;
 
+	swordGH = Novice::LoadTexture("./Resources/Images/sword.png");
+
 	hpUiDrawFrame = 0;
 	for (int i = 0; i < maxHp; i++) {
 		hpTransform[0] = {
@@ -236,6 +238,7 @@ void Player::Draw() {
 			}*/
 		}
 
+		DrawSword();
 		WingDraw();
 
 		// ヘイロー
@@ -253,6 +256,8 @@ void Player::Draw() {
 		if (isLockOn) {
 			Render::DrawSprite(targetTransform, *camera, WHITE, lockOnGH);
 		}
+
+		
 	}
 }
 
@@ -289,7 +294,7 @@ void Player::LockOn() {
 		targetTransform.pos = targetPos;
 		targetTransform.angle += 0.1f;
 		targetTransform.scale = { 1.5f,1.5f };
-		targetTransform.scale.x += sinf(static_cast<float>(frameCount)*0.2f)*0.5f;
+		targetTransform.scale.x += sinf(static_cast<float>(frameCount) * 0.2f) * 0.5f;
 		targetTransform.scale.y += sinf(static_cast<float>(frameCount) * 0.2f) * 0.5f;
 
 	} else {
@@ -325,7 +330,7 @@ void Player::Dash() {
 			leftWingTransform.scale = { 2.0f,2.0f };
 			rightWingTransform.scale = { 2.0f,-2.0f };
 
-			particleManager.SlashEffect(transform.pos, {32.0f,32.0f}, -angleDir, 1.0f, 100, 30, 2, featherGH);
+			particleManager.SlashEffect(transform.pos, { 32.0f,32.0f }, -angleDir, 1.0f, 100, 30, 2, featherGH);
 
 			camera->shakeRange += angleDir * 5.0f;
 			camera->panRange -= 0.2f;
@@ -402,8 +407,8 @@ void Player::Sheathe() {
 				sheatheCoolDown = PLR::kMaxSheatheCoolDown;
 				isSheathe = true;
 
-				particleManager.FromToEffect(haloTransform.pos, &transform.pos,{32.0f,32.0f}, PLR::kMaxSheatheCoolDown, 10, orangeLightGH, WHITE);
-				particleManager.AnimEffect(haloTransform.pos, { 256.0f,256.0f },Random(6.28f,0.0f), 4, 3, false, haloExprosionGH);
+				particleManager.FromToEffect(haloTransform.pos, &transform.pos, { 32.0f,32.0f }, PLR::kMaxSheatheCoolDown, 10, orangeLightGH, WHITE);
+				particleManager.AnimEffect(haloTransform.pos, { 256.0f,256.0f }, Random(6.28f, 0.0f), 4, 3, false, haloExprosionGH);
 
 				camera->panRange -= 0.2f;
 			}
@@ -468,7 +473,7 @@ void Player::WingDraw() {
 }
 
 void Player::UpdateHpUi() {
-	
+
 	if (hp == 1) {
 		hpUiDrawFrame = 60;
 	}
@@ -479,7 +484,7 @@ void Player::UpdateHpUi() {
 			hpTransform[i].pos += {Random(3.0f, -3.0f), Random(3.0f, -3.0f)};
 		}
 		hpTransform[i].pos.y += sinf(static_cast<float>(frameCount) * 0.1f) * 8.0f;
-		hpTransform[i].pos = hpTransform[i].pos * MakeRotateMatrix(2.0f * static_cast<float>(i) + Length(hpTransform[i].scale) - 1.414f );
+		hpTransform[i].pos = hpTransform[i].pos * MakeRotateMatrix(2.0f * static_cast<float>(i) + Length(hpTransform[i].scale) - 1.414f);
 		hpTransform[i].pos += transform.pos;
 		hpTransform[i].angle = 2.0f * static_cast<float>(i) + Length(hpTransform[i].scale) - 1.414f;
 
@@ -514,6 +519,31 @@ void Player::DrawHpUi() {
 			Render::DrawSprite(hpTransform[i], *camera, WHITE, lostHpGH);
 		}
 	}
+}
+
+void Player::DrawSword() {
+	rightArm = {
+		{24.0f,32.0f},
+		{128.0f,32.0f},
+		{0.5f,0.5f},
+		1.0f };
+	leftArm = {
+		{24.0f,-32.0f},
+		{128.0f,32.0f},
+		{0.5f,0.5f},
+		1.0f };
+	rightArm.pos = rightArm.pos * MakeAffineMatrix(transform.scale, transform.angle, transform.pos);
+	leftArm.pos = leftArm.pos * MakeAffineMatrix(transform.scale, transform.angle, transform.pos);
+	rightArm.angle = transform.angle + 0.6f;
+	leftArm.angle = transform.angle - 0.6f;
+
+	if (remainAttackChance >= 2) {
+		Render::DrawSprite(rightArm, *camera, WHITE, swordGH);
+	}
+	if (remainAttackChance >= 1) {
+		Render::DrawSprite(leftArm, *camera, WHITE, swordGH);
+	}
+
 }
 
 void Player::LoadVariables() {
