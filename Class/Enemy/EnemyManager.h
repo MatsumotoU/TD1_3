@@ -16,12 +16,13 @@ public:
 	void Draw();
 
 	void SetCamera(Camera* set);
+	void SetPlayerPos(Vector2* set);
 
 	int GetRemainEnemies();
 	Enemy* GetEnemyes();
 
 	void EnemyCollision();
-	void SpawnEnemy(Vector2 pos, Vector2 size);
+	void SpawnEnemy(Vector2 pos,ENM::Type set);
 	Vector2 NearEnemy(Vector2 targetPos);
 
 private:

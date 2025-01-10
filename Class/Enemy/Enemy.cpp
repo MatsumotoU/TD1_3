@@ -31,16 +31,31 @@ Enemy::Enemy() {
 	angleDir = { 1.0f,0.0f };
 	moveDir = { 0.0f,0.0f };
 	enemyGH = Novice::LoadTexture("./Resources/Images/enemy.png");
+
+	canAttack = false;
+	isSeePlayer = false;
+	type = ENM::None;
+	playerPos = nullptr;
+	attackRange = 0.0f;
+	isAttacking = false;
+	attackCoolDown = 0;
+	attackAnticipationFrame = 0;
+	maxAttackAnticipationFrame = 0;
 }
 
 void Enemy::Init() {
+	attackRange = 0.0f;
 	stunFrame = 0;
+	type = ENM::None;
+	isAttacking = false;
+	attackCoolDown = 0;
 }
 
 void Enemy::Update() {
 	if (isAlive) {
 		Move();
 		LockOn();
+		Attack();
 	}
 	StateCheck();
 
@@ -60,7 +75,7 @@ void Enemy::Draw() {
 		Render::DrawLine(targetRoute[i], targetRoute[i - 1], *camera, RED);
 	}
 #endif // _DEBUG
-	
+
 }
 
 void Enemy::SetCamera(Camera* set) {
@@ -89,6 +104,26 @@ void Enemy::SetDeathFrame(int set) {
 	deathFrame = set;
 }
 
+void Enemy::SetEnemyType(ENM::Type set) {
+	type = set;
+}
+
+void Enemy::SetCanAttack(int set) {
+	canAttack = set;
+}
+
+void Enemy::SetIsSeePlayer(int set) {
+	isSeePlayer = set;
+}
+
+void Enemy::SetPlayerPos(Vector2* set) {
+	playerPos = set;
+}
+
+void Enemy::SetIsShot(int set) {
+	isShot = set;
+}
+
 int Enemy::GetIsAlive() {
 	return isAlive;
 }
@@ -109,33 +144,171 @@ int Enemy::GetGraphHandle() {
 	return enemyGH;
 }
 
+ENM::Type Enemy::GetType() {
+	return type;
+}
+
+int Enemy::GetIsAttack() {
+	return isAttack;
+}
+
+int Enemy::GetIsShot() {
+	return isShot;
+}
+
+Vector2 Enemy::GetAngleDir() {
+	return {cosf(transform.angle),sinf(transform.angle)};
+}
+
 void Enemy::Move() {
+
+
+	if (isAttacking) {
+		return;
+	}
+
+
 	// スタンしてたら動かない
 	if (stunFrame > 0) {
 		stunFrame--;
 		return;
 	}
 
-	// ラインに沿って動く
-	if (nextRouteNum > 0) {
-		moveDir = -Normalize(transform.pos - targetRoute[nextRouteNum - 1]);
+	// 攻撃範囲内なら止まる
+	if (isSeePlayer) {
+		if (attackRange >= Length(transform.pos - *playerPos)) {
+			canAttack = true;
+			return;
+		} else {
+			canAttack = false;
+		}
+	}
+
+	// 目標めがけて行く
+	if (isSeePlayer) {
+
+		// プレイヤーめがけて突撃
+		moveDir = -Normalize(transform.pos - *playerPos);
 		physics.AddForce(moveDir * moveSpeed, IMPACT);
 
-		if (Length(transform.pos - targetRoute[nextRouteNum - 1]) <= 32.0f) {
+	} else {
 
-			nextRouteNum--;
+		// ラインに沿って動く
+		if (nextRouteNum > 0) {
+			moveDir = -Normalize(transform.pos - targetRoute[nextRouteNum - 1]);
+			physics.AddForce(moveDir * moveSpeed, IMPACT);
+
+			if (Length(transform.pos - targetRoute[nextRouteNum - 1]) <= 32.0f) {
+
+				nextRouteNum--;
+			}
 		}
 	}
 }
 
 void Enemy::LockOn() {
 
-	// 移動方向を見る
-	angleDir = { cosf(transform.angle),sinf(transform.angle) };
-	if (Cross(angleDir, moveDir) >= 0.0f) {
-		transform.angle += Length(angleDir - moveDir) * 0.2f;
+	if (type == ENM::Melee) {
+		if (isAttacking) {
+			return;
+		}
+	}
+
+	if (isSeePlayer) {
+
+		// プレイヤーを見る
+		angleDir = { cosf(transform.angle),sinf(transform.angle) };
+		if (Cross(angleDir, Normalize(*playerPos - transform.pos)) >= 0.0f) {
+			transform.angle += Length(angleDir - Normalize(*playerPos - transform.pos)) * 0.2f;
+		} else {
+			transform.angle -= Length(angleDir - Normalize(*playerPos - transform.pos)) * 0.2f;
+		}
+
 	} else {
-		transform.angle -= Length(angleDir - moveDir) * 0.2f;
+
+		// 移動方向を見る
+		angleDir = { cosf(transform.angle),sinf(transform.angle) };
+		if (Cross(angleDir, moveDir) >= 0.0f) {
+			transform.angle += Length(angleDir - moveDir) * 0.2f;
+		} else {
+			transform.angle -= Length(angleDir - moveDir) * 0.2f;
+		}
+	}
+
+
+}
+
+void Enemy::Attack() {
+
+	if (type == ENM::Melee) {
+		if (!isAttack) {
+			if (canAttack) {
+				if (attackCoolDown <= 0) {
+					if (!isAttacking) {
+
+						isAttacking = true;
+						attackCoolDown = 180;
+						attackAnticipationFrame = maxAttackAnticipationFrame;
+					}
+				}
+			}
+
+			if (isAttacking) {
+				if (attackAnticipationFrame > 0) {
+					attackAnticipationFrame--;
+				} else {
+					if (!isAttack) {
+						isAttacking = false;
+						isAttack = true;
+						physics.AddForce(angleDir * 20.0f, IMPACT);
+					}
+				}
+			}
+		}
+
+		if (isAttack) {
+			if (Length(physics.GetVelocity()) <= 3.0f) {
+				isAttack = false;
+			}
+		}
+
+		if (!isAttack && !isAttacking) {
+			if (attackCoolDown > 0) {
+				attackCoolDown--;
+			}
+		}
+	}
+
+	if (type == ENM::Shot) {
+		if (!isShot) {
+			if (canAttack && isSeePlayer) {
+				if (attackCoolDown <= 0) {
+					if (!isAttacking) {
+
+						isAttacking = true;
+						attackCoolDown = 60;
+						attackAnticipationFrame = maxAttackAnticipationFrame;
+					}
+				}
+			}
+
+			if (isAttacking) {
+				if (attackAnticipationFrame > 0) {
+					attackAnticipationFrame--;
+				} else {
+					if (!isAttack) {
+						isAttacking = false;
+						isShot = true;
+					}
+				}
+			}
+		}
+
+		if (!isShot && !isAttacking) {
+			if (attackCoolDown > 0) {
+				attackCoolDown--;
+			}
+		}
 	}
 
 }
@@ -159,6 +332,7 @@ void Enemy::StateCheck() {
 				Random(transform.size.y * 0.5f * shakeEnm, -transform.size.y * 0.5f * shakeEnm)};
 	}
 
+	// 死んでるか
 	if (!isAlive) {
 		if (deathFrame > 0) {
 			deathFrame--;
@@ -174,4 +348,33 @@ void Enemy::StateCheck() {
 
 void Enemy::Stun() {
 	stunFrame = ENM::kMaxStunFrame;
+}
+
+void Enemy::TypeInit() {
+	switch (type)
+	{
+	case ENM::Melee:
+		attackRange = 256.0f;
+		moveSpeed = 0.3f;
+		transform.size = { 64.0f,64.0f };
+		attackAnticipationFrame = 0;
+		maxAttackAnticipationFrame = 60;
+		break;
+	case ENM::Shot:
+		attackRange = 512.0f;
+		moveSpeed = 0.2f;
+		transform.size = { 64.0f,64.0f };
+		attackAnticipationFrame = 0;
+		maxAttackAnticipationFrame = 120;
+		break;
+	case ENM::Shield:
+		attackRange = 128.0f;
+		moveSpeed = 0.1f;
+		transform.size = { 64.0f,64.0f };
+		attackAnticipationFrame = 0;
+		maxAttackAnticipationFrame = 120;
+		break;
+	default:
+		break;
+	}
 }

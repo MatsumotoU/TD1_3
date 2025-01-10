@@ -38,6 +38,12 @@ void EnemyManager::SetCamera(Camera* set) {
 	}
 }
 
+void EnemyManager::SetPlayerPos(Vector2* set) {
+	for (int i = 0; i < EMG::kMaxEnemy; i++) {
+		enemyes[i].SetPlayerPos(set);
+	}
+}
+
 int EnemyManager::GetRemainEnemies() {
 	int count = 0;
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
@@ -69,16 +75,17 @@ void EnemyManager::EnemyCollision() {
 	}
 }
 
-void EnemyManager::SpawnEnemy(Vector2 pos, Vector2 size) {
+void EnemyManager::SpawnEnemy(Vector2 pos, ENM::Type set) {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		if (!enemyes[i].GetIsActive() && !enemyes[i].GetIsAlive()) {
 
 			enemyes[i].SetIsActive(true);
 			enemyes[i].SetDeathFrame(ENM::kMaxDeathFrame);
 			enemyes[i].SetPos(pos);
-			enemyes[i].SetSize(size);
 			enemyes[i].SetIsAlive(true);
 			enemyes[i].SetIsHitAttack(false);
+			enemyes[i].SetEnemyType(set);
+			enemyes[i].TypeInit();
 			break;
 		}
 	}

@@ -6,6 +6,14 @@
 namespace ENM {
 	const int kMaxStunFrame = 180;
 	const int kMaxDeathFrame = 60;
+
+	enum Type
+	{
+		None,
+		Melee,
+		Shot,
+		Shield
+	};
 }
 
 class Enemy:public GameObject
@@ -24,20 +32,41 @@ public:
 	void SetHitAttackDir(Vector2 set);
 	void SetPlayerRoute(std::vector<Vector2> set);
 	void SetDeathFrame(int set);
+	void SetEnemyType(ENM::Type set);
+	void SetCanAttack(int set);
+	void SetIsSeePlayer(int set);
+	void SetPlayerPos(Vector2* set);
+	void SetIsShot(int set);
 
 	int GetIsAlive();
 	int GetIsHitAttack();
 	Vector2 GetHitDir();
 	Vector2* GetPosPtr();
 	int GetGraphHandle();
+	ENM::Type GetType();
+	int GetIsAttack();
+	int GetIsShot();
+	Vector2 GetAngleDir();
 
 	void Move();
 	void LockOn();
+	void Attack();
 	void StateCheck();
 
 	void Stun();
-
+	void TypeInit();
 private:
+
+	int attackAnticipationFrame;
+	int maxAttackAnticipationFrame;
+	int isAttack;
+	int isShot;
+	int isAttacking;
+	int canAttack;
+	int isSeePlayer;
+	Vector2* playerPos;
+	float attackRange;
+	int attackCoolDown;
 
 	int deathFrame;
 	Vector2 angleDir;
@@ -59,4 +88,6 @@ private:
 
 	std::vector<Vector2> targetRoute;
 	int nextRouteNum;
+
+	ENM::Type type;
 };
