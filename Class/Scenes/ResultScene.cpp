@@ -45,7 +45,7 @@ void ResultScene::Init() {
 
 	for (int i = 0; i < 2; ++i) {
 		button[i] = {
-			{ 320.0f+ i * 640.0f,-128.0f }, // 位置
+			{ 320.0f + i * 640.0f,-128.0f }, // 位置
 			{ 300.0f, 80.0f }, // 大きさ
 			{ 1.0f, 1.0f }, // 比率
 			0.0f // 角度
@@ -66,7 +66,7 @@ void ResultScene::Init() {
 	movingFrameCount = 15.0f;
 
 	shouldPressedRight = false;
-	shouldPressedLeft = false;
+	shouldPressedLeft = true;
 
 	cameraPos = mainCamera.GetPosPtr();
 	*cameraPos = { 640.0f,360.0f };
@@ -78,6 +78,9 @@ void ResultScene::Init() {
 	missionUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/missionUI.png");
 	missionUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/missionUI.png");
 	missionUIGraphHandle[2] = Novice::LoadTexture("./Resources/Images/missionUI.png");
+
+	nextSceneUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/retry.png");
+	nextSceneUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/select.png");
 }
 
 void ResultScene::Update() {
@@ -94,38 +97,47 @@ void ResultScene::Update() {
 
 	if (input->GetControl(RIGHT, Press)) {
 		if (!shouldPressedRight) {
-			if (!shouldPressedLeft) {
-				shouldPressedRight = true;
-				shouldPressedLeft = false;
-			}
+			shouldPressedRight = true;
+			shouldPressedLeft = false;
 		}
 	}
 
 	if (input->GetControl(LEFT, Press)) {
-		if (!shouldPressedRight) {
-			if (!shouldPressedLeft) {
-				shouldPressedRight = false;
-				shouldPressedLeft = true;
-			}
+		if (!shouldPressedLeft) {
+			shouldPressedRight = false;
+			shouldPressedLeft = true;
 		}
 	}
 
 	// 決定キーを押してシーンを遷移させる
 	if (input->GetControl(ENTER, Triger)) {
-		// ステージに遷移する
-		if (shouldPressedLeft) {
-			if (!shouldPressedRight) {
-				nextScene = new GameStageScene();
-			}
-		}
+		if (movingOrder >= 18) {
 
-		if (shouldPressedRight) {
-			if (!shouldPressedLeft) {
-				nextScene = new SelectScene();
+			// ステージに遷移する
+			if (shouldPressedLeft) {
+				if (!shouldPressedRight) {
+					nextScene = new GameStageScene();
+				}
 			}
-		}
 
-		isTransition = true;
+			if (shouldPressedRight) {
+				if (!shouldPressedLeft) {
+					nextScene = new SelectScene();
+				}
+			}
+
+			isTransition = true;
+		}
+	}
+
+	if (shouldPressedLeft) {
+		button[0].scale = { 1.0f,1.0f };
+		button[1].scale = { 0.7f,0.7f };
+	}
+
+	if (shouldPressedRight) {
+		button[0].scale = { 0.7f,0.7f };
+		button[1].scale = { 1.0f,1.0f };
 	}
 
 	//================================================================
@@ -290,7 +302,7 @@ void ResultScene::Update() {
 				}
 			}
 
-			button[i].pos.y = Eas::EaseInOutQuart(buttonT[i], -128.0f, 110.0f);
+			button[i].pos.y = Eas::EaseInOutQuart(buttonT[i], -128.0f, 96.0f);
 		} else {
 			if (movingOrder == 10) {
 				buttonT[i] = 0.0f;
@@ -338,7 +350,7 @@ void ResultScene::Draw() {
 	}
 
 	for (int i = 0; i < 2; ++i) {
-		Render::DrawSprite(button[i], mainCamera, 0xEEEEEEFF, missionUIGraphHandle[i]);
+		Render::DrawSprite(button[i], mainCamera, 0xEEEEEEFF, nextSceneUIGraphHandle[i]);
 	}
 
 	Novice::ScreenPrintf(0, 16, "%d", movingOrder);

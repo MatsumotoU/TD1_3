@@ -47,6 +47,7 @@ private:
 
 	int starGraphHandle;
 	int missionUIGraphHandle[starTotalCount];
+	int nextSceneUIGraphHandle[2];
 
 	Vector2 cameraZoom;
 	Vector2* cameraPos;

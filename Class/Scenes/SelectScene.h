@@ -40,6 +40,8 @@ private:
 	Transform arrow[2];
 	float arrowTheta[2];
 
+	Transform spaceUI;
+
 	int shouldClearedMission[stageTotalCount][starTotalCount];
 
 	int shouldPressedRight;
@@ -54,8 +56,10 @@ private:
 
 	int starGraphHandle;
 	int arrowGraphHandle[2];
+	int spaceUIGraphHandle;
 
 	Vector2* cameraPos;
+	Vector2 cameraZoom;
 
 	ParticlManager particleManager;
 };
