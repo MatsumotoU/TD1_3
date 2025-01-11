@@ -63,7 +63,14 @@ void SelectScene::Init() {
 
 	arrow[0].scale = { 0.0f,0.0f };
 
-	// ミッションをクリアしたか
+	spaceUI = {
+		{640.0f,64.0f},
+		{256.0f,64.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+
+    // ミッションをクリアしたか
 	for (int i = 0; i < stageTotalCount; ++i) {
 		for (int j = 0; j < starTotalCount; ++j) {
 			shouldClearedMission[i][j] = true;
@@ -79,10 +86,15 @@ void SelectScene::Init() {
 	cameraPos = mainCamera.GetPosPtr();
 	*cameraPos = { 640.0f,360.0f };
 
+	cameraZoom = { 1.0f,1.0f };
+	mainCamera.SetScale(cameraZoom);
+
 	starGraphHandle = Novice::LoadTexture("./Resources/Images/missionStar.png");
 
 	arrowGraphHandle[0] = Novice::LoadTexture("./Resources/Images/stageSelectArrow1.png");
 	arrowGraphHandle[1] = Novice::LoadTexture("./Resources/Images/stageSelectArrow2.png");
+
+	spaceUIGraphHandle = Novice::LoadTexture("./Resources/Images/spaceUI.png");
 }
 
 void SelectScene::Update() {
@@ -330,7 +342,12 @@ void SelectScene::Update() {
 		}
 	}
 
-	//shouldClearedMission[0][0] = false;
+	/*if (isTransition) {
+		cameraZoom.x -= 0.01f;
+		cameraZoom.y -= 0.01f;
+	}*/
+
+	mainCamera.SetScale(cameraZoom);
 
 	particleManager.Update();
 }
@@ -357,6 +374,8 @@ void SelectScene::Draw() {
 	for (int i = 0; i < 2; ++i) {
 		Render::DrawSprite(arrow[i], mainCamera, 0xffffffff, arrowGraphHandle[i]);
 	}
+
+	Render::DrawSprite(spaceUI, mainCamera, 0xEEEEEEFF, spaceUIGraphHandle);
 }
 
 IScene* SelectScene::GetNextScene() {
