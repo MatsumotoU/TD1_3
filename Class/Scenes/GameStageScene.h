@@ -41,6 +41,7 @@ public:
 	void EnemyAttack();
 	void WaveUiDraw();
 
+	void ControlInfoUpdate();
 	void ControlInfoDraw();
 
 	void CameraUpdate();
@@ -48,7 +49,7 @@ public:
 private:
 
 	Transform contorolInfoTransform[3];
-	int contorolInfoGH[3];
+	int contorolInfoGH[4];
 
 	int wave;
 	int isChangeWave;
