@@ -54,6 +54,15 @@ int EnemyManager::GetRemainEnemies() {
 	return count;
 }
 
+int EnemyManager::GetIsThereHitEnemy() {
+	for (int i = 0; i < EMG::kMaxEnemy; i++) {
+		if (enemyes[i].GetIsHitAttack() && enemyes[i].GetIsAlive()) {
+			return true;
+		}
+	}
+	return false;
+}
+
 Enemy* EnemyManager::GetEnemyes() {
 	return enemyes;
 }

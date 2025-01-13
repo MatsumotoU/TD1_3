@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Class/Common/MyEasing.h"
 
 Enemy::Enemy() {
 	transform.pos = { 0.0f,0.0f };
@@ -41,6 +42,12 @@ Enemy::Enemy() {
 	attackCoolDown = 0;
 	attackAnticipationFrame = 0;
 	maxAttackAnticipationFrame = 0;
+	
+	swordGH = Novice::LoadTexture("./Resources/Images/sword.png");
+	swordTransform.pos = transform.pos;
+	swordTransform.angle = 0.0f;
+	swordTransform.scale = { 0.8f,0.8f };
+	swordTransform.size = { 128.0f,32.0f };
 }
 
 void Enemy::Init() {
@@ -49,14 +56,20 @@ void Enemy::Init() {
 	type = ENM::None;
 	isAttacking = false;
 	attackCoolDown = 0;
+	isHitAttack = false;
 }
 
 void Enemy::Update() {
 	if (isAlive) {
-		Move();
-		LockOn();
-		Attack();
+		if (stunFrame <= 0) {
+			Move();
+			LockOn();
+			Attack();
+		}
+
+		
 	}
+	UpdateSword();
 	StateCheck();
 
 	physics.Update(&transform.pos);
@@ -69,6 +82,8 @@ void Enemy::Draw() {
 		Render::DrawLine(transform.pos, transform.pos + hitDir * 100.0f, *camera, RED);
 		Render::DrawLine(transform.pos, transform.pos + -hitDir * 100.0f, *camera, RED);
 	}
+
+	DrawSword();
 
 #ifdef _DEBUG
 	for (int i = static_cast<int>(targetRoute.size() - 1); i > 0; i--) {
@@ -164,13 +179,6 @@ void Enemy::Move() {
 
 
 	if (isAttacking) {
-		return;
-	}
-
-
-	// スタンしてたら動かない
-	if (stunFrame > 0) {
-		stunFrame--;
 		return;
 	}
 
@@ -314,6 +322,12 @@ void Enemy::Attack() {
 }
 
 void Enemy::StateCheck() {
+
+	// スタンしてたら動かない
+	if (stunFrame > 0) {
+		stunFrame--;
+	}
+
 	// スタン値
 	drawTransform = transform;
 	if (stunFrame <= 0) {
@@ -327,9 +341,11 @@ void Enemy::StateCheck() {
 
 		float shakeEnm = static_cast<float>(stunFrame) / static_cast<float>(ENM::kMaxStunFrame);
 
+		drawTransform.scale = { 1.0f + (hitDir.x * shakeEnm) * 0.5f,1.0f + (hitDir.y * shakeEnm)*0.5f };
+
 		drawTransform.pos += {
-			Random(transform.size.x * 0.5f * shakeEnm, -transform.size.x * 0.5f * shakeEnm),
-				Random(transform.size.y * 0.5f * shakeEnm, -transform.size.y * 0.5f * shakeEnm)};
+			Random(transform.size.x * 0.3f * shakeEnm, -transform.size.x * 0.3f * shakeEnm),
+				Random(transform.size.y * 0.3f * shakeEnm, -transform.size.y * 0.3f * shakeEnm)};
 	}
 
 	// 死んでるか
@@ -343,6 +359,28 @@ void Enemy::StateCheck() {
 		} else {
 			isActive = false;
 		}
+	}
+}
+
+void Enemy::UpdateSword() {
+	if (isHitAttack) {
+		if (isAlive) {
+
+			Vector2 localSwordPos = { 0.0f,48.0f + 16.0f * (sinf(static_cast<float>(stunFrame) * 0.1f) * 0.5f) };
+			swordTransform.pos = localSwordPos + transform.pos;
+			swordTransform.angle = -3.14f * 0.5f;
+		} else {
+
+			Vector2 localSwordPos = { 0.0f,Eas::EaseIn(static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame),5.0f,0.0f,128.0f)};
+			swordTransform.pos = localSwordPos + transform.pos;
+			swordTransform.angle = -3.14f * 0.5f;
+		}
+	}
+}
+
+void Enemy::DrawSword() {
+	if (isHitAttack) {
+		Render::DrawSprite(swordTransform, *camera, WHITE, swordGH);
 	}
 }
 

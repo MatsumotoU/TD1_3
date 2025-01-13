@@ -93,3 +93,35 @@ void Render::DrawSprite(Transform transform, Camera camera, unsigned int color, 
 
 	}
 }
+
+void Render::DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Camera camera, int num, int gh[10], unsigned int color) {
+	Transform tempTransform = { 0 };
+	tempTransform.pos = pos;
+	tempTransform.scale = scale;
+	tempTransform.size = size;
+	tempTransform.angle = angle;
+	
+	int tempNum = num;
+	int digit = 1;
+	int numD[10] = { 0 };
+
+	while (tempNum >= 10)
+	{
+		tempNum /= 10;
+		digit++;
+	}
+
+	tempNum = num;
+	for (int i = 0; i < digit; i++) {
+
+		numD[i] = tempNum % 10;
+		tempNum /= 10;
+	}
+
+	Vector2 digitPos = { pos.x + (size.x * (digit - 1)) * 0.5f ,pos.y };
+	tempTransform.pos += digitPos;
+
+	for (int i = 0; i < digit; i++) {
+		DrawSprite(tempTransform,camera, gh[numD[i]], color);
+	}
+}

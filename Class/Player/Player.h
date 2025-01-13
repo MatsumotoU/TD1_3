@@ -67,6 +67,7 @@ public:
 
 private:
 	int frameCount;
+	float seVolume;
 
 	Transform rightArm;
 	Transform leftArm;
@@ -104,6 +105,7 @@ private:
 	float dashPower;
 	int dashAfterimageRemainFrame;
 	int dashAfterimageRemainInterval;
+	int dashOP;
 
 	int isAttack;
 	int attackCoolDown;

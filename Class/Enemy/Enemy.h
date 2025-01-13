@@ -53,6 +53,9 @@ public:
 	void Attack();
 	void StateCheck();
 
+	void UpdateSword();
+	void DrawSword();
+
 	void Stun();
 	void TypeInit();
 private:
@@ -79,6 +82,8 @@ private:
 	int isAlive;
 	Camera* camera;
 	int enemyGH;
+	Transform swordTransform;
+	int swordGH;
 	unsigned int color;
 
 	int isHitAttack;
