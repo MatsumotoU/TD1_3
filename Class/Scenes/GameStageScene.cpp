@@ -17,6 +17,10 @@ void GameStageScene::Init() {
 	gameStage = 0;
 	nextScene = nullptr;
 	mainCamera.Init();
+	isClearStage = true;
+	clearStageTimeBuffer = 0;
+
+	flashScreenFrame = 0;
 
 	stopObjectUpdateFrame = 0;
 	exprosionHitStopFrame = 6;
@@ -28,6 +32,7 @@ void GameStageScene::Init() {
 	enemyManager.Init();
 	enemyManager.SetCamera(&mainCamera);
 	enemyManager.SetPlayerPos(player.GetPosPtr());
+	lastHitEnemyNum = -1;
 
 	particleManager.Init();
 	particleManager.SetCamera(&mainCamera);
@@ -102,6 +107,10 @@ void GameStageScene::Init() {
 	contorolInfoGH[1] = Novice::LoadTexture("./Resources/Images/tutorial2.png");
 	contorolInfoGH[2] = Novice::LoadTexture("./Resources/Images/tutorial3.png");
 	contorolInfoGH[3] = Novice::LoadTexture("./Resources/Images/tutorial4.png");
+
+	hitEffectGH[0] = Novice::LoadTexture("./Resources/Images/hitEffect1.png");
+	hitEffectGH[1] = Novice::LoadTexture("./Resources/Images/hitEffect2.png");
+	hitEffectGH[2] = Novice::LoadTexture("./Resources/Images/hitEffect3.png");
 }
 
 void GameStageScene::Update() {
@@ -120,19 +129,38 @@ void GameStageScene::Update() {
 			stopObjectUpdateFrame--;
 		}
 	}
+
+	if (enemyManager.GetRemainEnemies() <= 0) {
+		if (stopObjectUpdateFrame > 0) {
+			Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->x, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().x, 0.3f);
+			Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->y, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().y, 0.3f);
+		}
+	}
 	ImGuiUpdate();
+
+	if (flashScreenFrame > 0) {
+		flashScreenFrame--;
+	}
 }
 
 void GameStageScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
 
 	map.Draw();
-	particleManager.Draw();
+	
 	bulletManager.Draw();
 	enemyManager.Draw();
 	player.Draw();
+
+	particleManager.Draw();
 	WaveUiDraw();
 	ControlInfoDraw();
+
+	if (flashScreenFrame > 0) {
+		if (flashScreenFrame % 12 <= 6) {
+			Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xFFFFFF23, kFillModeSolid);
+		}
+	}
 }
 
 void GameStageScene::ImGuiUpdate() {
@@ -157,6 +185,8 @@ void GameStageScene::ImGuiUpdate() {
 
 	ImGui::End();
 
+	player.UpdateImGui();
+
 #endif // _DEBUG
 }
 
@@ -169,6 +199,22 @@ void GameStageScene::WaveManager() {
 	if (enemyManager.GetRemainEnemies() <= 0) {
 		if (!isChangeWave) {
 
+			// ステージクリア後の演出時間
+			if (isClearStage) {
+				
+				if (clearStageTimeBuffer > 0) {
+					clearStageTimeBuffer--;
+					return;
+				}
+
+			} else {
+
+				isClearStage = true;
+				clearStageTimeBuffer = GMScene::maxClearStageTimeBuffer;
+				return;
+			}
+
+			// ステージ切り替え用オブジェクト初期化
 			isChangeWave = true;
 			wave++;
 			balancePoleTransform.pos = { 0.0f,100.0f };
@@ -318,6 +364,8 @@ void GameStageScene::WaveManager() {
 		if (wave >= 4 || (input->GetControl(ENTER, Triger) && frameCount >= 30)) {
 			LoadWave();
 			isChangeWave = false;
+			isClearStage = false;
+			lastHitEnemyNum = -1;
 		}
 	}
 }
@@ -349,8 +397,18 @@ void GameStageScene::LoadWave() {
 }
 
 void GameStageScene::ObjectUpdate() {
+
+	CameraUpdate();
+	particleManager.Update();
+
+	// ステージをクリアしてるならコマ送り
+	if (isClearStage) {
+		if (frameCount % 3 != 0) {
+			return;
+		}
+	}
+
 	player.Update();
-	player.UpdateImGui();
 	PlayerLockOn();
 
 	bulletManager.Update();
@@ -359,10 +417,6 @@ void GameStageScene::ObjectUpdate() {
 	ExprodeEnemy();
 	EnemyMoveToPlayer();
 	EnemyAttack();
-
-	CameraUpdate();
-
-	particleManager.Update();
 }
 
 void GameStageScene::ObjectCollision() {
@@ -447,8 +501,10 @@ void GameStageScene::ObjectCollision() {
 
 							mainCamera.shakeRange = { 10.0f, 10.0f };
 							stopObjectUpdateFrame = exprosionHitStopFrame;
-							mainCamera.SetPos(enemyManager.GetEnemyes()[e].GetPos());
-							mainCamera.panRange = -0.5f;
+							//mainCamera.SetPos(enemyManager.GetEnemyes()[e].GetPos());
+							mainCamera.panRange = -0.2f;
+
+							particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 64.0f,64.0f }, Random(6.24f, 0.0f), 3, 10, false, hitEffectGH);
 						}
 					}
 				}
@@ -458,65 +514,66 @@ void GameStageScene::ObjectCollision() {
 	map.EnemyMapCollision();
 
 	// プレイヤーの当たり判定
-	if (player.GetDamageCoolDown() <= 0) {
-		// 弾
-		for (int b = 0; b < BMG::kBulletMax; b++) {
-			if (bulletManager.GetBullets()[b].GetIsShot()) {
+	if (!isClearStage) {
+		if (player.GetDamageCoolDown() <= 0) {
+			// 弾
+			for (int b = 0; b < BMG::kBulletMax; b++) {
+				if (bulletManager.GetBullets()[b].GetIsShot()) {
 
-				// 爆発の当たり判定
-				if (bulletManager.GetBullets()[b].GetTag() == "exprosion") {
+					// 爆発の当たり判定
+					if (bulletManager.GetBullets()[b].GetTag() == "exprosion") {
 
-					if (IsHitCollisionEllipse(
-						bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
-						bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
+						if (IsHitCollisionEllipse(
+							bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
+							bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
 
-						player.Damage();
-						player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
+							player.Damage();
+							player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
 
-						// カメラを揺らす
-						mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+							// カメラを揺らす
+							mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+						}
 					}
-				}
 
-				// 爆発の当たり判定
-				if (bulletManager.GetBullets()[b].GetTag() == "enemy") {
+					// 爆発の当たり判定
+					if (bulletManager.GetBullets()[b].GetTag() == "enemy") {
 
-					if (IsHitCollisionEllipse(
-						bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
-						bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
+						if (IsHitCollisionEllipse(
+							bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
+							bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
 
-						player.Damage();
-						player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
+							player.Damage();
+							player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
 
-						// カメラを揺らす
-						mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+							// カメラを揺らす
+							mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+						}
 					}
 				}
 			}
-		}
-		// 敵
-		for (int e = 0; e < EMG::kMaxEnemy; e++) {
-			if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
-				if (enemyManager.GetEnemyes()[e].GetType() == ENM::Melee) {
-					if (enemyManager.GetEnemyes()[e].GetIsAttack()) {
+			// 敵
+			for (int e = 0; e < EMG::kMaxEnemy; e++) {
+				if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
+					if (enemyManager.GetEnemyes()[e].GetType() == ENM::Melee) {
+						if (enemyManager.GetEnemyes()[e].GetIsAttack()) {
 
-						if (IsHitCollisionEllipse(
-							enemyManager.GetEnemyes()[e].GetPos(), player.GetPos(),
-							enemyManager.GetEnemyes()[e].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
+							if (IsHitCollisionEllipse(
+								enemyManager.GetEnemyes()[e].GetPos(), player.GetPos(),
+								enemyManager.GetEnemyes()[e].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
 
-							player.Damage();
-							player.GetPhysics()->AddForce(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos(), IMPACT);
+								player.Damage();
+								player.GetPhysics()->AddForce(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos(), IMPACT);
 
-							// カメラを揺らす
-							mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * 100.0f;
+								// カメラを揺らす
+								mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * 100.0f;
+							}
 						}
 					}
 				}
 			}
 		}
-
-		map.PlayerMapCollision();
 	}
+	map.PlayerMapCollision();
 
 	// 弾の当たり判定
 	map.BulletMapCollision();
@@ -554,6 +611,15 @@ void GameStageScene::ExprodeEnemy() {
 				bulletManager.ShotBullet(
 					enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
 					-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
+
+				// ラストヒット
+				if (enemyManager.GetRemainEnemies() <= 0) {
+					if (lastHitEnemyNum == -1) {
+						lastHitEnemyNum = e;
+						stopObjectUpdateFrame = 30;
+						flashScreenFrame = 30;
+					}
+				}
 			}
 		}
 	}
@@ -685,7 +751,14 @@ void GameStageScene::ControlInfoDraw() {
 
 void GameStageScene::CameraUpdate() {
 	Vector2* cameraPos = mainCamera.GetPosPtr();
-	*cameraPos = player.GetPos();
+	if (isClearStage) {
+		Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->x, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().x, 0.1f);
+		Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->y, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().y, 0.1f);
+		mainCamera.shakeRange = { static_cast<float>(clearStageTimeBuffer) * 0.1f,static_cast<float>(clearStageTimeBuffer) * 0.1f};
+		mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer),0.5f,1.0f);
+	} else {
+		*cameraPos = player.GetPos();
+	}
 
 	mainCamera.CameraMoveLimit({ 640.0f,370.0f }, { 1408.0f,1678.0f });
 }

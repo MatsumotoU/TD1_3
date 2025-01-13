@@ -7,6 +7,10 @@
 #include "Class/Common/Mapchip.h"
 #include "Class/Balance/BalanceObject.h"
 
+namespace GMScene {
+	const int maxClearStageTimeBuffer = 120;
+}
+
 class GameStageScene : public IScene {
 public:
 
@@ -48,9 +52,14 @@ public:
 
 private:
 
+	int flashScreenFrame;
+	int hitEffectGH[3];
+
 	Transform contorolInfoTransform[3];
 	int contorolInfoGH[4];
 
+	int isClearStage;
+	int clearStageTimeBuffer;
 	int wave;
 	int isChangeWave;
 
@@ -70,6 +79,7 @@ private:
 	float leftWeight;
 	int playerWeightGH;
 	int enemyWeightGH;
+	int lastHitEnemyNum;
 
 	Transform waveStringTransform;
 	int waveStringGH;
