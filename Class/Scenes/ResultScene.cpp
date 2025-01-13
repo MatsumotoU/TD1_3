@@ -68,6 +68,8 @@ void ResultScene::Init() {
 	shouldPressedRight = false;
 	shouldPressedLeft = true;
 
+	//isDuringAnimation = true;
+
 	cameraPos = mainCamera.GetPosPtr();
 	*cameraPos = { 640.0f,360.0f };
 
@@ -127,17 +129,39 @@ void ResultScene::Update() {
 			}
 
 			isTransition = true;
+		} else {
+			movingOrder = 18;
+			for (int i = 0; i < starTotalCount; ++i) {
+				starT[i] = 1.0f;
+				star[i].pos.x = Eas::EaseInOutQuart(starT[i], 1728.0f, 1008.0f);
+				star[i].pos.y = Eas::EaseInOutQuart(starT[i], i * 360.0f, 160.0f + i * 200.0f);
+
+				missionUIT[i] = 1.0f;
+				missionUI[i].pos.x = Eas::EaseInOutQuart(missionUIT[i], -640.0f, 384.0f);
+				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 256.0f + i * 180.0f);
+			}
+
+			for (int i = 0; i < 2; ++i) {
+				buttonT[i] = 1.0f;
+				button[i].pos.y = Eas::EaseInOutQuart(buttonT[i], -128.0f, 96.0f);
+			}
 		}
 	}
 
-	if (shouldPressedLeft) {
-		button[0].scale = { 1.0f,1.0f };
-		button[1].scale = { 0.7f,0.7f };
-	}
+	if (movingOrder >= 18) {
+		if (shouldPressedLeft) {
+			button[0].scale = { 1.0f,1.0f };
+			button[1].scale = { 0.7f,0.7f };
 
-	if (shouldPressedRight) {
-		button[0].scale = { 0.7f,0.7f };
-		button[1].scale = { 1.0f,1.0f };
+			button[0].pos.y = 96.0f + sinf(star[0].angle * 3.0f) * 4.0f;
+		}
+
+		if (shouldPressedRight) {
+			button[0].scale = { 0.7f,0.7f };
+			button[1].scale = { 1.0f,1.0f };
+
+			button[1].pos.y = 96.0f + sinf(star[1].angle * 3.0f) * 4.0f;
+		}
 	}
 
 	//================================================================

@@ -50,13 +50,16 @@ private:
 	float stageIconTheta;
 	float notSelectedStageScale;
 
-	//float timeMoveStageIcon;
-	//float timeMoveStar;
+	float zoomT;
+
+	int isZoom;
 	float movingFrameCount;
 
 	int starGraphHandle;
 	int arrowGraphHandle[2];
 	int spaceUIGraphHandle;
+
+	int tempGH;
 
 	Vector2* cameraPos;
 	Vector2 cameraZoom;

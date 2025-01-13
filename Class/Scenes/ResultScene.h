@@ -45,6 +45,8 @@ private:
 
 	float movingFrameCount;
 
+	int isDuringAnimation;
+
 	int starGraphHandle;
 	int missionUIGraphHandle[starTotalCount];
 	int nextSceneUIGraphHandle[2];

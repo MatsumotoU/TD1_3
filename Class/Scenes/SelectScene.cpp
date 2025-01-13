@@ -70,7 +70,7 @@ void SelectScene::Init() {
 		0.0f
 	};
 
-    // ミッションをクリアしたか
+	// ミッションをクリアしたか
 	for (int i = 0; i < stageTotalCount; ++i) {
 		for (int j = 0; j < starTotalCount; ++j) {
 			shouldClearedMission[i][j] = true;
@@ -80,14 +80,19 @@ void SelectScene::Init() {
 	// 左右キーを押したときステージアイコンなどが動く時間
 	movingFrameCount = 25.0f;
 
+	isZoom = false;
+
 	shouldPressedRight = false;
 	shouldPressedLeft = false;
 
 	cameraPos = mainCamera.GetPosPtr();
 	*cameraPos = { 640.0f,360.0f };
 
+	zoomT = 0.0f;
 	cameraZoom = { 1.0f,1.0f };
 	mainCamera.SetScale(cameraZoom);
+
+	tempGH = Novice::LoadTexture("./Resources/Images/tmpStageIcon.png");
 
 	starGraphHandle = Novice::LoadTexture("./Resources/Images/missionStar.png");
 
@@ -160,8 +165,11 @@ void SelectScene::Update() {
 	// 決定キーを押してシーンを遷移させる
 	if (input->GetControl(ENTER, Triger)) {
 		// ステージに遷移する
-		nextScene = new GameStageScene();
-		isTransition = true;
+		if (!isZoom) {
+			isZoom = true;
+		}
+		/*nextScene = new GameStageScene();
+		isTransition = true;*/
 	}
 
 	//================================================================
@@ -342,10 +350,22 @@ void SelectScene::Update() {
 		}
 	}
 
-	/*if (isTransition) {
-		cameraZoom.x -= 0.01f;
-		cameraZoom.y -= 0.01f;
-	}*/
+	if (isZoom) {
+		if (zoomT < 1.0f) {
+			zoomT += 1.0f / 35.0f;
+		}
+
+		if (zoomT >= 1.0f) {
+			zoomT = 1.0f;
+			nextScene = new GameStageScene();
+			isTransition = true;
+		}
+
+		cameraZoom.x = Eas::EaseInOutQuart(zoomT, 1.0f, 0.55f);
+		cameraZoom.y = Eas::EaseInOutQuart(zoomT, 1.0f, 0.55f);
+
+		cameraPos->y = Eas::EaseInOutQuart(zoomT, 360.0f, 256.0f);
+	}
 
 	mainCamera.SetScale(cameraZoom);
 
@@ -358,7 +378,7 @@ void SelectScene::Draw() {
 	particleManager.Draw();
 
 	for (int i = 0; i < stageTotalCount; ++i) {
-		Render::DrawSprite(stageIcon[i], mainCamera, 0xD65A31FF, 0);
+		Render::DrawSprite(stageIcon[i], mainCamera, 0xD65A31FF, tempGH);
 	}
 
 	for (int i = 0; i < starTotalCount; ++i) {
