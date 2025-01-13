@@ -9,6 +9,7 @@
 
 namespace GMScene {
 	const int maxClearStageTimeBuffer = 120;
+	const int maxComboRemainFrame = 60;
 }
 
 class GameStageScene : public IScene {
@@ -52,11 +53,15 @@ public:
 
 private:
 
+	float seVolume;
+
 	int flashScreenFrame;
 	int hitEffectGH[3];
 
 	Transform contorolInfoTransform[3];
+	float shakeContorolInfoExprosion;
 	int contorolInfoGH[4];
+	int rcContorolInfoGH[4];
 
 	int isClearStage;
 	int clearStageTimeBuffer;
@@ -67,6 +72,10 @@ private:
 	int stopObjectUpdateFrame;
 
 	int slashGH;
+
+	int exprosionComboCount;
+	int comboRemainFrame;
+	int comboOP[5];
 
 	BalanceObject baranceObjects[EMG::kMaxEnemy + 1];
 	Transform balancePoleTransform;

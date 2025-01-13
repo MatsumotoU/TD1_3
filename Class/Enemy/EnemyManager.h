@@ -19,6 +19,7 @@ public:
 	void SetPlayerPos(Vector2* set);
 
 	int GetRemainEnemies();
+	int GetIsThereHitEnemy();
 	Enemy* GetEnemyes();
 
 	void EnemyCollision();

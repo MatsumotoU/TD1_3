@@ -71,6 +71,7 @@ Player::Player() {
 	dashPower = 100.0f;
 	dashAfterimageRemainFrame = 10;
 	dashAfterimageRemainInterval = 20;
+	dashOP = Novice::LoadAudio("./Resources/Sounds/dash.mp3");
 
 	isAttack = false;
 	attackCoolDown = 0;
@@ -97,6 +98,8 @@ Player::Player() {
 	particleManager.SetCamera(camera);
 
 	playerGH = Novice::LoadTexture("./Resources/Images/player.png");
+
+	seVolume = 0.5f;
 
 }
 
@@ -334,6 +337,8 @@ void Player::Dash() {
 
 			camera->shakeRange += angleDir * 5.0f;
 			camera->panRange -= 0.2f;
+
+			Novice::PlayAudio(dashOP, false, seVolume);
 		}
 	}
 
@@ -403,14 +408,16 @@ void Player::Sheathe() {
 		if (sheatheCoolDown <= 0) {
 			if (!isSheathe && !isAttack) {
 
-				moveStackFrame = PLR::kMaxMoveStackFrame * 3;
-				sheatheCoolDown = PLR::kMaxSheatheCoolDown;
-				isSheathe = true;
+				if (remainAttackChance < 2) {
+					moveStackFrame = PLR::kMaxMoveStackFrame * 3;
+					sheatheCoolDown = PLR::kMaxSheatheCoolDown;
+					isSheathe = true;
 
-				particleManager.FromToEffect(haloTransform.pos, &transform.pos, { 32.0f,32.0f }, PLR::kMaxSheatheCoolDown, 10, orangeLightGH, WHITE);
-				particleManager.AnimEffect(haloTransform.pos, { 256.0f,256.0f }, Random(6.28f, 0.0f), 4, 3, false, haloExprosionGH);
+					particleManager.FromToEffect(haloTransform.pos, &transform.pos, { 32.0f,32.0f }, PLR::kMaxSheatheCoolDown, 10, orangeLightGH, WHITE);
+					particleManager.AnimEffect(haloTransform.pos, { 256.0f,256.0f }, Random(6.28f, 0.0f), 4, 3, false, haloExprosionGH);
 
-				camera->panRange -= 0.2f;
+					camera->panRange -= 0.2f;
+				}
 			}
 		}
 	}

@@ -20,6 +20,16 @@ void GameStageScene::Init() {
 	isClearStage = true;
 	clearStageTimeBuffer = 0;
 
+	seVolume = 0.5f;
+
+	exprosionComboCount = 0;
+	comboRemainFrame = 0;
+	comboOP[0] = Novice::LoadAudio("./Resources/Sounds/combo1.mp3");
+	comboOP[1] = Novice::LoadAudio("./Resources/Sounds/combo2.mp3");
+	comboOP[2] = Novice::LoadAudio("./Resources/Sounds/combo3.mp3");
+	comboOP[3] = Novice::LoadAudio("./Resources/Sounds/combo4.mp3");
+	comboOP[4] = Novice::LoadAudio("./Resources/Sounds/combo5.mp3");
+
 	flashScreenFrame = 0;
 
 	stopObjectUpdateFrame = 0;
@@ -85,6 +95,7 @@ void GameStageScene::Init() {
 
 	slashGH = Novice::LoadTexture("./Resources/Images/slash.png");
 
+	shakeContorolInfoExprosion = 0.0f;
 	contorolInfoTransform[0] = {
 		{-320.0f,-320.0f},
 		{256.0f,32.0f},
@@ -107,6 +118,11 @@ void GameStageScene::Init() {
 	contorolInfoGH[1] = Novice::LoadTexture("./Resources/Images/tutorial2.png");
 	contorolInfoGH[2] = Novice::LoadTexture("./Resources/Images/tutorial3.png");
 	contorolInfoGH[3] = Novice::LoadTexture("./Resources/Images/tutorial4.png");
+
+	rcContorolInfoGH[0] = Novice::LoadTexture("./Resources/Images/RCtutorial1.png");
+	rcContorolInfoGH[1] = Novice::LoadTexture("./Resources/Images/RCtutorial2.png");
+	rcContorolInfoGH[2] = Novice::LoadTexture("./Resources/Images/RCtutorial3.png");
+	rcContorolInfoGH[3] = Novice::LoadTexture("./Resources/Images/RCtutorial4.png");
 
 	hitEffectGH[0] = Novice::LoadTexture("./Resources/Images/hitEffect1.png");
 	hitEffectGH[1] = Novice::LoadTexture("./Resources/Images/hitEffect2.png");
@@ -147,7 +163,7 @@ void GameStageScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
 
 	map.Draw();
-	
+
 	bulletManager.Draw();
 	enemyManager.Draw();
 	player.Draw();
@@ -168,6 +184,7 @@ void GameStageScene::ImGuiUpdate() {
 
 	ImGui::Begin("GameScene");
 	ImGui::Text("GameStage = %d Wave = %d", gameStage, wave);
+	ImGui::Text("combo = %d :%d", exprosionComboCount,comboRemainFrame);
 	ImGui::InputFloat("x", &testPopEnemyPos.x);
 	ImGui::InputFloat("y", &testPopEnemyPos.y);
 	ImGui::SliderFloat("balanceAngle", &balanceAngle, -3.14f, 3.14f);
@@ -201,7 +218,7 @@ void GameStageScene::WaveManager() {
 
 			// ステージクリア後の演出時間
 			if (isClearStage) {
-				
+
 				if (clearStageTimeBuffer > 0) {
 					clearStageTimeBuffer--;
 					return;
@@ -423,7 +440,7 @@ void GameStageScene::ObjectCollision() {
 
 	// 敵の当たり判定
 	for (int e = 0; e < EMG::kMaxEnemy; e++) {
-		if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
+		if (enemyManager.GetEnemyes()[e].GetIsAlive() && enemyManager.GetEnemyes()[e].GetIsActive()) {
 			// プレイヤー
 			if (player.GetIsAttack()) {
 				if (IsHitCollisionEllipse(
@@ -474,6 +491,9 @@ void GameStageScene::ObjectCollision() {
 							enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
 							enemyManager.GetEnemyes()[e].SetHitAttackDir(
 								Normalize(bulletManager.GetBullets()[b].GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
+
+							// 爆発
+							particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
 						}
 					}
 
@@ -486,8 +506,6 @@ void GameStageScene::ObjectCollision() {
 
 							enemyManager.GetEnemyes()[e].SetHitAttackDir(
 								Normalize(bulletManager.GetBullets()[b].GetPos() - enemyManager.GetEnemyes()[e].GetPos()));
-
-							enemyManager.GetEnemyes()[e].SetIsAlive(false);
 
 							if (!enemyManager.GetEnemyes()[e].GetIsHitAttack()) {
 								bulletManager.ShotBullet(
@@ -504,7 +522,30 @@ void GameStageScene::ObjectCollision() {
 							//mainCamera.SetPos(enemyManager.GetEnemyes()[e].GetPos());
 							mainCamera.panRange = -0.2f;
 
-							particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 64.0f,64.0f }, Random(6.24f, 0.0f), 3, 10, false, hitEffectGH);
+							// 爆発
+							particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
+
+							// ラストヒット
+							if (enemyManager.GetRemainEnemies() <= 0) {
+								if (lastHitEnemyNum == -1) {
+									lastHitEnemyNum = e;
+									stopObjectUpdateFrame = 30;
+									flashScreenFrame = 30;
+								}
+							}
+
+							
+
+							// コンボ加算
+							if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
+								// SE
+								Novice::PlayAudio(comboOP[Clamp(exprosionComboCount, 0, 4)], false, seVolume);
+
+								exprosionComboCount++;
+								comboRemainFrame = GMScene::maxComboRemainFrame;
+							}
+
+							enemyManager.GetEnemyes()[e].SetIsAlive(false);
 						}
 					}
 				}
@@ -612,6 +653,9 @@ void GameStageScene::ExprodeEnemy() {
 					enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
 					-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
 
+				// 爆発
+				particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
+
 				// ラストヒット
 				if (enemyManager.GetRemainEnemies() <= 0) {
 					if (lastHitEnemyNum == -1) {
@@ -627,6 +671,13 @@ void GameStageScene::ExprodeEnemy() {
 	if (player.GetIsSheathe()) {
 		player.SetIsSheathe(false);
 		player.SetRemainAttackChance(PLR::kMaxAttackChance);
+	}
+
+	// コンボを0に戻す
+	if (comboRemainFrame > 0) {
+		comboRemainFrame--;
+	} else {
+		exprosionComboCount = 0;
 	}
 }
 
@@ -686,6 +737,9 @@ void GameStageScene::WaveUiDraw() {
 }
 
 void GameStageScene::ControlInfoUpdate() {
+	if (shakeContorolInfoExprosion > 0.0f) {
+		shakeContorolInfoExprosion--;
+	}
 
 	if (isChangeWave) {
 
@@ -706,16 +760,24 @@ void GameStageScene::ControlInfoUpdate() {
 			Eas::SimpleEaseIn(&contorolInfoTransform[1].scale.x, 0.9f, 0.3f);
 			Eas::SimpleEaseIn(&contorolInfoTransform[1].scale.y, 0.8f, 0.3f);
 		} else {
-			contorolInfoTransform[1].scale.x = 1.0f + sinf(static_cast<float>(frameCount+10) * 0.1f) * 0.1f;
-			contorolInfoTransform[1].scale.y = 1.0f + sinf(static_cast<float>(frameCount+10) * 0.1f) * 0.1f;
+			contorolInfoTransform[1].scale.x = 1.0f + sinf(static_cast<float>(frameCount + 10) * 0.1f) * 0.1f;
+			contorolInfoTransform[1].scale.y = 1.0f + sinf(static_cast<float>(frameCount + 10) * 0.1f) * 0.1f;
 		}
 
-		if (player.GetIsSheathe()) {
+		if (enemyManager.GetIsThereHitEnemy() || player.GetRemainAttackChance() <= 0) {
+			contorolInfoTransform[2].scale.x = 1.0f + sinf(static_cast<float>(frameCount + 20) * 0.3f) * 0.1f;
+			contorolInfoTransform[2].scale.y = 1.0f + sinf(static_cast<float>(frameCount + 20) * 0.3f) * 0.1f;
+
+		} else {
 			Eas::SimpleEaseIn(&contorolInfoTransform[2].scale.x, 0.9f, 0.3f);
 			Eas::SimpleEaseIn(&contorolInfoTransform[2].scale.y, 0.8f, 0.3f);
-		} else {
-			contorolInfoTransform[2].scale.x = 1.0f + sinf(static_cast<float>(frameCount+20) * 0.1f) * 0.1f;
-			contorolInfoTransform[2].scale.y = 1.0f + sinf(static_cast<float>(frameCount+20) * 0.1f) * 0.1f;
+
+			if (input->GetTriger(DIK_E) || input->GetControl(ATTACK, Triger)) {
+				shakeContorolInfoExprosion = 30.0f;
+			}
+
+			contorolInfoTransform[2].pos = { 320.0f + shakeContorolInfoExprosion* sinf(static_cast<float>(frameCount)) ,-320.0f};
+
 		}
 	}
 }
@@ -724,27 +786,53 @@ void GameStageScene::ControlInfoDraw() {
 
 	if (isChangeWave) {
 
-		Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, contorolInfoGH[3]);
+		if (Novice::GetNumberOfJoysticks() > 0) {
+			Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, rcContorolInfoGH[3]);
+		} else {
+			Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, contorolInfoGH[3]);
+		}
+		
 
 	} else {
 
-		if (Length(input->GetControlDir()) > 0.0f) {
-			Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF, contorolInfoGH[0]);
-		} else {
-			Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, contorolInfoGH[0]);
-		}
+		if (Novice::GetNumberOfJoysticks() > 0) {
+			if (Length(input->GetControlDir()) > 0.0f) {
+				Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF, rcContorolInfoGH[0]);
+			} else {
+				Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, rcContorolInfoGH[0]);
+			}
 
-		if (player.GetIsDash()) {
-			Render::DrawSprite(contorolInfoTransform[1], uiCamera, 0x232323FF, contorolInfoGH[1]);
-		} else {
-			Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, contorolInfoGH[1]);
-		}
+			if (player.GetIsDash()) {
+				Render::DrawSprite(contorolInfoTransform[1], uiCamera, 0x232323FF, rcContorolInfoGH[1]);
+			} else {
+				Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, rcContorolInfoGH[1]);
+			}
 
-		if (player.GetIsSheathe()) {
-			Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, contorolInfoGH[2]);
+			if (enemyManager.GetIsThereHitEnemy() || player.GetRemainAttackChance() <= 0) {
+				Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xD65A31FF, rcContorolInfoGH[2]);
+			} else {
+				Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, rcContorolInfoGH[2]);
+			}
 		} else {
-			Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, contorolInfoGH[2]);
+			if (Length(input->GetControlDir()) > 0.0f) {
+				Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF,contorolInfoGH[0]);
+			} else {
+				Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, contorolInfoGH[0]);
+			}
+
+			if (player.GetIsDash()) {
+				Render::DrawSprite(contorolInfoTransform[1], uiCamera, 0x232323FF, rcContorolInfoGH[1]);
+			} else {
+				Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, contorolInfoGH[1]);
+			}
+
+			if (enemyManager.GetIsThereHitEnemy() || player.GetRemainAttackChance() <= 0) {
+				Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xD65A31FF, rcContorolInfoGH[2]);
+			} else {
+				Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, contorolInfoGH[2]);
+			}
 		}
+		
 
 	}
 }
@@ -754,8 +842,8 @@ void GameStageScene::CameraUpdate() {
 	if (isClearStage) {
 		Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->x, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().x, 0.1f);
 		Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->y, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().y, 0.1f);
-		mainCamera.shakeRange = { static_cast<float>(clearStageTimeBuffer) * 0.1f,static_cast<float>(clearStageTimeBuffer) * 0.1f};
-		mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer),0.5f,1.0f);
+		mainCamera.shakeRange = { static_cast<float>(clearStageTimeBuffer) * 0.1f,static_cast<float>(clearStageTimeBuffer) * 0.1f };
+		mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer), 0.5f, 1.0f);
 	} else {
 		*cameraPos = player.GetPos();
 	}
