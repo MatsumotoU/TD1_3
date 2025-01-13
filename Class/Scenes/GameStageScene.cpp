@@ -101,6 +101,7 @@ void GameStageScene::Init() {
 	contorolInfoGH[0] = Novice::LoadTexture("./Resources/Images/tutorial1.png");
 	contorolInfoGH[1] = Novice::LoadTexture("./Resources/Images/tutorial2.png");
 	contorolInfoGH[2] = Novice::LoadTexture("./Resources/Images/tutorial3.png");
+	contorolInfoGH[3] = Novice::LoadTexture("./Resources/Images/tutorial4.png");
 }
 
 void GameStageScene::Update() {
@@ -109,6 +110,7 @@ void GameStageScene::Update() {
 	frameCount++;
 
 	WaveManager();
+	ControlInfoUpdate();
 
 	if (!isChangeWave) {
 		if (stopObjectUpdateFrame <= 0) {
@@ -617,26 +619,68 @@ void GameStageScene::WaveUiDraw() {
 	}
 }
 
+void GameStageScene::ControlInfoUpdate() {
+
+	if (isChangeWave) {
+
+		contorolInfoTransform[1].scale.x = 1.0f + sinf(static_cast<float>(frameCount) * 0.1f) * 0.1f;
+		contorolInfoTransform[1].scale.y = 1.0f + sinf(static_cast<float>(frameCount) * 0.1f) * 0.1f;
+
+	} else {
+
+		if (Length(input->GetControlDir()) > 0.0f) {
+			Eas::SimpleEaseIn(&contorolInfoTransform[0].scale.x, 0.9f, 0.3f);
+			Eas::SimpleEaseIn(&contorolInfoTransform[0].scale.y, 0.8f, 0.3f);
+		} else {
+			contorolInfoTransform[0].scale.x = 1.0f + sinf(static_cast<float>(frameCount) * 0.1f) * 0.1f;
+			contorolInfoTransform[0].scale.y = 1.0f + sinf(static_cast<float>(frameCount) * 0.1f) * 0.1f;
+		}
+
+		if (player.GetIsDash()) {
+			Eas::SimpleEaseIn(&contorolInfoTransform[1].scale.x, 0.9f, 0.3f);
+			Eas::SimpleEaseIn(&contorolInfoTransform[1].scale.y, 0.8f, 0.3f);
+		} else {
+			contorolInfoTransform[1].scale.x = 1.0f + sinf(static_cast<float>(frameCount+10) * 0.1f) * 0.1f;
+			contorolInfoTransform[1].scale.y = 1.0f + sinf(static_cast<float>(frameCount+10) * 0.1f) * 0.1f;
+		}
+
+		if (player.GetIsSheathe()) {
+			Eas::SimpleEaseIn(&contorolInfoTransform[2].scale.x, 0.9f, 0.3f);
+			Eas::SimpleEaseIn(&contorolInfoTransform[2].scale.y, 0.8f, 0.3f);
+		} else {
+			contorolInfoTransform[2].scale.x = 1.0f + sinf(static_cast<float>(frameCount+20) * 0.1f) * 0.1f;
+			contorolInfoTransform[2].scale.y = 1.0f + sinf(static_cast<float>(frameCount+20) * 0.1f) * 0.1f;
+		}
+	}
+}
+
 void GameStageScene::ControlInfoDraw() {
 
-	if (Length(input->GetControlDir()) > 0.0f) {
-		Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF, contorolInfoGH[0]);
+	if (isChangeWave) {
+
+		Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, contorolInfoGH[3]);
+
 	} else {
-		Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, contorolInfoGH[0]);
+
+		if (Length(input->GetControlDir()) > 0.0f) {
+			Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF, contorolInfoGH[0]);
+		} else {
+			Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, contorolInfoGH[0]);
+		}
+
+		if (player.GetIsDash()) {
+			Render::DrawSprite(contorolInfoTransform[1], uiCamera, 0x232323FF, contorolInfoGH[1]);
+		} else {
+			Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, contorolInfoGH[1]);
+		}
+
+		if (player.GetIsSheathe()) {
+			Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, contorolInfoGH[2]);
+		} else {
+			Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, contorolInfoGH[2]);
+		}
+
 	}
-	
-	if (player.GetIsDash()) {
-		Render::DrawSprite(contorolInfoTransform[1], uiCamera, 0x232323FF, contorolInfoGH[1]);
-	} else {
-		Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, contorolInfoGH[1]);
-	}
-	
-	if (player.GetIsSheathe()) {
-		Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, contorolInfoGH[2]);
-	} else {
-		Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, contorolInfoGH[2]);
-	}
-	
 }
 
 void GameStageScene::CameraUpdate() {
