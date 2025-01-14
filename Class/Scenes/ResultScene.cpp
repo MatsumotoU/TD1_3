@@ -135,6 +135,7 @@ void ResultScene::Update() {
 				starT[i] = 1.0f;
 				star[i].pos.x = Eas::EaseInOutQuart(starT[i], 1728.0f, 1008.0f);
 				star[i].pos.y = Eas::EaseInOutQuart(starT[i], i * 360.0f, 160.0f + i * 200.0f);
+				star[i].scale = { 1.0f,1.0f };
 
 				missionUIT[i] = 1.0f;
 				missionUI[i].pos.x = Eas::EaseInOutQuart(missionUIT[i], -640.0f, 384.0f);
