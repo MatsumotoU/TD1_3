@@ -47,25 +47,25 @@ void SceneTransition::Draw() {
 
 		if (isTransitionClosed) {
 
-			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 8.0f)), 1280, 360, 0.0f, 0x2d2d4f23, kFillModeSolid);
-			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 8.0f)), 1280, 360, 0.0f, 0x2d2d4f23, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 8.0f)), 1280, 360, 0.0f, 0x2d2d4f23, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 8.0f)), 1280, 360, 0.0f, 0x2d2d4f23, kFillModeSolid);
 
-			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 4.0f)), 1280, 360, 0.0f, 0x2d2d4fAF, kFillModeSolid);
-			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 4.0f)), 1280, 360, 0.0f, 0x2d2d4fAF, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 4.0f)), 1280, 360, 0.0f, 0x2d2d4fAF, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 4.0f)), 1280, 360, 0.0f, 0x2d2d4fAF, kFillModeSolid);
 
-			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 2.0f)), 1280, 360, 0.0f, 0x2d2d4fFF, kFillModeSolid);
-			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 2.0f)), 1280, 360, 0.0f, 0x2d2d4fFF, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 2.0f)), 1280, 360, 0.0f, 0x2d2d4fFF, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 2.0f)), 1280, 360, 0.0f, 0x2d2d4fFF, kFillModeSolid);
 
 		} else {
 
-			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 8.0f)), 1280, 360, 0.0f, 0x2d2d4f23, kFillModeSolid);
-			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 8.0f)), 1280, 360, 0.0f, 0x2d2d4f23, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 8.0f)), 1280, 360, 0.0f, 0x2d2d4f23, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 8.0f)), 1280, 360, 0.0f, 0x2d2d4f23, kFillModeSolid);
 
-			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 4.0f)), 1280, 360, 0.0f, 0x2d2d4fAF, kFillModeSolid);
-			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 4.0f)), 1280, 360, 0.0f, 0x2d2d4fAF, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 4.0f)), 1280, 360, 0.0f, 0x2d2d4fAF, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 4.0f)), 1280, 360, 0.0f, 0x2d2d4fAF, kFillModeSolid);
 
-			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 2.0f)), 1280, 360, 0.0f, 0x2d2d4fFF, kFillModeSolid);
-			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 30.0f, 2.0f)), 1280, 360, 0.0f, 0x2d2d4fFF, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(-360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 2.0f)), 1280, 360, 0.0f, 0x2d2d4fFF, kFillModeSolid);
+			Novice::DrawBox(0, static_cast<int>(360.0f + 360.0f * powf(1.0f - static_cast<float>(transitionTime) / 40.0f, 2.0f)), 1280, 360, 0.0f, 0x2d2d4fFF, kFillModeSolid);
 		}
 	}
 
