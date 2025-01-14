@@ -305,7 +305,7 @@ void TitleScene::Update() {
 		}
 
 		// シーン遷移処理
-		if (input->GetTriger(DIK_SPACE)) {
+		if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER,Triger)) {
 			isTransition = true;// こいつをtrueにすると即座にシーン遷移する(シーンのUpdateは止まる)
 		}
 
