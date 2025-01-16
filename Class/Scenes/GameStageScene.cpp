@@ -131,6 +131,10 @@ void GameStageScene::Init() {
 	contorolTutorialUI.Init();
 	contorolTutorialUI.SetCamera(&uiCamera);
 	contorolTutorialUI.SetPlayer(&player);
+
+	// 一番最初の位置バグ修正用
+	player.Update();
+	mainCamera.SetPos(player.GetPos());
 }
 
 void GameStageScene::Update() {
