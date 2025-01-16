@@ -140,6 +140,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Class\Scenes\SceneManager.cpp" />
     <ClCompile Include="Class\Scenes\SelectScene.cpp" />
     <ClCompile Include="Class\Scenes\TitleScene.cpp" />
+    <ClCompile Include="Class\UIobjects\ContorolTutorialUI.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -198,6 +199,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="Class\Scenes\SceneManager.h" />
     <ClInclude Include="Class\Scenes\SelectScene.h" />
     <ClInclude Include="Class\Scenes\TitleScene.h" />
+    <ClInclude Include="Class\UIobjects\ContorolTutorialUI.h" />
     <ClInclude Include="External\nlohmann\json.hpp" />
     <ClInclude Include="External\nlohmann\json_fwd.hpp" />
     <ClInclude Include="Resources\ConstantVariables\filePath.h" />

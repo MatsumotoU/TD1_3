@@ -9,6 +9,14 @@ void InputManager::Update() {
 	memcpy(preKeys, keys, 256);
 	Novice::GetHitKeyStateAll(keys);
 
+	// 各キーの押されている長さ
+	for (int i = 0; i < 256; i++) {
+		if (GetTriger(i)) {
+			keysPushTime[i]++;
+		} else {
+			keysPushTime[i] = 0;
+		}
+	}
 }
 
 //==============================
@@ -450,4 +458,17 @@ Vector2 InputManager::GetControlDir() {
 	}
 
 	return Normalize(result);
+}
+
+int InputManager::GetPressFrame(int key) {
+	return keysPushTime[key];
+}
+
+int InputManager::GetNotPressAnyKeys() {
+	for (int i = 0; i < 256; i++) {
+		if (keysPushTime[i] > 0) {
+			return false;
+		}
+	}
+	return true;
 }
