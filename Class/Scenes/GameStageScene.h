@@ -12,6 +12,7 @@
 namespace GMScene {
 	const int maxClearStageTimeBuffer = 120;
 	const int maxComboRemainFrame = 60;
+	const float exprodeRange = 256.0f;
 }
 
 class GameStageScene : public IScene {
