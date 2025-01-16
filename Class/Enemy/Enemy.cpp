@@ -48,6 +48,8 @@ Enemy::Enemy() {
 	swordTransform.angle = 0.0f;
 	swordTransform.scale = { 0.8f,0.8f };
 	swordTransform.size = { 128.0f,32.0f };
+
+	isExprosion = false;
 }
 
 void Enemy::Init() {
@@ -57,6 +59,7 @@ void Enemy::Init() {
 	isAttacking = false;
 	attackCoolDown = 0;
 	isHitAttack = false;
+	isExprosion = false;
 }
 
 void Enemy::Update() {
@@ -69,7 +72,7 @@ void Enemy::Update() {
 
 		
 	}
-	UpdateSword();
+	//UpdateSword();
 	StateCheck();
 
 	physics.Update(&transform.pos);
@@ -83,7 +86,7 @@ void Enemy::Draw() {
 		Render::DrawLine(transform.pos, transform.pos + -hitDir * 100.0f, *camera, RED);
 	}
 
-	DrawSword();
+	//DrawSword();
 
 #ifdef _DEBUG
 	for (int i = static_cast<int>(targetRoute.size() - 1); i > 0; i--) {
@@ -139,6 +142,10 @@ void Enemy::SetIsShot(int set) {
 	isShot = set;
 }
 
+void Enemy::SetIsExprosion(int set) {
+	isExprosion = set;
+}
+
 int Enemy::GetIsAlive() {
 	return isAlive;
 }
@@ -173,6 +180,10 @@ int Enemy::GetIsShot() {
 
 Vector2 Enemy::GetAngleDir() {
 	return {cosf(transform.angle),sinf(transform.angle)};
+}
+
+int Enemy::GetIsReqestExprosion() {
+	return isExprosion;
 }
 
 void Enemy::Move() {
@@ -332,7 +343,7 @@ void Enemy::StateCheck() {
 	drawTransform = transform;
 	if (stunFrame <= 0) {
 		if (isHitAttack) {
-			////////////////////////////////////////////////////////////////////////////////////////////////////
+			isExprosion = true;
 		}
 
 		drawTransform = transform;

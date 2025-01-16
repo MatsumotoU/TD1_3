@@ -37,6 +37,7 @@ public:
 	void SetIsSeePlayer(int set);
 	void SetPlayerPos(Vector2* set);
 	void SetIsShot(int set);
+	void SetIsExprosion(int set);
 
 	int GetIsAlive();
 	int GetIsHitAttack();
@@ -47,6 +48,7 @@ public:
 	int GetIsAttack();
 	int GetIsShot();
 	Vector2 GetAngleDir();
+	int GetIsReqestExprosion();
 
 	void Move();
 	void LockOn();
@@ -58,6 +60,7 @@ public:
 
 	void Stun();
 	void TypeInit();
+
 private:
 
 	int attackAnticipationFrame;

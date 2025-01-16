@@ -42,6 +42,8 @@ public:
 	void ObjectUpdate();
 	void ObjectCollision();
 
+	void EnemyCollision();
+
 	void Attack();
 	void PlayerLockOn();
 	void ExprodeEnemy();
