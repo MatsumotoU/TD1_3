@@ -167,7 +167,7 @@ void Camera::Update() {
 		angleShakeRange = 0.0f;
 	}
 	if (angleShakeRange >= 15.0f) {
-		angleShakeRange >= 15.0f;
+		angleShakeRange = 15.0f;
 	}
 	angleShake = sinf(time->frameCount * 0.1f) * (angleShakeRange * 0.01f);
 
