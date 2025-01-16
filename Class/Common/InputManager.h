@@ -53,9 +53,22 @@ public:
 	/// <returns>入力方向0~1を返す</returns>
 	Vector2 GetControlDir();
 
-private:
+	/// <summary>
+	/// 任意のキーが押されているフレーム取得
+	/// </summary>
+	/// <param name="key">任意のキー</param>
+	/// <returns>連続して押されている長さ(フレーム)</returns>
+	int GetPressFrame(int key);
 
-	int time;
+	/// <summary>
+	/// どこも押されていないかどうかを取得
+	/// </summary>
+	/// <returns>押されていないならtrueを返す</returns>
+	int GetNotPressAnyKeys();
+
+private:
+	// キー入力の長さを取得する
+	int keysPushTime[256] = { 0 };
 
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };

@@ -7,6 +7,8 @@
 #include "Class/Common/Mapchip.h"
 #include "Class/Balance/BalanceObject.h"
 
+#include "Class/UIobjects/ContorolTutorialUI.h"
+
 namespace GMScene {
 	const int maxClearStageTimeBuffer = 120;
 	const int maxComboRemainFrame = 60;
@@ -104,5 +106,7 @@ private:
 	Camera uiCamera;
 
 	IScene* nextScene;
+
+	ContorolTutorialUI contorolTutorialUI;
 };
 

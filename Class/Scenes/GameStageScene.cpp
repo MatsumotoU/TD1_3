@@ -127,6 +127,10 @@ void GameStageScene::Init() {
 	hitEffectGH[0] = Novice::LoadTexture("./Resources/Images/hitEffect1.png");
 	hitEffectGH[1] = Novice::LoadTexture("./Resources/Images/hitEffect2.png");
 	hitEffectGH[2] = Novice::LoadTexture("./Resources/Images/hitEffect3.png");
+
+	contorolTutorialUI.Init();
+	contorolTutorialUI.SetCamera(&uiCamera);
+	contorolTutorialUI.SetPlayer(&player);
 }
 
 void GameStageScene::Update() {
@@ -136,6 +140,7 @@ void GameStageScene::Update() {
 
 	WaveManager();
 	ControlInfoUpdate();
+	contorolTutorialUI.Update();
 
 	if (!isChangeWave) {
 		if (stopObjectUpdateFrame <= 0) {
@@ -171,6 +176,7 @@ void GameStageScene::Draw() {
 	particleManager.Draw();
 	WaveUiDraw();
 	ControlInfoDraw();
+	contorolTutorialUI.Draw();
 
 	if (flashScreenFrame > 0) {
 		if (flashScreenFrame % 12 <= 6) {
