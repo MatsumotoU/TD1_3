@@ -57,7 +57,9 @@ private:
 
 	int starGraphHandle;
 	int arrowGraphHandle[2];
-	int spaceUIGraphHandle;
+	int arrowPadGraphHandle[2];
+	int spaceUIGraphHandle[2];
+	int aUIGraphHandle[2];
 
 	int tempGH;
 

@@ -36,7 +36,7 @@ void SelectScene::Init() {
 	notSelectedStageScale = 0.6f;
 	for (int i = 0; i < stageTotalCount; ++i) {
 		stageIcon[i] = {
-			{ 640.0f + i * 640.0f, 256.0f },
+			{ 640.0f + i * 640.0f, 288.0f },
 			{ 256.0f, 256.0f },
 			{ 1.0f, 1.0f },
 			0.0f
@@ -65,7 +65,7 @@ void SelectScene::Init() {
 
 	spaceUI = {
 		{640.0f,64.0f},
-		{256.0f,64.0f},
+		{448.0f,64.0f},
 		{1.0f,1.0f},
 		0.0f
 	};
@@ -99,7 +99,14 @@ void SelectScene::Init() {
 	arrowGraphHandle[0] = Novice::LoadTexture("./Resources/Images/stageSelectArrow1.png");
 	arrowGraphHandle[1] = Novice::LoadTexture("./Resources/Images/stageSelectArrow2.png");
 
-	spaceUIGraphHandle = Novice::LoadTexture("./Resources/Images/spaceUI.png");
+	arrowPadGraphHandle[0] = Novice::LoadTexture("./Resources/Images/stageSelectArrowPad1.png");
+	arrowPadGraphHandle[1] = Novice::LoadTexture("./Resources/Images/stageSelectArrowPad2.png");
+
+	spaceUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/spaceUI.png");
+	spaceUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/spaceUIB.png");
+
+	aUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/A_DONE.png");
+	aUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/A_DONEB.png");
 }
 
 void SelectScene::Update() {
@@ -111,24 +118,26 @@ void SelectScene::Update() {
 	if (input->GetControl(RIGHT, Press)) {
 		if (!shouldPressedRight) {
 			if (!shouldPressedLeft) {
-				if (gameStage < stageTotalCount - 1) {
-					gameStage++;
-					shouldPressedRight = true;
-					for (int i = 0; i < starTotalCount; ++i) {
-						starT[i] = 0.0f;
-						isStarMoving[i] = true;
-						star[i].scale = { 6.0f,6.0f };
-					}
+				if (!isZoom) {
+					if (gameStage < stageTotalCount - 1) {
+						gameStage++;
+						shouldPressedRight = true;
+						for (int i = 0; i < starTotalCount; ++i) {
+							starT[i] = 0.0f;
+							isStarMoving[i] = true;
+							star[i].scale = { 6.0f,6.0f };
+						}
 
-					for (int i = 0; i < stageTotalCount; ++i) {
-						stageIconT[i] = 0.0f;
-						stageIcon[i].pos.y = 256.0f;
-						stageIconTheta = 0.0f;
-					}
+						for (int i = 0; i < stageTotalCount; ++i) {
+							stageIconT[i] = 0.0f;
+							stageIcon[i].pos.y = 288.0f;
+							stageIconTheta = 0.0f;
+						}
 
-					for (int i = 0; i < 2; ++i) {
-						arrowTheta[i] = 0.0f;
-						arrow[i].angle = 0.0f;
+						for (int i = 0; i < 2; ++i) {
+							arrowTheta[i] = 0.0f;
+							arrow[i].angle = 0.0f;
+						}
 					}
 				}
 			}
@@ -138,24 +147,26 @@ void SelectScene::Update() {
 	if (input->GetControl(LEFT, Press)) {
 		if (!shouldPressedRight) {
 			if (!shouldPressedLeft) {
-				if (gameStage > 0) {
-					gameStage--;
-					shouldPressedLeft = true;
-					for (int i = 0; i < starTotalCount; ++i) {
-						starT[i] = 0.0f;
-						isStarMoving[i] = true;
-						star[i].scale = { 6.0f,6.0f };
-					}
+				if (!isZoom) {
+					if (gameStage > 0) {
+						gameStage--;
+						shouldPressedLeft = true;
+						for (int i = 0; i < starTotalCount; ++i) {
+							starT[i] = 0.0f;
+							isStarMoving[i] = true;
+							star[i].scale = { 6.0f,6.0f };
+						}
 
-					for (int i = 0; i < stageTotalCount; ++i) {
-						stageIconT[i] = 0.0f;
-						stageIcon[i].pos.y = 256.0f;
-						stageIconTheta = 0.0f;
-					}
+						for (int i = 0; i < stageTotalCount; ++i) {
+							stageIconT[i] = 0.0f;
+							stageIcon[i].pos.y = 288.0f;
+							stageIconTheta = 0.0f;
+						}
 
-					for (int i = 0; i < 2; ++i) {
-						arrowTheta[i] = 0.0f;
-						arrow[i].angle = 0.0f;
+						for (int i = 0; i < 2; ++i) {
+							arrowTheta[i] = 0.0f;
+							arrow[i].angle = 0.0f;
+						}
 					}
 				}
 			}
@@ -163,13 +174,11 @@ void SelectScene::Update() {
 	}
 
 	// 決定キーを押してシーンを遷移させる
-	if (input->GetControl(ENTER, Triger)) {
+	if (input->GetControl(ENTER, Press)) {
 		// ステージに遷移する
 		if (!isZoom) {
 			isZoom = true;
 		}
-		/*nextScene = new GameStageScene();
-		isTransition = true;*/
 	}
 
 	//================================================================
@@ -207,7 +216,7 @@ void SelectScene::Update() {
 		}
 
 		arrowTheta[1] += 1.0f / movingFrameCount * static_cast<float>(M_PI);
-		arrow[1].pos.y = 256.0f + sinf(arrowTheta[1]) * 32.0f;
+		arrow[1].pos.y = 288.0f + sinf(arrowTheta[1]) * 32.0f;
 
 		if (gameStage == stageTotalCount - 1) {
 			arrow[1].scale.x = Eas::EaseInOutQuart(stageIconT[0], 1.3f, 0.0f);
@@ -286,7 +295,7 @@ void SelectScene::Update() {
 		if (gameStage == i) {
 			if (!shouldPressedLeft && !shouldPressedRight) {
 				stageIconTheta -= 1.0f / 90.0f * static_cast<float>(M_PI);
-				stageIcon[i].pos.y = 256.0f + sinf(stageIconTheta) * 8.0f;
+				stageIcon[i].pos.y = 288.0f + sinf(stageIconTheta) * 8.0f;
 			}
 		}
 	}
@@ -294,9 +303,11 @@ void SelectScene::Update() {
 	for (int i = 0; i < 2; ++i) {
 		if (!shouldPressedLeft && !shouldPressedRight) {
 			arrowTheta[i] += 1.0f / 90.0f * static_cast<float>(M_PI);
-			arrow[i].pos.y = 256.0f + sinf(arrowTheta[i]) * 4.0f;
+			arrow[i].pos.y = 288.0f + sinf(arrowTheta[i]) * 4.0f;
 		}
 	}
+
+	spaceUI.pos.y = 64.0f + cosf(stageIconTheta) * 1.0f;
 
 	//================================================================
 	// 星の更新処理
@@ -364,7 +375,7 @@ void SelectScene::Update() {
 		cameraZoom.x = Eas::EaseInOutQuart(zoomT, 1.0f, 0.55f);
 		cameraZoom.y = Eas::EaseInOutQuart(zoomT, 1.0f, 0.55f);
 
-		cameraPos->y = Eas::EaseInOutQuart(zoomT, 360.0f, 256.0f);
+		cameraPos->y = Eas::EaseInOutQuart(zoomT, 360.0f, 288.0f);
 	}
 
 	mainCamera.SetScale(cameraZoom);
@@ -392,10 +403,26 @@ void SelectScene::Draw() {
 	}
 
 	for (int i = 0; i < 2; ++i) {
-		Render::DrawSprite(arrow[i], mainCamera, 0xffffffff, arrowGraphHandle[i]);
+		if (Novice::GetNumberOfJoysticks() == 0) {
+			Render::DrawSprite(arrow[i], mainCamera, 0xffffffff, arrowGraphHandle[i]);
+		} else {
+			Render::DrawSprite(arrow[i], mainCamera, 0xffffffff, arrowPadGraphHandle[i]);
+		}
 	}
 
-	Render::DrawSprite(spaceUI, mainCamera, 0xEEEEEEFF, spaceUIGraphHandle);
+	if (Novice::GetNumberOfJoysticks() == 0) {
+		if (input->GetControl(ENTER, Press)) {
+			Render::DrawSprite(spaceUI, mainCamera, 0xFFFFFFFF, spaceUIGraphHandle[1]);
+		} else {
+			Render::DrawSprite(spaceUI, mainCamera, 0xEEEEEEFF, spaceUIGraphHandle[0]);
+		}
+	} else {
+		if (input->GetControl(ENTER, Press)) {
+			Render::DrawSprite(spaceUI, mainCamera, 0xFFFFFFFF, aUIGraphHandle[1]);
+		} else {
+			Render::DrawSprite(spaceUI, mainCamera, 0xEEEEEEFF, aUIGraphHandle[0]);
+		}
+	}
 }
 
 IScene* SelectScene::GetNextScene() {
