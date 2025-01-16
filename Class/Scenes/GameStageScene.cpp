@@ -33,7 +33,7 @@ void GameStageScene::Init() {
 	flashScreenFrame = 0;
 
 	stopObjectUpdateFrame = 0;
-	exprosionHitStopFrame = 6;
+	exprosionHitStopFrame = 30;
 
 	player.Init();
 	player.SetCamera(&mainCamera);
@@ -514,12 +514,17 @@ void GameStageScene::ObjectCollision() {
 								Normalize(bulletManager.GetBullets()[b].GetPos() - enemyManager.GetEnemyes()[e].GetPos()));
 
 							if (!enemyManager.GetEnemyes()[e].GetIsHitAttack()) {
-								bulletManager.ShotBullet(
+								/*bulletManager.ShotBullet(
 									enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
 									enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
 								bulletManager.ShotBullet(
 									enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
 									-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
+								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);*/
+
+								bulletManager.ShotBullet(
+									enemyManager.GetEnemyes()[e].GetPos(), { GMScene::exprodeRange,GMScene::exprodeRange },
+									enemyManager.GetEnemyes()[e].GetHitDir(), 0.0f, 60, "exprosion", 0);
 								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
 							}
 
@@ -539,8 +544,6 @@ void GameStageScene::ObjectCollision() {
 									flashScreenFrame = 30;
 								}
 							}
-
-							
 
 							// コンボ加算
 							if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
@@ -567,33 +570,36 @@ void GameStageScene::ObjectCollision() {
 			for (int b = 0; b < BMG::kBulletMax; b++) {
 				if (bulletManager.GetBullets()[b].GetIsShot()) {
 
-					// 爆発の当たり判定
-					if (bulletManager.GetBullets()[b].GetTag() == "exprosion") {
+					if (map.GetIsFromToVisionClear(bulletManager.GetBullets()[b].GetPos(), player.GetPos())) {
 
-						if (IsHitCollisionEllipse(
-							bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
-							bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
+						// 爆発の当たり判定
+						if (bulletManager.GetBullets()[b].GetTag() == "exprosion") {
 
-							player.Damage();
-							player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
+							if (IsHitCollisionEllipse(
+								bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
+								bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
 
-							// カメラを揺らす
-							mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+								player.Damage();
+								player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
+
+								// カメラを揺らす
+								mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+							}
 						}
-					}
 
-					// 爆発の当たり判定
-					if (bulletManager.GetBullets()[b].GetTag() == "enemy") {
+						// 爆発の当たり判定
+						if (bulletManager.GetBullets()[b].GetTag() == "enemy") {
 
-						if (IsHitCollisionEllipse(
-							bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
-							bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
+							if (IsHitCollisionEllipse(
+								bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
+								bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
 
-							player.Damage();
-							player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
+								player.Damage();
+								player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
 
-							// カメラを揺らす
-							mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+								// カメラを揺らす
+								mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+							}
 						}
 					}
 				}
@@ -623,7 +629,7 @@ void GameStageScene::ObjectCollision() {
 	map.PlayerMapCollision();
 
 	// 弾の当たり判定
-	map.BulletMapCollision();
+	//map.BulletMapCollision();
 }
 
 void GameStageScene::Attack() {
@@ -653,11 +659,15 @@ void GameStageScene::ExprodeEnemy() {
 				enemyManager.GetEnemyes()[e].SetIsAlive(false);
 
 				bulletManager.ShotBullet(
+					enemyManager.GetEnemyes()[e].GetPos(), { GMScene::exprodeRange,GMScene::exprodeRange },
+					enemyManager.GetEnemyes()[e].GetHitDir(), 0.0f, 60, "exprosion", 0);
+
+				/*bulletManager.ShotBullet(
 					enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
 					enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
 				bulletManager.ShotBullet(
 					enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
-					-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);
+					-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);*/
 
 				// 爆発
 				particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);

@@ -142,6 +142,12 @@ void Camera::Update() {
 	// 画面揺れ
 	shakeRange.x *= 0.9f;
 	shakeRange.y *= 0.9f;
+	if (shakeRange.x >= 15.0f) {
+		shakeRange.x = 15.0f;
+	}
+	if (shakeRange.y >= 15.0f) {
+		shakeRange.y = 15.0f;
+	}
 
 	if (shakeRange.x > 1.0f) {
 		shake.x = static_cast<float>(rand() % static_cast<int>(shakeRange.x * 2.0f) - static_cast<int>(shakeRange.x));
@@ -159,6 +165,9 @@ void Camera::Update() {
 	angleShakeRange *= 0.9f;
 	if (angleShakeRange <= 0.0f) {
 		angleShakeRange = 0.0f;
+	}
+	if (angleShakeRange >= 15.0f) {
+		angleShakeRange >= 15.0f;
 	}
 	angleShake = sinf(time->frameCount * 0.1f) * (angleShakeRange * 0.01f);
 
