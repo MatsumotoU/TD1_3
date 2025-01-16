@@ -332,8 +332,7 @@ void Enemy::StateCheck() {
 	drawTransform = transform;
 	if (stunFrame <= 0) {
 		if (isHitAttack) {
-			isHitAttack = false;
-			hitDir = { 0.0f,0.0f };
+			////////////////////////////////////////////////////////////////////////////////////////////////////
 		}
 
 		drawTransform = transform;
