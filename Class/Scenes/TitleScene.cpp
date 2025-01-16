@@ -17,57 +17,57 @@ void TitleScene::Init() {
 	// タイトルロゴの変数
 	logo[0] =
 	{
-		640.0f,460.0f,
-		650.0f,350.0f,
+		640.5f,460.0f,
+		1280.0f,176.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	logo[1] =
 	{
-		640.0f,547.0f,
-		650.0f,logo[0].size.y/2.0f,
+		696.0f,460.0f,
+		1280.0f,176.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	startLogo[0] =
 	{
-		640.0f,547.0f,
-		650.0f,175.0f,
+		696.0f,460.0f,
+		1280.0f,176.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	endLogo[0] =
 	{
-		478.0f,547.0f,
-		650.0f,175.0f,
+		640.0f,460.0f,
+		1280.0f,88.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	logo[2] =
 	{
-		640.0f,logo[0].pos.y - 87.5f,
-		650.0f,logo[0].size.y / 2.0f,
+		600.0f,460.0f,
+		1280.0f,176.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	startLogo[1] =
 	{
-		640.0f,388.0f,
-		650.0f,175.0f,
+		600.0f,460.0f,
+		1280.0f,176.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	endLogo[1] =
 	{
-		803.0f,388.0f,
-		650.0f,175.0f,
+		640.0f,460.0f,
+		1280.0f,176.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	// スペースキーの位置の変数
 	button[2] =
 	{
-		640.0f,135.0f,
+		639.5f,135.0f,
 		600.0f,150.0f,
 		1.0f,1.0f,0.0f
 	};
@@ -180,7 +180,17 @@ void TitleScene::Init() {
 
 void TitleScene::Update() {
 
-	
+	frameCount++;
+
+	// 演出のスキップ処理
+	if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER, Triger)) {
+		isMoveEnd = true;
+		logo[1].pos.x = endLogo[0].pos.x;
+		logo[2].pos.x = endLogo[1].pos.x;
+		returnColor[0] = 0x00000000;
+		returnColor[1] = 0xFFFFFFFF;
+	}
+
 	if (efectT[1] >= 0.9f)
 	{
 		// デタラメ文字列のフェードアウト処理
@@ -227,7 +237,27 @@ void TitleScene::Update() {
 		}
 	}
 
-	if (efectCoolTime >= 0)
+	if (isMoveEnd)
+	{
+		// PressSpaceを点滅させる処理
+		if (blinkTimer >= 0)
+		{
+			blinkTimer--;
+		}
+		else
+		{
+			blinkTimer = 60;
+		}
+
+		//シーン遷移処理
+		if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER, Triger)) {
+			if (frameCount >= 180) {
+				isTransition = true;// こいつをtrueにすると即座にシーン遷移する(シーンのUpdateは止まる)
+			}
+			
+		}
+	}
+	else if (efectCoolTime >= 0)
 	{
 		// エフェクト開始までの待ち時間処理
 		efectCoolTime--;
@@ -270,18 +300,30 @@ void TitleScene::Update() {
 	}
 	else if (isEaseStart)
 	{
-		if (efectT[1] <= 1.0f)
+		if (efectT[1] < 1.0f)
 		{
 			// ロゴをイージングさせる処理
 			efectT[1] += 0.015f;
+
+			if (efectT[1] >= 1.0f)
+			{
+				efectT[1] = 1.0f;
+			}
+
 			button[0].pos.x = Eas::EaseIn(efectT[1], 4.0f, startButton[0].pos.x, endButton[0].pos.x);
 			button[1].pos.x = Eas::EaseIn(efectT[1], 4.0f, startButton[1].pos.x, endButton[1].pos.x);
 		}
 
-		if (efectT[0] <= 1.0f)
+		if (efectT[0] < 1.0f)
 		{
 			// ロゴをイージングさせる処理
 			efectT[0] += 0.015f;
+
+			if (efectT[0] >= 1.0f)
+			{
+				efectT[0] = 1.0f;
+			}
+
 			logo[1].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[0].pos.x, endLogo[0].pos.x);
 			logo[2].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[1].pos.x, endLogo[1].pos.x);
 		}
@@ -291,24 +333,6 @@ void TitleScene::Update() {
 			isEaseStart = false;
 			isMoveEnd = true;
 		}
-	}
-	else if (isMoveEnd)
-	{
-		// PressSpaceを点滅させる処理
-		if (blinkTimer >= 0)
-		{
-			blinkTimer--;
-		}
-		else
-		{
-			blinkTimer = 60;
-		}
-
-		// シーン遷移処理
-		if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER,Triger)) {
-			isTransition = true;// こいつをtrueにすると即座にシーン遷移する(シーンのUpdateは止まる)
-		}
-
 	}
 
 	mainCamera.Update();
@@ -328,13 +352,14 @@ void TitleScene::Draw() {
 	if (efectCoolTime >= 0)
 	{
 		// ロゴの描画処理
-		Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
+		Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
+		Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
 	}
 
 	if (isMoveEnd)
 	{
 		// ロゴの描画処理
-		Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF,titleLogoGh[1]);
+		Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
 		Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
 		Render::DrawSprite(button[0], mainCamera, returnColor[0], buttonGh[0]);
 		Render::DrawSprite(button[1], mainCamera, returnColor[0], buttonGh[1]);
@@ -342,17 +367,11 @@ void TitleScene::Draw() {
 	}
 	else
 	{
-
-		if (isEaseStart)
+		if (isEfectMove)
 		{
 			// ロゴの描画処理
 			Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
 			Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
-		}
-		else if (isEfectMove)
-		{
-			// ロゴの描画処理
-			Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
 		}
 		else if (isUnderEfectMove)
 		{
@@ -362,6 +381,12 @@ void TitleScene::Draw() {
 			Render::DrawSprite(button[0], mainCamera, returnColor[0], buttonGh[0]);
 			Render::DrawSprite(button[1], mainCamera, returnColor[0], buttonGh[1]);
 
+		}
+		else if (isEaseStart)
+		{
+			// ロゴの描画処理
+			Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
+			Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
 		}
 
 		// デタラメ文字列の描画処理
