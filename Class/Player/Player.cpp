@@ -206,7 +206,7 @@ void Player::Update() {
 	Move();
 	LockOn();
 	Dash();
-	Sheathe();
+	//Sheathe();
 	StateCheck();
 
 	HaloMove();
@@ -439,6 +439,11 @@ void Player::StateCheck() {
 	// 無敵時間減少
 	if (damageCoolDown > 0) {
 		damageCoolDown--;
+	}
+
+	// 攻撃回数
+	if (remainAttackChance <= 2) {
+		remainAttackChance = 2;
 	}
 
 	// 物理更新
