@@ -673,6 +673,14 @@ int Player::GetGraphHandle() {
 	return playerGH;
 }
 
+int Player::GetHp() {
+	return hp;
+}
+
+int Player::GetMaxHp() {
+	return maxHp;
+}
+
 void Player::CountDownRemainAttackChance() {
 	remainAttackChance--;
 	if (remainAttackChance <= 0) {
