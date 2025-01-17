@@ -8,6 +8,7 @@
 #include "Class/Balance/BalanceObject.h"
 
 #include "Class/UIobjects/ContorolTutorialUI.h"
+#include "Class/UIobjects/PlayerHpUI.h"
 
 namespace GMScene {
 	const int maxClearStageTimeBuffer = 120;
@@ -111,5 +112,6 @@ private:
 	IScene* nextScene;
 
 	ContorolTutorialUI contorolTutorialUI;
+	PlayerHpUI playerHpUI;
 };
 

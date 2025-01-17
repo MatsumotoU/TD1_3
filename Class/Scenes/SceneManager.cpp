@@ -77,7 +77,6 @@ void SceneManager::Update() {
 
 			}
 		}
-
 	}
 
 	// シーン遷移演出処理

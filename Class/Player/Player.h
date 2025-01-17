@@ -61,6 +61,8 @@ public:
 	Vector2 GetAttackPos();
 	Vector2* GetPosPtr();
 	int GetGraphHandle();
+	int GetHp();
+	int GetMaxHp();
 
 	void CountDownRemainAttackChance();
 	void Damage();

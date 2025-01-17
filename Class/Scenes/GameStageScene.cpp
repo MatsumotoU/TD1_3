@@ -132,6 +132,10 @@ void GameStageScene::Init() {
 	contorolTutorialUI.SetCamera(&uiCamera);
 	contorolTutorialUI.SetPlayer(&player);
 
+	playerHpUI.Init();
+	playerHpUI.SetCamera(&uiCamera);
+	playerHpUI.SetPlayer(&player);
+
 	// 一番最初の位置バグ修正用
 	player.Update();
 	mainCamera.SetPos(player.GetPos());
@@ -145,6 +149,7 @@ void GameStageScene::Update() {
 	WaveManager();
 	ControlInfoUpdate();
 	contorolTutorialUI.Update();
+	playerHpUI.Update();
 
 	if (!isChangeWave) {
 		if (stopObjectUpdateFrame <= 0) {
@@ -177,6 +182,7 @@ void GameStageScene::Draw() {
 	enemyManager.Draw();
 	player.Draw();
 
+	playerHpUI.Draw();
 	particleManager.Draw();
 	WaveUiDraw();
 	ControlInfoDraw();
