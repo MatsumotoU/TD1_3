@@ -143,6 +143,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Class\UIobjects\ContorolTutorialUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Class\UIobjects\PlayerHpUI.cpp" />
+    <ClCompile Include="Class\UIobjects\RemainEnemyUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Class\Balance\BalanceObject.h" />
@@ -204,6 +205,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="External\nlohmann\json.hpp" />
     <ClInclude Include="External\nlohmann\json_fwd.hpp" />
     <ClInclude Include="Class\UIobjects\PlayerHpUI.h" />
+    <ClInclude Include="Class\UIobjects\RemainEnemyUI.h" />
     <ClInclude Include="Resources\ConstantVariables\filePath.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

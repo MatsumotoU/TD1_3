@@ -51,6 +51,7 @@ public:
 	void EnemyMoveToPlayer();
 	void EnemyAttack();
 	void WaveUiDraw();
+	void BalanceUpdate();
 
 	void ControlInfoUpdate();
 	void ControlInfoDraw();
