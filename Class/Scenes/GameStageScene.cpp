@@ -250,13 +250,6 @@ void GameStageScene::WaveManager() {
 			// ステージ切り替え用オブジェクト初期化
 			isChangeWave = true;
 			wave++;
-			balancePoleTransform.pos = { 0.0f,100.0f };
-			balancePoleTransform.scale = { 0.0f,0.0f };
-			balanceBasketTransform[0].scale = { 0.0f,0.0f };
-			balanceBasketTransform[1].scale = { 0.0f,0.0f };
-			balanceBasketSwingWidth = 1.0f;
-			//balancePoleTransform.angle = 2.0f;
-			frameCount = 0;
 
 			// ステージ切り替え
 			if (wave == 1) {
@@ -266,132 +259,10 @@ void GameStageScene::WaveManager() {
 			} else if (wave == 3) {
 				map.LoadMap("Resources/Maps/stage1w3.txt");
 			}
-
-			// 天秤に乗るオブジェクト初期化
-			for (int i = 0; i < map.GetEnemyNum(); i++) {
-				baranceObjects[i % EMG::kMaxEnemy].Init();
-				baranceObjects[i % EMG::kMaxEnemy].SetCamera(&uiCamera);
-			}
-			baranceObjects[0].SetPos({ -220.0f,400.0f });
-			baranceObjects[0].SetSize({ 64.0f,64.0f });
-			baranceObjects[0].SetIsActive(true);
-			baranceObjects[0].SetGraphHandle(playerWeightGH);
-			for (int i = 1; i < map.GetEnemyNum() + 1; i++) {
-				baranceObjects[i].SetIsActive(true);
-				baranceObjects[i].SetPos({ 220.0f + Random(80.0f,-80.0f),400.0f + Random(300.0f,0.0f) });
-				baranceObjects[i].SetGraphHandle(enemyWeightGH);
-			}
-			balanceAngle = 0.0f;
-			rightWeight = 0.0f;
-			leftWeight = 0.0f;
 		}
 	}
 
 	if (isChangeWave) {
-
-		// 天秤のかご傾き処理
-		Eas::SimpleEaseIn(&balanceAngle, rightWeight - leftWeight * 0.25f, 0.01f);
-		balanceAngle = Clamp(balanceAngle, -0.3f, 0.3f);
-		balanceBasketTransform[0] = {
-			{220.0f,0.0f},
-			{256.0f,256.0f},
-			{1.0f,1.0f},
-			0.0f
-		};
-		balanceBasketTransform[1] = {
-			{-220.0f,0.0f},
-			{256.0f,256.0f},
-			{1.0f,1.0f},
-			0.0f
-		};
-		balanceBasketTransform[0].pos = balanceBasketTransform[0].pos * MakeRotateMatrix(balanceAngle);
-		balanceBasketTransform[1].pos = balanceBasketTransform[1].pos * MakeRotateMatrix(balanceAngle);
-		balanceBasketTransform[0].pos.y -= 64.0f;
-		balanceBasketTransform[1].pos.y -= 64.0f;
-
-		// 天秤が上下にちょっと揺れる
-		balancePoleTransform.pos.y += sinf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
-		balanceBasketTransform[0].pos.y += cosf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
-		balanceBasketTransform[1].pos.y += cosf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
-		waveStringTransform.pos.y += sinf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
-
-		// 天秤の柱召喚
-		Eas::SimpleEaseIn(&balancePoleTransform.pos.y, -64.0f, 0.3f);
-		Eas::SimpleEaseIn(&balancePoleTransform.scale.x, 1.0f, 0.2f);
-		Eas::SimpleEaseIn(&balancePoleTransform.scale.y, 1.0f, 0.2f);
-
-		// 天秤のかご召喚
-		if (balancePoleTransform.scale.x >= 1.0f) {
-			Eas::SimpleEaseIn(&balanceBasketTransform[0].scale.x, 1.0f, 0.2f);
-			Eas::SimpleEaseIn(&balanceBasketTransform[0].scale.y, 1.0f, 0.2f);
-			Eas::SimpleEaseIn(&balanceBasketTransform[1].scale.x, 1.0f, 0.2f);
-			Eas::SimpleEaseIn(&balanceBasketTransform[1].scale.y, 1.0f, 0.2f);
-
-			balanceBasketTransform[0].angle = sinf(static_cast<float>(frameCount) * 0.2f) * balanceBasketSwingWidth;
-			balanceBasketTransform[1].angle = cosf(static_cast<float>(frameCount) * 0.2f) * balanceBasketSwingWidth;
-			balanceBasketSwingWidth *= 0.92f;
-		}
-
-		// プレイヤー召喚
-		if (balanceBasketTransform[0].scale.x >= 1.0f) {
-			if (baranceObjects[0].GetIsActive()) {
-				baranceObjects[0].Update();
-			}
-
-			if (IsHitRectangle(
-				baranceObjects[0].GetPos(), baranceObjects[0].GetSize(),
-				{ balanceBasketTransform[1].pos.x,balanceBasketTransform[1].pos.y - balanceBasketTransform[1].size.y * 0.5f },
-				{ balanceBasketTransform[1].size.x,balanceBasketTransform[1].size.y * 0.3f })) {
-
-				baranceObjects[0].SetFalling(false);
-				baranceObjects[0].GetPhysics()->SetVelocity(ZeroVector2);
-				baranceObjects[0].GetPhysics()->SetAcceleration(ZeroVector2);
-				baranceObjects[0].ParentObject(&balanceBasketTransform[1]);
-				rightWeight = 1.2f;
-			}
-		}
-
-		if (!baranceObjects[0].GetFalling()) {
-			for (int i = 1; i < EMG::kMaxEnemy + 1; i++) {
-
-				if (baranceObjects[i].GetIsActive()) {
-					baranceObjects[i].Update();
-				}
-
-				if (IsHitRectangle(
-					baranceObjects[i].GetPos(), baranceObjects[i].GetSize(),
-					{ balanceBasketTransform[0].pos.x,balanceBasketTransform[0].pos.y - balanceBasketTransform[0].size.y * 0.5f },
-					{ balanceBasketTransform[0].size.x,balanceBasketTransform[0].size.y * 0.3f })) {
-
-					baranceObjects[i].GetPhysics()->SetVelocity(ZeroVector2);
-					baranceObjects[i].GetPhysics()->SetAcceleration(ZeroVector2);
-					baranceObjects[i].ParentObject(&balanceBasketTransform[0]);
-
-					if (baranceObjects[i].GetFalling()) {
-						leftWeight += 0.1f;
-						baranceObjects[i].SetFalling(false);
-					}
-				}
-
-				if (i < EMG::kMaxEnemy + 1) {
-					if (IsHitRectangle(
-						baranceObjects[i].GetPos(), baranceObjects[i].GetSize(),
-						baranceObjects[i + 1].GetPos(), baranceObjects[i + 1].GetSize())) {
-						if (!baranceObjects[i + 1].GetFalling()) {
-
-							baranceObjects[i].GetPhysics()->SetVelocity(ZeroVector2);
-							baranceObjects[i].GetPhysics()->SetAcceleration(ZeroVector2);
-							baranceObjects[i].ParentObject(&balanceBasketTransform[0]);
-
-							if (baranceObjects[i].GetFalling()) {
-								leftWeight += 3.0f;
-								baranceObjects[i].SetFalling(false);
-							}
-						}
-					}
-				}
-			}
-		}
 
 		// ウェーブ管理処理演出終了
 		if (wave >= 4 || (input->GetControl(ENTER, Triger) && frameCount >= 30)) {
@@ -620,15 +491,6 @@ void GameStageScene::EnemyCollision() {
 							// 爆発
 							particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
 
-							// ラストヒット
-							if (enemyManager.GetRemainEnemies() <= 0) {
-								if (lastHitEnemyNum == -1) {
-									lastHitEnemyNum = e;
-									stopObjectUpdateFrame = 30;
-									flashScreenFrame = 30;
-								}
-							}
-
 							// コンボ加算
 							if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
 								// SE
@@ -637,8 +499,17 @@ void GameStageScene::EnemyCollision() {
 								exprosionComboCount++;
 								comboRemainFrame = GMScene::maxComboRemainFrame;
 							}
-
 							enemyManager.GetEnemyes()[e].SetIsAlive(false);
+
+							// ラストヒット
+							if (enemyManager.GetRemainEnemies() <= 0) {
+								if (lastHitEnemyNum == -1) {
+									lastHitEnemyNum = e;
+									stopObjectUpdateFrame = 30;
+									flashScreenFrame = 30;
+									return;
+								}
+							}
 							return;
 						}
 					}
@@ -695,6 +566,7 @@ void GameStageScene::ExprodeEnemy() {
 						lastHitEnemyNum = e;
 						stopObjectUpdateFrame = 30;
 						flashScreenFrame = 30;
+						return;
 					}
 				}
 			}
@@ -754,7 +626,8 @@ void GameStageScene::EnemyAttack() {
 void GameStageScene::WaveUiDraw() {
 	if (isChangeWave) {
 		Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x000000DF, kFillModeSolid);
-		Render::DrawSprite(balancePoleTransform, uiCamera, WHITE, balancePoleGH);
+
+		/*Render::DrawSprite(balancePoleTransform, uiCamera, WHITE, balancePoleGH);
 
 		for (int i = 0; i < EMG::kMaxEnemy + 1; i++) {
 
@@ -762,11 +635,176 @@ void GameStageScene::WaveUiDraw() {
 				baranceObjects[i].Draw();
 			}
 		}
-
 		Render::DrawSprite(balanceBasketTransform[0], uiCamera, WHITE, balanceBasketGH);
-		Render::DrawSprite(balanceBasketTransform[1], uiCamera, WHITE, balanceBasketGH);
+		Render::DrawSprite(balanceBasketTransform[1], uiCamera, WHITE, balanceBasketGH);*/
+
 		Render::DrawSprite(waveStringTransform, uiCamera, WHITE, waveStringGH);
 	}
+}
+
+void GameStageScene::BalanceUpdate() {
+	if (enemyManager.GetRemainEnemies() <= 0) {
+		if (!isChangeWave) {
+
+			// ステージクリア後の演出時間
+			if (isClearStage) {
+
+				if (clearStageTimeBuffer > 0) {
+					clearStageTimeBuffer--;
+					return;
+				}
+
+			} else {
+
+				isClearStage = true;
+				clearStageTimeBuffer = GMScene::maxClearStageTimeBuffer;
+				return;
+			}
+
+			// ステージ切り替え用オブジェクト初期化
+			isChangeWave = true;
+			wave++;
+			balancePoleTransform.pos = { 0.0f,100.0f };
+			balancePoleTransform.scale = { 0.0f,0.0f };
+			balanceBasketTransform[0].scale = { 0.0f,0.0f };
+			balanceBasketTransform[1].scale = { 0.0f,0.0f };
+			balanceBasketSwingWidth = 1.0f;
+			//balancePoleTransform.angle = 2.0f;
+			frameCount = 0;
+
+			// ステージ切り替え
+			if (wave == 1) {
+				map.LoadMap("Resources/Maps/stage1w1.txt");
+			} else if (wave == 2) {
+				map.LoadMap("Resources/Maps/stage1w2.txt");
+			} else if (wave == 3) {
+				map.LoadMap("Resources/Maps/stage1w3.txt");
+			}
+
+			// 天秤に乗るオブジェクト初期化
+			for (int i = 0; i < map.GetEnemyNum(); i++) {
+				baranceObjects[i % EMG::kMaxEnemy].Init();
+				baranceObjects[i % EMG::kMaxEnemy].SetCamera(&uiCamera);
+			}
+			baranceObjects[0].SetPos({ -220.0f,400.0f });
+			baranceObjects[0].SetSize({ 64.0f,64.0f });
+			baranceObjects[0].SetIsActive(true);
+			baranceObjects[0].SetGraphHandle(playerWeightGH);
+			for (int i = 1; i < map.GetEnemyNum() + 1; i++) {
+				baranceObjects[i].SetIsActive(true);
+				baranceObjects[i].SetPos({ 220.0f + Random(80.0f,-80.0f),400.0f + Random(300.0f,0.0f) });
+				baranceObjects[i].SetGraphHandle(enemyWeightGH);
+			}
+			balanceAngle = 0.0f;
+			rightWeight = 0.0f;
+			leftWeight = 0.0f;
+		}
+	}
+#pragma region Balance
+	// 天秤のかご傾き処理
+	Eas::SimpleEaseIn(&balanceAngle, rightWeight - leftWeight * 0.25f, 0.01f);
+	balanceAngle = Clamp(balanceAngle, -0.3f, 0.3f);
+	balanceBasketTransform[0] = {
+		{220.0f,0.0f},
+		{256.0f,256.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+	balanceBasketTransform[1] = {
+		{-220.0f,0.0f},
+		{256.0f,256.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+	balanceBasketTransform[0].pos = balanceBasketTransform[0].pos * MakeRotateMatrix(balanceAngle);
+	balanceBasketTransform[1].pos = balanceBasketTransform[1].pos * MakeRotateMatrix(balanceAngle);
+	balanceBasketTransform[0].pos.y -= 64.0f;
+	balanceBasketTransform[1].pos.y -= 64.0f;
+
+	// 天秤が上下にちょっと揺れる
+	balancePoleTransform.pos.y += sinf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
+	balanceBasketTransform[0].pos.y += cosf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
+	balanceBasketTransform[1].pos.y += cosf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
+	waveStringTransform.pos.y += sinf(static_cast<float>(frameCount) * 0.1f) * 0.5f;
+
+	// 天秤の柱召喚
+	Eas::SimpleEaseIn(&balancePoleTransform.pos.y, -64.0f, 0.3f);
+	Eas::SimpleEaseIn(&balancePoleTransform.scale.x, 1.0f, 0.2f);
+	Eas::SimpleEaseIn(&balancePoleTransform.scale.y, 1.0f, 0.2f);
+
+	// 天秤のかご召喚
+	if (balancePoleTransform.scale.x >= 1.0f) {
+		Eas::SimpleEaseIn(&balanceBasketTransform[0].scale.x, 1.0f, 0.2f);
+		Eas::SimpleEaseIn(&balanceBasketTransform[0].scale.y, 1.0f, 0.2f);
+		Eas::SimpleEaseIn(&balanceBasketTransform[1].scale.x, 1.0f, 0.2f);
+		Eas::SimpleEaseIn(&balanceBasketTransform[1].scale.y, 1.0f, 0.2f);
+
+		balanceBasketTransform[0].angle = sinf(static_cast<float>(frameCount) * 0.2f) * balanceBasketSwingWidth;
+		balanceBasketTransform[1].angle = cosf(static_cast<float>(frameCount) * 0.2f) * balanceBasketSwingWidth;
+		balanceBasketSwingWidth *= 0.92f;
+	}
+
+	// プレイヤー召喚
+	if (balanceBasketTransform[0].scale.x >= 1.0f) {
+		if (baranceObjects[0].GetIsActive()) {
+			baranceObjects[0].Update();
+		}
+
+		if (IsHitRectangle(
+			baranceObjects[0].GetPos(), baranceObjects[0].GetSize(),
+			{ balanceBasketTransform[1].pos.x,balanceBasketTransform[1].pos.y - balanceBasketTransform[1].size.y * 0.5f },
+			{ balanceBasketTransform[1].size.x,balanceBasketTransform[1].size.y * 0.3f })) {
+
+			baranceObjects[0].SetFalling(false);
+			baranceObjects[0].GetPhysics()->SetVelocity(ZeroVector2);
+			baranceObjects[0].GetPhysics()->SetAcceleration(ZeroVector2);
+			baranceObjects[0].ParentObject(&balanceBasketTransform[1]);
+			rightWeight = 1.2f;
+		}
+	}
+
+	if (!baranceObjects[0].GetFalling()) {
+		for (int i = 1; i < EMG::kMaxEnemy + 1; i++) {
+
+			if (baranceObjects[i].GetIsActive()) {
+				baranceObjects[i].Update();
+			}
+
+			if (IsHitRectangle(
+				baranceObjects[i].GetPos(), baranceObjects[i].GetSize(),
+				{ balanceBasketTransform[0].pos.x,balanceBasketTransform[0].pos.y - balanceBasketTransform[0].size.y * 0.5f },
+				{ balanceBasketTransform[0].size.x,balanceBasketTransform[0].size.y * 0.3f })) {
+
+				baranceObjects[i].GetPhysics()->SetVelocity(ZeroVector2);
+				baranceObjects[i].GetPhysics()->SetAcceleration(ZeroVector2);
+				baranceObjects[i].ParentObject(&balanceBasketTransform[0]);
+
+				if (baranceObjects[i].GetFalling()) {
+					leftWeight += 0.1f;
+					baranceObjects[i].SetFalling(false);
+				}
+			}
+
+			if (i < EMG::kMaxEnemy + 1) {
+				if (IsHitRectangle(
+					baranceObjects[i].GetPos(), baranceObjects[i].GetSize(),
+					baranceObjects[i + 1].GetPos(), baranceObjects[i + 1].GetSize())) {
+					if (!baranceObjects[i + 1].GetFalling()) {
+
+						baranceObjects[i].GetPhysics()->SetVelocity(ZeroVector2);
+						baranceObjects[i].GetPhysics()->SetAcceleration(ZeroVector2);
+						baranceObjects[i].ParentObject(&balanceBasketTransform[0]);
+
+						if (baranceObjects[i].GetFalling()) {
+							leftWeight += 3.0f;
+							baranceObjects[i].SetFalling(false);
+						}
+					}
+				}
+			}
+		}
+	}
+#pragma endregion
 }
 
 void GameStageScene::ControlInfoUpdate() {
