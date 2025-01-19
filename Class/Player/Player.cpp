@@ -223,7 +223,7 @@ void Player::Draw() {
 
 	particleManager.Draw();
 
-	if (isAlive) {
+	if (isActive) {
 
 		// ダッシュ可能円
 		Render::DrawEllipse(transform.pos,
@@ -632,6 +632,10 @@ void Player::SetRemainAttackChance(int set) {
 
 void Player::SetIsDash(int set) {
 	isDash = set;
+}
+
+int Player::GetIsAlive() {
+	return isAlive;
 }
 
 int Player::GetIsAttack() {

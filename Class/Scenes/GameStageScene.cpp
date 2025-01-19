@@ -229,7 +229,7 @@ IScene* GameStageScene::GetNextScene() {
 
 void GameStageScene::WaveManager() {
 
-	if (enemyManager.GetRemainEnemies() <= 0) {
+	if (enemyManager.GetRemainEnemies() <= 0 || !player.GetIsAlive()) {
 		if (!isChangeWave) {
 
 			// ステージクリア後の演出時間
@@ -249,7 +249,9 @@ void GameStageScene::WaveManager() {
 
 			// ステージ切り替え用オブジェクト初期化
 			isChangeWave = true;
-			wave++;
+			if (player.GetIsAlive()) {
+				wave++;
+			}
 
 			// ステージ切り替え
 			if (wave == 1) {
@@ -911,10 +913,17 @@ void GameStageScene::ControlInfoDraw() {
 void GameStageScene::CameraUpdate() {
 	Vector2* cameraPos = mainCamera.GetPosPtr();
 	if (isClearStage) {
-		Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->x, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().x, 0.1f);
-		Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->y, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().y, 0.1f);
+		if (player.GetIsAlive()) {
+			Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->x, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().x, 0.1f);
+			Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->y, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().y, 0.1f);
+			
+		} else {
+			*cameraPos = player.GetPos();
+		}
+
 		mainCamera.shakeRange = { static_cast<float>(clearStageTimeBuffer) * 0.1f,static_cast<float>(clearStageTimeBuffer) * 0.1f };
-		mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer), 0.5f, 1.0f);
+		mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer), 0.1f, 1.0f);
+		
 	} else {
 		*cameraPos = player.GetPos();
 	}

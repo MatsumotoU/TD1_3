@@ -60,6 +60,8 @@ void Enemy::Init() {
 	attackCoolDown = 0;
 	isHitAttack = false;
 	isExprosion = false;
+	isActive = false;
+	isAlive = false;
 }
 
 void Enemy::Update() {
