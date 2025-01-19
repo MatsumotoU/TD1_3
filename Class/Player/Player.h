@@ -52,6 +52,7 @@ public:
 	void SetRemainAttackChance(int set);
 	void SetIsDash(int set);
 
+	int GetIsAlive();
 	int GetIsAttack();
 	int GetIsSheathe();
 	int GetIsDash();
