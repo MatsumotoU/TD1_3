@@ -45,9 +45,9 @@ void ResultScene::Init() {
 
 	for (int i = 0; i < 2; ++i) {
 		button[i] = {
-			{ 320.0f + i * 640.0f,-128.0f }, // 位置
+			{ 384.0f + i * 512.0f,-128.0f }, // 位置
 			{ 300.0f, 80.0f }, // 大きさ
-			{ 1.0f, 1.0f }, // 比率
+			{ 0.8f, 0.8f }, // 比率
 			0.0f // 角度
 		};
 
@@ -55,18 +55,27 @@ void ResultScene::Init() {
 		buttonT[i] = 0.0f;
 	}
 
+	button[1].scale = { 1.0f,1.0f };
+
 	// ミッションをクリアしたか
 	for (int i = 0; i < starTotalCount; ++i) {
 		shouldClearedMission[i] = true;
 	}
+
+	spaceUI = {
+		{-128.0f,-128.0f},
+		{192.0f,64.0f},
+		{0.8f,0.8f},
+		0.0f
+	};
 
 	movingOrder = 0;
 
 	// 動く時間
 	movingFrameCount = 15.0f;
 
-	shouldPressedRight = false;
-	shouldPressedLeft = true;
+	shouldPressedRight = true;
+	shouldPressedLeft = false;
 
 	//isDuringAnimation = true;
 
@@ -74,6 +83,8 @@ void ResultScene::Init() {
 	*cameraPos = { 640.0f,360.0f };
 
 	cameraZoom = { 1.0f,1.0f };
+
+	flashAlpha = 0;
 
 	starGraphHandle = Novice::LoadTexture("./Resources/Images/missionStar.png");
 
@@ -83,6 +94,12 @@ void ResultScene::Init() {
 
 	nextSceneUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/retry.png");
 	nextSceneUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/select.png");
+
+	spaceUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/spaceUIResult.png");
+	spaceUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/spaceUIResultB.png");
+
+	aUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/AbuttonResult.png");
+	aUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/AbuttonResultB.png");
 }
 
 void ResultScene::Update() {
@@ -134,17 +151,20 @@ void ResultScene::Update() {
 			for (int i = 0; i < starTotalCount; ++i) {
 				starT[i] = 1.0f;
 				star[i].pos.x = Eas::EaseInOutQuart(starT[i], 1728.0f, 1008.0f);
-				star[i].pos.y = Eas::EaseInOutQuart(starT[i], i * 360.0f, 160.0f + i * 200.0f);
-				star[i].scale = { 1.0f,1.0f };
+				star[i].pos.y = Eas::EaseInOutQuart(starT[i], i * 360.0f, 270.0f + i * 160.0f);
+				star[i].scale = { 0.8f,0.8f };
 
 				missionUIT[i] = 1.0f;
 				missionUI[i].pos.x = Eas::EaseInOutQuart(missionUIT[i], -640.0f, 384.0f);
-				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 256.0f + i * 180.0f);
+				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 270.0f + i * 160.0f);
+				missionUI[i].scale = { 0.8f,0.8f };
 			}
+
+			flashAlpha = 255;
 
 			for (int i = 0; i < 2; ++i) {
 				buttonT[i] = 1.0f;
-				button[i].pos.y = Eas::EaseInOutQuart(buttonT[i], -128.0f, 96.0f);
+				button[i].pos.y = Eas::EaseInOutQuart(buttonT[i], -128.0f, 80.0f);
 			}
 		}
 	}
@@ -152,17 +172,31 @@ void ResultScene::Update() {
 	if (movingOrder >= 18) {
 		if (shouldPressedLeft) {
 			button[0].scale = { 1.0f,1.0f };
-			button[1].scale = { 0.7f,0.7f };
+			button[1].scale = { 0.8f,0.8f };
+			spaceUI.pos.x = button[0].pos.x;
+			spaceUI.pos.y = button[0].pos.y + 80.0f;
+			button[0].pos.y = 80.0f + sinf(star[0].angle * 3.0f) * 4.0f;
 
-			button[0].pos.y = 96.0f + sinf(star[0].angle * 3.0f) * 4.0f;
+			spaceUI.pos.y = button[0].pos.y + 80.0f + cosf(star[1].angle * 3.0f) * 1.0f;
 		}
 
 		if (shouldPressedRight) {
-			button[0].scale = { 0.7f,0.7f };
+			button[0].scale = { 0.8f,0.8f };
 			button[1].scale = { 1.0f,1.0f };
+			spaceUI.pos.x = button[1].pos.x;
+			spaceUI.pos.y = button[1].pos.y + 80.0f;
+			button[1].pos.y = 80.0f + sinf(star[1].angle * 3.0f) * 4.0f;
 
-			button[1].pos.y = 96.0f + sinf(star[1].angle * 3.0f) * 4.0f;
+			spaceUI.pos.y = button[1].pos.y + 80.0f + cosf(star[1].angle * 3.0f) * 1.0f;
 		}
+	}
+
+	if (flashAlpha > 0) {
+		flashAlpha -= 8;
+	}
+
+	if (flashAlpha <= 10) {
+		flashAlpha = 0;
 	}
 
 	//================================================================
@@ -194,6 +228,7 @@ void ResultScene::Update() {
 
 				if (starT[i] >= 0.80f && starT[i] <= 0.85f) {
 					cameraZoom = { 1.18f,1.18f };
+					//flashAlpha = 255;
 				}
 
 				if (starT[i] < 0.8f) {
@@ -225,8 +260,9 @@ void ResultScene::Update() {
 				}
 
 				star[i].angle += 1.0f / 180.0f * static_cast<float>(M_PI);
-
-				star[i].pos.y = Eas::EaseInOutQuart(starT[i], 160.0f + i * 200.0f, 256.0f + i * 180.0f);
+				star[i].scale.x = Eas::EaseInOutQuart(starT[i], 1.0f, 0.8f);
+				star[i].scale.y = Eas::EaseInOutQuart(starT[i], 1.0f, 0.8f);
+				star[i].pos.y = Eas::EaseInOutQuart(starT[i], 160.0f + i * 200.0f, 270.0f + i * 160.0f);
 			}
 		} else {
 			star[i].angle += 1.0f / 180.0f * static_cast<float>(M_PI);
@@ -239,7 +275,7 @@ void ResultScene::Update() {
 					movingOrder++;
 				}
 			} else {
-				star[i].pos.y = (256.0f + i * 180.0f) + sinf(star[i].angle * 3.0f) * 8.0f;
+				star[i].pos.y = (270.0f + i * 160.0f) + sinf(star[i].angle * 3.0f) * 8.0f;
 			}
 		}
 
@@ -302,7 +338,9 @@ void ResultScene::Update() {
 					}
 				}
 
-				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 256.0f + i * 180.0f);
+				missionUI[i].scale.x = Eas::EaseInOutQuart(missionUIT[i], 1.0f, 0.8f);
+				missionUI[i].scale.y = Eas::EaseInOutQuart(missionUIT[i], 1.0f, 0.8f);
+				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 270.0f + i * 160.0f);
 			} else {
 				if (movingOrder == 10) {
 					missionUIT[i] = 0.0f;
@@ -327,7 +365,7 @@ void ResultScene::Update() {
 				}
 			}
 
-			button[i].pos.y = Eas::EaseInOutQuart(buttonT[i], -128.0f, 96.0f);
+			button[i].pos.y = Eas::EaseInOutQuart(buttonT[i], -128.0f, 80.0f);
 		} else {
 			if (movingOrder == 10) {
 				buttonT[i] = 0.0f;
@@ -378,8 +416,24 @@ void ResultScene::Draw() {
 		Render::DrawSprite(button[i], mainCamera, 0xEEEEEEFF, nextSceneUIGraphHandle[i]);
 	}
 
-	Novice::ScreenPrintf(0, 16, "%d", movingOrder);
-	Novice::ScreenPrintf(0, 32, "%d", frameCount);
+	if (Novice::GetNumberOfJoysticks() == 0) {
+		if (input->GetControl(ENTER, Press)) {
+			Render::DrawSprite(spaceUI, mainCamera, 0xFFFFFFFF, spaceUIGraphHandle[1]);
+		} else {
+			Render::DrawSprite(spaceUI, mainCamera, 0xEEEEEEFF, spaceUIGraphHandle[0]);
+		}
+	} else {
+		if (input->GetControl(ENTER, Press)) {
+			Render::DrawSprite(spaceUI, mainCamera, 0xFFFFFFFF, aUIGraphHandle[1]);
+		} else {
+			Render::DrawSprite(spaceUI, mainCamera, 0xEEEEEEFF, aUIGraphHandle[0]);
+		}
+	}
+
+	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xffffff00 | flashAlpha, kFillModeSolid);
+
+	//Novice::ScreenPrintf(0, 16, "%d", movingOrder);
+	//Novice::ScreenPrintf(0, 32, "%d", frameCount);
 }
 
 IScene* ResultScene::GetNextScene() {
