@@ -68,49 +68,49 @@ void TitleScene::Init() {
 	button[2] =
 	{
 		639.5f,135.0f,
-		600.0f,150.0f,
+		700.0f,180.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	button[0] =
 	{
 		640.0f,button[2].pos.y + button[2].size.y / 4.0f,
-		600.0f,75.0f,
+		700.0f,90.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	button[1] =
 	{
 		640.0f,button[2].pos.y - button[2].size.y / 4.0f,
-		600.0f,75.0f,
+		700.0f,90.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	startButton[0] =
 	{
 		640.0f,button[2].pos.y + button[2].size.y / 4.0f,
-		600.0f,75.0f,
+		700.0f,90.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	startButton[1] =
 	{
 		640.0f,button[2].pos.y - button[2].size.y / 4.0f,
-		600.0f,75.0f,
+		700.0f,90.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	endButton[0] =
 	{
 		540.0f,button[2].pos.y + button[2].size.y / 4.0f,
-		600.0f,75.0f,
+		700.0f,90.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	endButton[1] =
 	{
 		760.0f,button[2].pos.y - button[2].size.y / 4.0f,
-		600.0f,75.0f,
+		700.0f,90.0f,
 		1.0f,1.0f,0.0f
 	};
 
@@ -144,7 +144,12 @@ void TitleScene::Init() {
 	color[1] = 0xFFFFFF00;
 	returnColor[1] = 0xFFFFFF00;
 	alphaValue[1] = 0.0f;
-	blinkTimer = 60;
+	color[2] = 0xFFFFFF00;
+	returnColor[2] = 0xFFFFFFFF;
+	endColor = 0xFFFFFFFF;
+	alphaValue[2] = 0.0f;
+	alphaValue[3] = 0.0f;
+	isIncreaseAlpha = true;
 	efectNum = 0;
 
 	cameraPos = mainCamera.GetPosPtr();
@@ -157,6 +162,7 @@ void TitleScene::Init() {
 	buttonGh[0] = Novice::LoadTexture("./Resources/Images/button1.png");
 	buttonGh[1] = Novice::LoadTexture("./Resources/Images/button2.png");
 	buttonGh[2] = Novice::LoadTexture("./Resources/Images/button.png");
+	buttonGh[3] = Novice::LoadTexture("./Resources/Images/buttonPad.png");
 	bigEfectGh[0] = Novice::LoadTexture("./Resources/Images/bigEfect1.png");
 	bigEfectGh[1] = Novice::LoadTexture("./Resources/Images/bigEfect2.png");
 	bigEfectGh[2] = Novice::LoadTexture("./Resources/Images/bigEfect3.png");
@@ -209,12 +215,12 @@ void TitleScene::Update() {
 	}
 
 
-	if (efectT[1] >= 1.0f)
+	if (efectT[1] >= 0.1f)
 	{
 		// PressSpaceのフェードイン処理
 		if (alphaValue[1] < 1.0f)
 		{
-			alphaValue[1] += 0.1f;
+			alphaValue[1] += 0.008f;
 
 			if (alphaValue[1] >= 1.0f)
 			{
@@ -239,15 +245,39 @@ void TitleScene::Update() {
 
 	if (isMoveEnd)
 	{
-		// PressSpaceを点滅させる処理
-		if (blinkTimer >= 0)
+
+		if (isIncreaseAlpha)
 		{
-			blinkTimer--;
+			// ボタンを点滅させる処理
+			if (alphaValue[2] < 1.0f)
+			{
+				alphaValue[2] += 0.01f;
+
+				if (alphaValue[2] >= 1.0f)
+				{
+					alphaValue[2] = 1.0f;
+					isIncreaseAlpha = false;
+				}
+
+			}
 		}
 		else
 		{
-			blinkTimer = 60;
+			if (alphaValue[2] > 0.3f)
+			{
+				alphaValue[2] -= 0.01f;
+
+				if (alphaValue[2] <= 0.3f)
+				{
+					alphaValue[2] = 0.3f;
+					isIncreaseAlpha = true;
+				}
+
+			}
 		}
+
+		alphaValue[3] = Eas::EaseInOutQuart(alphaValue[2], 1.0f, 0.1f);
+		returnColor[2] = ColorFade(color[2], alphaValue[3]);
 
 		//シーン遷移処理
 		if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER, Triger)) {
@@ -294,7 +324,7 @@ void TitleScene::Update() {
 			isUnderEfectMove = false;
 			isEaseStart = true;
 			alphaValue[0] = 1.0f;
-		
+			alphaValue[1] = 0.1f;
 		}
 
 	}
@@ -343,12 +373,6 @@ void TitleScene::Draw() {
 	// 背景の描画処理
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
 	
-	if (blinkTimer / 30 == 0)
-	{
-		// PressSpaceの描画処理
-		Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[2]);
-	}
-
 	if (efectCoolTime >= 0)
 	{
 		// ロゴの描画処理
@@ -364,6 +388,17 @@ void TitleScene::Draw() {
 		Render::DrawSprite(button[0], mainCamera, returnColor[0], buttonGh[0]);
 		Render::DrawSprite(button[1], mainCamera, returnColor[0], buttonGh[1]);
 
+		// PressSpaceの描画処理
+		if (Novice::GetNumberOfJoysticks() == 0)
+		{
+			// キーボード操作
+			Render::DrawSprite(button[2], mainCamera, returnColor[2], buttonGh[2]);
+		}
+		else
+		{
+			// パッド操作
+			Render::DrawSprite(button[2], mainCamera, returnColor[2], buttonGh[3]);
+		}
 	}
 	else
 	{
@@ -387,6 +422,18 @@ void TitleScene::Draw() {
 			// ロゴの描画処理
 			Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
 			Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
+		}
+
+		// PressSpaceの描画処理
+		if (Novice::GetNumberOfJoysticks() == 0)
+		{
+			// キーボード操作
+			Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[2]);
+		}
+		else
+		{
+			// パッド操作
+			Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[3]);
 		}
 
 		// デタラメ文字列の描画処理
