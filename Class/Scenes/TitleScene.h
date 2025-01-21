@@ -27,21 +27,22 @@ private:
 	Transform logo[3];
 	Transform startLogo[2];
 	Transform endLogo[2];
-	Transform button[3];
+	Transform button[4];
 	Transform startButton[2];
 	Transform endButton[2];
 	Transform efect[2];
 	float efectT[2];
-	float alphaValue[2];
+	float alphaValue[4];
 	int efectCoolTime;
 	int isEfectMove;
 	int isEaseStart;
 	int isUnderEfectMove;
 	int isMoveEnd;
-	int blinkTimer;
+	int isIncreaseAlpha;
 	int efectNum;
-	unsigned int color[2];
-	unsigned int returnColor[2];
+	unsigned int color[3];
+	unsigned int returnColor[3];
+	unsigned int endColor;
 
 	ParticlManager particleManager;
 	Camera mainCamera;
@@ -52,5 +53,7 @@ private:
 	int buttonGh[3];
 	int bigEfectGh[9];
 	int smallEfectGh[9];
+
+	unsigned int EaseInOutQuart(float transitionRate, unsigned int startValue, unsigned int endValue);
 };
 
