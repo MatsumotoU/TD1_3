@@ -37,6 +37,7 @@ private:
 	int isEfectMove;
 	int isEaseStart;
 	int isUnderEfectMove;
+	int isSwordMove;
 	int isMoveEnd;
 	int isIncreaseAlpha;
 	int efectNum;
