@@ -25,6 +25,8 @@ public:
 	void SpriteEffect(Vector2 pos, Vector2 size, float angle, int RemainingFrame, int gh);
 	void SlashEffect(Vector2 pos, Vector2 size, Vector2 dir, float power, int rnd, int RemainingFrame, int particlCap, int gh);
 	void AnimEffect(Vector2 pos, Vector2 size, float angle, int animMaxFrame, int animSpeed, int isLoop, int* gh);
+
+	// クラッカー（出し始める位置、大きさ、出す方向(ラジアン)、勢い、出す方向プラス最大何度ぶらすか(ディグリー)、出す方向マイナス何度ぶらすか(ディグリー)、平均描画時間、最大数、画像、色）
 	void CrackerEffect(Vector2 pos, Vector2 size, float dir, float power, float max, float min, int RemainingFrame, int particleCap, int gh, unsigned int color);
 private:
 

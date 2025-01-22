@@ -15,6 +15,8 @@ void ResultScene::Init() {
 
 	mainCamera.Init();
 
+	subCamera.Init();
+
 	particleManager.Init();
 	particleManager.SetCamera(&mainCamera);
 
@@ -69,6 +71,22 @@ void ResultScene::Init() {
 		0.0f
 	};
 
+	for (int i = 0; i < 2; ++i) {
+		cracker[i] = {
+			{ -128.0f + i * 1536.0f,-128.0f }, // 位置
+			{ 256.0f,256.0f }, // 大きさ
+			{ 1.0f, 1.0f }, // 比率
+			0.0f // 角度
+		};
+
+		crackerT[i] = 0.0f;
+		crackerAlpha[i] = 255;
+		isCrackerMoving[i] = false;
+	}
+
+	cracker[0].angle = 1.0f / 10.0f * static_cast<float>(M_PI);
+	cracker[1].angle = 19.0f / 10.0f * static_cast<float>(M_PI);
+
 	movingOrder = 0;
 
 	// 動く時間
@@ -79,8 +97,11 @@ void ResultScene::Init() {
 
 	//isDuringAnimation = true;
 
-	cameraPos = mainCamera.GetPosPtr();
-	*cameraPos = { 640.0f,360.0f };
+	cameraPos[0] = mainCamera.GetPosPtr();
+	*cameraPos[0] = { 640.0f,360.0f };
+
+	cameraPos[1] = subCamera.GetPosPtr();
+	*cameraPos[1] = { 640.0f,360.0f };
 
 	cameraZoom = { 1.0f,1.0f };
 
@@ -100,6 +121,9 @@ void ResultScene::Init() {
 
 	aUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/AbuttonResult.png");
 	aUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/AbuttonResultB.png");
+
+	crackerGraphHandle[0] = Novice::LoadTexture("./Resources/Images/cracker1.png");
+	crackerGraphHandle[1] = Novice::LoadTexture("./Resources/Images/cracker2.png");
 }
 
 void ResultScene::Update() {
@@ -206,6 +230,11 @@ void ResultScene::Update() {
 	for (int i = 0; i < starTotalCount; ++i) {
 		if (movingOrder == 4) {
 			isStarMoving[i] = true;
+			if (i < 2) {
+				if (!isCrackerMoving[i]) {
+					isCrackerMoving[i] = true;
+				}
+			}
 		}
 
 		// 星の縮小の処理
@@ -226,13 +255,17 @@ void ResultScene::Update() {
 					}
 				}
 
+				if (starT[i] >= 0.75f && starT[i] <= 0.80f) {
+					if (i < 2) {
+						cracker[i].scale = { 1.4f,1.4f };
+					}
+				}
+
 				if (starT[i] >= 0.80f && starT[i] <= 0.85f) {
 					cameraZoom = { 1.18f,1.18f };
 
-					particleManager.CrackerEffect({ 0.0f,0.0f }, { 32.0f,32.0f }, 1.0f / 3.0f * static_cast<float>(M_PI), 20.0f, 3.0f, -3.0f, 60, 24, 0, 0xffffffff);
-					particleManager.CrackerEffect({ 1280.0f,0.0f }, { 32.0f,32.0f }, 2.0f / 3.0f * static_cast<float>(M_PI), 20.0f, 3.0f, -3.0f, 60, 24, 0, 0xffffffff);
-
-					//flashAlpha = 255;
+					particleManager.CrackerEffect({ 0.0f,0.0f }, { 48.0f,48.0f }, 4.5f / 13.0f * static_cast<float>(M_PI), 60.0f, 2.0f, -2.0f, 60, 24, 0, 0xffffffff);
+					particleManager.CrackerEffect({ 1300.0f,0.0f }, { 48.0f,48.0f }, 8.5f / 13.0f * static_cast<float>(M_PI), 60.0f, 2.0f, -2.0f, 60, 24, 0, 0xffffffff);
 				}
 
 				if (starT[i] < 0.8f) {
@@ -292,6 +325,44 @@ void ResultScene::Update() {
 					  star[i].pos.y + Random(90.0f,0.0f) * sinf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)) },
 					20, 0
 				);
+			}
+		}
+	}
+
+	//================================================================
+	// クラッカーの更新処理
+	//================================================================
+
+	for (int i = 0; i < 2; ++i) {
+		if (isCrackerMoving[i]) {
+			if (crackerT[i] < 1.0f) {
+				crackerT[i] += 1.0f / 13.0f;
+			}
+
+			if (crackerT[i] >= 1.0f) {
+				crackerT[i] = 1.0f;
+				isCrackerMoving[i] = false;
+			}
+
+			cracker[i].pos.x = Eas::EaseInOutQuart(crackerT[i], -128.0f + i * 1536.0f, 96.0f + i * 1088.0f);
+			cracker[i].pos.y = Eas::EaseInOutQuart(crackerT[i], -128.0f, 96.0f);
+		} else {
+			if (crackerT[i] == 1.0f) {
+				if (cracker[i].scale.x > 1.0f) {
+					cracker[i].scale.x -= 0.05f;
+				}
+
+				if (cracker[i].scale.y > 1.0f) {
+					cracker[i].scale.y -= 0.05f;
+				}
+
+				if (crackerAlpha[i] >= 1) {
+					crackerAlpha[i] -= 4;
+
+					if (crackerAlpha[i] <= 4) {
+						crackerAlpha[i] = 0;
+					}
+				}
 			}
 		}
 	}
@@ -400,7 +471,6 @@ void ResultScene::Update() {
 void ResultScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
 
-	particleManager.Draw();
 
 	for (int i = 0; i < starTotalCount; ++i) {
 		// ===================================================================================//
@@ -432,6 +502,12 @@ void ResultScene::Draw() {
 		} else {
 			Render::DrawSprite(spaceUI, mainCamera, 0xEEEEEEFF, aUIGraphHandle[0]);
 		}
+	}
+
+	particleManager.Draw();
+
+	for (int i = 0; i < 2; ++i) {
+		Render::DrawSprite(cracker[i], subCamera, 0xffffff00 | crackerAlpha[i], crackerGraphHandle[i]);
 	}
 
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xffffff00 | flashAlpha, kFillModeSolid);

@@ -38,6 +38,11 @@ private:
 
 	Transform spaceUI;
 
+	Transform cracker[2];
+	float crackerT[2];
+	unsigned int crackerAlpha[2];
+	int isCrackerMoving[2];
+
 	int movingOrder;
 
 	int shouldClearedMission[starTotalCount];
@@ -54,11 +59,14 @@ private:
 	int nextSceneUIGraphHandle[2];
 	int spaceUIGraphHandle[2];
 	int aUIGraphHandle[2];
+	int crackerGraphHandle[2];
 
 	unsigned int flashAlpha;
 
 	Vector2 cameraZoom;
-	Vector2* cameraPos;
+	Vector2* cameraPos[2];
+
+	Camera subCamera;
 
 	ParticlManager particleManager;
 };
