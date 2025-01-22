@@ -68,7 +68,7 @@ void TitleScene::Init() {
 
 	startLogo[2] =
 	{
-		1360.0f,800.0f,
+		1360.0f,1360.0f,
 		96.0f,96.0f,
 		1.0f,1.0f,0.0f
 	};
@@ -89,7 +89,7 @@ void TitleScene::Init() {
 
 	startLogo[3] =
 	{
-		-80.0f,800.0f,
+		-80.0f,1360.0f,
 		96.0f,96.0f,
 		1.0f,1.0f,0.0f
 	};
@@ -373,23 +373,6 @@ void TitleScene::Update() {
 	}
 	else if (isEaseStart)
 	{
-		if (efectT[2] < 1.0f)
-		{
-			// メをイージングさせる処理
-			efectT[2] += 0.015f;
-
-			if (efectT[2] >= 1.0f)
-			{
-				efectT[2] = 1.0f;
-				mainCamera.shakeRange = { 50.0f,0.0f };
-			}
-
-			logo[2].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.x, endLogo[2].pos.x);
-			logo[2].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.y, endLogo[2].pos.y);
-			logo[3].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.x, endLogo[3].pos.x);
-			logo[3].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.y, endLogo[3].pos.y);
-		}
-
 		if (efectT[1] < 1.0f)
 		{
 			// ロゴをイージングさせる処理
@@ -421,6 +404,29 @@ void TitleScene::Update() {
 		{
 			// イージング終わった時の処理
 			isEaseStart = false;
+			isSwordMove = true;
+		}
+	}
+	else if (isSwordMove)
+	{
+		if (efectT[2] < 1.0f)
+		{
+			// メをイージングさせる処理
+			efectT[2] += 0.015f;
+
+			if (efectT[2] >= 1.0f)
+			{
+				efectT[2] = 1.0f;
+				mainCamera.shakeRange = { 0.0f,50.0f };
+			}
+
+			logo[2].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.x, endLogo[2].pos.x);
+			logo[2].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.y, endLogo[2].pos.y);
+			logo[3].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.x, endLogo[3].pos.x);
+			logo[3].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.y, endLogo[3].pos.y);
+		}
+		else
+		{
 			isMoveEnd = true;
 		}
 	}
@@ -480,6 +486,14 @@ void TitleScene::Draw() {
 
 		}
 		else if (isEaseStart)
+		{
+			// ロゴの描画処理
+			Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
+			Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
+			Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
+			Render::DrawSprite(logo[3], mainCamera, 0xFFFFFFFF, titleLogoGh[3]);
+		}
+		else if (isSwordMove)
 		{
 			// ロゴの描画処理
 			Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
