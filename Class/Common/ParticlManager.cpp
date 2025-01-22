@@ -10,8 +10,8 @@ void ParticlManager::Init() {
 	for (int i = 0; i < kPlarticlMax; i++) {
 
 		particls[i].Init();
-		particls[i].GetPhysics2D()->SetVelocityLimit({ 128.0f,128.0f });
-		
+		particls[i].GetPhysics2D()->SetVelocityLimit({ 256.0f,256.0f });
+
 		if (camera != nullptr) {
 			particls->SetCamera(camera);
 		}
@@ -273,6 +273,7 @@ void ParticlManager::AnimEffect(Vector2 pos, Vector2 size, float angle, int anim
 
 }
 
+// クラッカー（出し始める位置、大きさ、出す方向(ラジアン)、勢い、出す方向プラス最大何度ぶらすか(ディグリー)、出す方向マイナス何度ぶらすか(ディグリー)、平均描画時間、最大数、画像、色）
 void ParticlManager::CrackerEffect(Vector2 pos, Vector2 size, float dir, float power, float max, float min, int RemainingFrame, int particleCap, int gh, unsigned int color) {
 	for (int i = 0; i < particleCap; i++) {
 
@@ -283,17 +284,16 @@ void ParticlManager::CrackerEffect(Vector2 pos, Vector2 size, float dir, float p
 				particls[p].Init();
 				particls[p].SetCamera(camera);
 				particls[p].SetIsFade(true);
-				particls[p].SetFadeFrame(RemainingFrame);
+				particls[p].SetFadeFrame(RemainingFrame + Random(10, -10));
 				particls[p].SetIsActive(true);
-				//particls[p].SetIsTarget(true);
 				particls[p].SetPos(pos);
-				particls[p].SetSize(size);
+				particls[p].SetSize(size * Random(1.15f, 0.85f));
 				particls[p].GetPhysics2D()->AddForce(
-					{ (power + Random(5.0f,-5.0f)) * cosf(dir), (power + Random(5.0f,-5.0f)) * sinf(dir) }, IMPACT);
-				particls[p].GetPhysics2D()->AddForce({ 0.0f,-0.05f }, ACCELERATION);
+					{ (power + Random(power / 2.5f,-power / 2.5f)) * cosf(dir), (power + Random(power / 2.5f,-power / 2.5f)) * sinf(dir) }, IMPACT);
+				particls[p].GetPhysics2D()->AddForce({ 0.0f,-0.2f }, ACCELERATION);
 				particls[p].SetRotateDir(static_cast<float>(rand() % 10 - 5) * 0.1f);
 				particls[p].SetGraphHandle(gh);
-				particls[p].GetPhysics2D()->SetResistance(0.98f);
+				particls[p].GetPhysics2D()->SetResistance(0.9f);
 				particls[p].SetIsShirink(true);
 				particls[p].SetColor(color);
 				break;
