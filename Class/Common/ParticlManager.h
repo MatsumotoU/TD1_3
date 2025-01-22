@@ -18,14 +18,14 @@ public:
 	void SetCamera(Camera* set);
 
 	void SprayEffect(Vector2 pos, Vector2 size, int particlCap, int gh, unsigned int color);
-	void ExplosionEffect(Vector2 pos, Vector2 size,Vector2 force,int particlCap, int gh,unsigned int color);
+	void ExplosionEffect(Vector2 pos, Vector2 size, Vector2 force, int particlCap, int gh, unsigned int color);
 	void ShowerEffect(Vector2 pos, Vector2 dir, int diffusivity, int particlCap, int gh);
-	void FromToEffect(Vector2 fromPos, Vector2* toPos,Vector2 size, int stackFrame, int particlCap, int gh, unsigned int color);
+	void FromToEffect(Vector2 fromPos, Vector2* toPos, Vector2 size, int stackFrame, int particlCap, int gh, unsigned int color);
 	void PointEffect(Vector2 pos, int RemainingFrame, int gh);
 	void SpriteEffect(Vector2 pos, Vector2 size, float angle, int RemainingFrame, int gh);
 	void SlashEffect(Vector2 pos, Vector2 size, Vector2 dir, float power, int rnd, int RemainingFrame, int particlCap, int gh);
-	void AnimEffect(Vector2 pos, Vector2 size,float angle, int animMaxFrame, int animSpeed, int isLoop, int* gh);
-
+	void AnimEffect(Vector2 pos, Vector2 size, float angle, int animMaxFrame, int animSpeed, int isLoop, int* gh);
+	void CrackerEffect(Vector2 pos, Vector2 size, float dir, float power, float max, float min, int RemainingFrame, int particleCap, int gh, unsigned int color);
 private:
 
 	int frameCount;

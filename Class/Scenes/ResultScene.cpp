@@ -228,6 +228,10 @@ void ResultScene::Update() {
 
 				if (starT[i] >= 0.80f && starT[i] <= 0.85f) {
 					cameraZoom = { 1.18f,1.18f };
+
+					particleManager.CrackerEffect({ 0.0f,0.0f }, { 32.0f,32.0f }, 1.0f / 3.0f * static_cast<float>(M_PI), 20.0f, 3.0f, -3.0f, 60, 24, 0, 0xffffffff);
+					particleManager.CrackerEffect({ 1280.0f,0.0f }, { 32.0f,32.0f }, 2.0f / 3.0f * static_cast<float>(M_PI), 20.0f, 3.0f, -3.0f, 60, 24, 0, 0xffffffff);
+
 					//flashAlpha = 255;
 				}
 
