@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "ParticlManager.h"
 
 void ParticlManager::Init() {
@@ -74,7 +75,7 @@ void ParticlManager::SetCamera(Camera* set) {
 	}
 }
 
-void ParticlManager::SprayEffect(Vector2 pos,Vector2 size, int particlCap, int gh,unsigned int color) {
+void ParticlManager::SprayEffect(Vector2 pos, Vector2 size, int particlCap, int gh, unsigned int color) {
 
 	for (int i = 0; i < particlCap; i++) {
 
@@ -146,7 +147,7 @@ void ParticlManager::ShowerEffect(Vector2 pos, Vector2 dir, int diffusivity, int
 	}
 }
 
-void ParticlManager::FromToEffect(Vector2 fromPos, Vector2* toPos, Vector2 size, int stackFrame, int particlCap, int gh,unsigned int color) {
+void ParticlManager::FromToEffect(Vector2 fromPos, Vector2* toPos, Vector2 size, int stackFrame, int particlCap, int gh, unsigned int color) {
 
 	for (int i = 0; i < particlCap; i++) {
 
@@ -270,4 +271,33 @@ void ParticlManager::AnimEffect(Vector2 pos, Vector2 size, float angle, int anim
 		}
 	}
 
+}
+
+void ParticlManager::CrackerEffect(Vector2 pos, Vector2 size, float dir, float power, float max, float min, int RemainingFrame, int particleCap, int gh, unsigned int color) {
+	for (int i = 0; i < particleCap; i++) {
+
+		for (int p = 0; p < kPlarticlMax; p++) {
+
+			if (!particls[p].GetIsActive()) {
+				dir += Random(max, min) * (static_cast<float>(M_PI) / 180.0f);
+				particls[p].Init();
+				particls[p].SetCamera(camera);
+				particls[p].SetIsFade(true);
+				particls[p].SetFadeFrame(RemainingFrame);
+				particls[p].SetIsActive(true);
+				//particls[p].SetIsTarget(true);
+				particls[p].SetPos(pos);
+				particls[p].SetSize(size);
+				particls[p].GetPhysics2D()->AddForce(
+					{ (power + Random(5.0f,-5.0f)) * cosf(dir), (power + Random(5.0f,-5.0f)) * sinf(dir) }, IMPACT);
+				particls[p].GetPhysics2D()->AddForce({ 0.0f,-0.05f }, ACCELERATION);
+				particls[p].SetRotateDir(static_cast<float>(rand() % 10 - 5) * 0.1f);
+				particls[p].SetGraphHandle(gh);
+				particls[p].GetPhysics2D()->SetResistance(0.98f);
+				particls[p].SetIsShirink(true);
+				particls[p].SetColor(color);
+				break;
+			}
+		}
+	}
 }

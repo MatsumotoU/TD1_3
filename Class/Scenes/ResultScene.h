@@ -36,6 +36,8 @@ private:
 	int isButtonMoving[2];
 	float buttonT[2];
 
+	Transform spaceUI;
+
 	int movingOrder;
 
 	int shouldClearedMission[starTotalCount];
@@ -50,6 +52,10 @@ private:
 	int starGraphHandle;
 	int missionUIGraphHandle[starTotalCount];
 	int nextSceneUIGraphHandle[2];
+	int spaceUIGraphHandle[2];
+	int aUIGraphHandle[2];
+
+	unsigned int flashAlpha;
 
 	Vector2 cameraZoom;
 	Vector2* cameraPos;
