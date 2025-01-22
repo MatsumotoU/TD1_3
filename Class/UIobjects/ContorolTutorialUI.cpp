@@ -35,10 +35,15 @@ void ContorolTutorialUI::Init() {
 
 void ContorolTutorialUI::Update() {
 
-	if (player->GetPos().x <= 564.0f && player->GetPos().y >= 64.0f * 25.0f) {
-		isInScreeenUI = false;
+	if (isActive) {
+		
+		if (player->GetPos().x <= 564.0f && player->GetPos().y >= 64.0f * 25.0f) {
+			isInScreeenUI = false;
+		} else {
+			isInScreeenUI = true;
+		}
 	} else {
-		isInScreeenUI = true;
+		isInScreeenUI = false;
 	}
 
 	if (tutorialCount == 0) {
@@ -125,4 +130,8 @@ void ContorolTutorialUI::SetCamera(Camera* set) {
 
 void ContorolTutorialUI::SetPlayer(Player* set) {
 	player = set;
+}
+
+void ContorolTutorialUI::SetIsInScreen(int set) {
+	isInScreeenUI = set;
 }

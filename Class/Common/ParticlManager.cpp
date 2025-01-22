@@ -9,6 +9,7 @@ void ParticlManager::Init() {
 	for (int i = 0; i < kPlarticlMax; i++) {
 
 		particls[i].Init();
+		particls[i].GetPhysics2D()->SetVelocityLimit({ 128.0f,128.0f });
 		
 		if (camera != nullptr) {
 			particls->SetCamera(camera);

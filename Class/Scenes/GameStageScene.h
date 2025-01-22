@@ -6,6 +6,7 @@
 #include "Class/Common/ParticlManager.h"
 #include "Class/Common/Mapchip.h"
 #include "Class/Balance/BalanceObject.h"
+#include "Class/UIobjects/BounceNumber.h"
 
 #include "Class/UIobjects/ContorolTutorialUI.h"
 #include "Class/UIobjects/PlayerHpUI.h"
@@ -114,5 +115,8 @@ private:
 
 	ContorolTutorialUI contorolTutorialUI;
 	PlayerHpUI playerHpUI;
+
+	BounceNumber enemyRemainNum;
+	int enemyRemainNumGH[10];
 };
 

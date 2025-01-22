@@ -29,5 +29,6 @@ public:
 private:
 
 	Enemy enemyes[EMG::kMaxEnemy];
+	int enemyGH;
 
 };

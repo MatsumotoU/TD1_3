@@ -31,7 +31,7 @@ Enemy::Enemy() {
 	stunFrame = 0;
 	angleDir = { 1.0f,0.0f };
 	moveDir = { 0.0f,0.0f };
-	enemyGH = Novice::LoadTexture("./Resources/Images/enemy.png");
+	enemyGH = 0;
 
 	canAttack = false;
 	isSeePlayer = false;
@@ -43,7 +43,7 @@ Enemy::Enemy() {
 	attackAnticipationFrame = 0;
 	maxAttackAnticipationFrame = 0;
 	
-	swordGH = Novice::LoadTexture("./Resources/Images/sword.png");
+	swordGH = 0;
 	swordTransform.pos = transform.pos;
 	swordTransform.angle = 0.0f;
 	swordTransform.scale = { 0.8f,0.8f };
@@ -81,7 +81,7 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw() {
-	Render::DrawSprite(drawTransform, *camera, color, enemyGH);
+	Render::DrawSprite(drawTransform, *camera, color, *enemyGH);
 
 	if (isHitAttack) {
 		Render::DrawLine(transform.pos, transform.pos + hitDir * 100.0f, *camera, RED);
@@ -148,6 +148,10 @@ void Enemy::SetIsExprosion(int set) {
 	isExprosion = set;
 }
 
+void Enemy::SetGH(int* set) {
+	enemyGH = set;
+}
+
 int Enemy::GetIsAlive() {
 	return isAlive;
 }
@@ -165,7 +169,7 @@ Vector2* Enemy::GetPosPtr() {
 }
 
 int Enemy::GetGraphHandle() {
-	return enemyGH;
+	return *enemyGH;
 }
 
 ENM::Type Enemy::GetType() {

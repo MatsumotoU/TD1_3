@@ -10,6 +10,8 @@ class MyPhysics2D
 {
 public:
 
+	MyPhysics2D();
+
 	void Init();
 	void Update(Vector2* worldPos);
 
@@ -23,6 +25,7 @@ public:
 	void SetWeigh(float setWeight);
 	void SetAirResistance(float setAirResistance);
 	void SetResistance(float set);
+	void SetVelocityLimit(Vector2 set);
 
 	void AddForce(Vector2 force,ForceMode mode);
 	void AddGravity(Vector2 direction,float strength);
@@ -35,6 +38,8 @@ public:
 	void AttenuationVelocity(float power);
 
 private:
+
+	Vector2 velocityLimit;
 
 	Vector2 velocity;
 	Vector2 acceleration;

@@ -38,6 +38,7 @@ public:
 	void SetPlayerPos(Vector2* set);
 	void SetIsShot(int set);
 	void SetIsExprosion(int set);
+	void SetGH(int* set);
 
 	int GetIsAlive();
 	int GetIsHitAttack();
@@ -84,7 +85,7 @@ private:
 	int isExprosion;
 	int isAlive;
 	Camera* camera;
-	int enemyGH;
+	int* enemyGH;
 	Transform swordTransform;
 	int swordGH;
 	unsigned int color;

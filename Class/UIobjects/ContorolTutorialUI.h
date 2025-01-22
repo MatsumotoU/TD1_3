@@ -5,7 +5,7 @@
 
 class Player;
 
-class ContorolTutorialUI : GameObject
+class ContorolTutorialUI :public GameObject
 {
 public:
 
@@ -15,6 +15,7 @@ public:
 
 	void SetCamera(Camera* set);
 	void SetPlayer(Player* set);
+	void SetIsInScreen(int set);
 
 private:
 

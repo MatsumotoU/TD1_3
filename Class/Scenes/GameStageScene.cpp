@@ -136,6 +136,21 @@ void GameStageScene::Init() {
 	playerHpUI.SetCamera(&uiCamera);
 	playerHpUI.SetPlayer(&player);
 
+	enemyRemainNum.Init();
+	enemyRemainNum.SetPos({ 0.0f,-128.0f });
+	enemyRemainNum.SetSize({ 128.0f,128.0f });
+	enemyRemainNumGH[0] = Novice::LoadTexture("./Resources/Images/Number1.png");
+	enemyRemainNumGH[1] = Novice::LoadTexture("./Resources/Images/Number2.png");
+	enemyRemainNumGH[2] = Novice::LoadTexture("./Resources/Images/Number3.png");
+	enemyRemainNumGH[3] = Novice::LoadTexture("./Resources/Images/Number4.png");
+	enemyRemainNumGH[4] = Novice::LoadTexture("./Resources/Images/Number5.png");
+	enemyRemainNumGH[5] = Novice::LoadTexture("./Resources/Images/Number6.png");
+	enemyRemainNumGH[6] = Novice::LoadTexture("./Resources/Images/Number7.png");
+	enemyRemainNumGH[7] = Novice::LoadTexture("./Resources/Images/Number8.png");
+	enemyRemainNumGH[8] = Novice::LoadTexture("./Resources/Images/Number9.png");
+	enemyRemainNumGH[9] = Novice::LoadTexture("./Resources/Images/Number10.png");
+	enemyRemainNum.SetTargetNum(map.GetEnemyNum());
+
 	// 一番最初の位置バグ修正用
 	player.Update();
 	mainCamera.SetPos(player.GetPos());
@@ -228,6 +243,8 @@ IScene* GameStageScene::GetNextScene() {
 }
 
 void GameStageScene::WaveManager() {
+	
+	enemyRemainNum.Update();
 
 	if (enemyManager.GetRemainEnemies() <= 0 || !player.GetIsAlive()) {
 		if (!isChangeWave) {
@@ -261,10 +278,15 @@ void GameStageScene::WaveManager() {
 			} else if (wave == 3) {
 				map.LoadMap("Resources/Maps/stage1w3.txt");
 			}
+
+			enemyRemainNum.Init();
+			enemyRemainNum.SetTargetNum(map.GetEnemyNum());
 		}
 	}
 
 	if (isChangeWave) {
+
+		contorolTutorialUI.SetIsActive(false);
 
 		// ウェーブ管理処理演出終了
 		if (wave >= 4 || (input->GetControl(ENTER, Triger) && frameCount >= 30)) {
@@ -272,6 +294,8 @@ void GameStageScene::WaveManager() {
 			isChangeWave = false;
 			isClearStage = false;
 			lastHitEnemyNum = -1;
+
+			contorolTutorialUI.SetIsActive(true);
 		}
 	}
 }
@@ -628,6 +652,8 @@ void GameStageScene::EnemyAttack() {
 void GameStageScene::WaveUiDraw() {
 	if (isChangeWave) {
 		Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x000000DF, kFillModeSolid);
+		enemyRemainNum.Draw(&uiCamera, enemyRemainNumGH);
+		//Render::DrawNum({ 0.0f,0.0f }, { 128.0f,128.0f }, { 1.0f,1.0f }, 0.0f, uiCamera, 0, enemyRemainNumGH, WHITE);
 
 		/*Render::DrawSprite(balancePoleTransform, uiCamera, WHITE, balancePoleGH);
 
@@ -641,6 +667,7 @@ void GameStageScene::WaveUiDraw() {
 		Render::DrawSprite(balanceBasketTransform[1], uiCamera, WHITE, balanceBasketGH);*/
 
 		Render::DrawSprite(waveStringTransform, uiCamera, WHITE, waveStringGH);
+		Render::DrawNum({ 0.0f,64.0f }, { 128.0f,128.0f }, { 1.0f,1.0f }, 0.0f, uiCamera, wave, enemyRemainNumGH, WHITE);
 	}
 }
 
