@@ -15,14 +15,8 @@ void TitleScene::Init() {
 	mainCamera.Init();
 
 	// タイトルロゴの変数
-	logo[0] =
-	{
-		640.5f,460.0f,
-		1280.0f,176.0f,
-		1.0f,1.0f,0.0f
-	};
 
-	logo[1] =
+	logo[0] =
 	{
 		696.0f,460.0f,
 		1280.0f,176.0f,
@@ -43,7 +37,7 @@ void TitleScene::Init() {
 		1.0f,1.0f,0.0f
 	};
 
-	logo[2] =
+	logo[1] =
 	{
 		600.0f,460.0f,
 		1280.0f,176.0f,
@@ -61,6 +55,49 @@ void TitleScene::Init() {
 	{
 		640.0f,460.0f,
 		1280.0f,176.0f,
+		1.0f,1.0f,0.0f
+	};
+
+	// メの変数
+	logo[2] =
+	{
+		1360.0f,800.0f,
+		142.0f,146.0f,
+		1.0f,1.0f,0.0f
+	};
+
+	startLogo[2] =
+	{
+		1360.0f,800.0f,
+		96.0f,96.0f,
+		1.0f,1.0f,0.0f
+	};
+
+	endLogo[2] =
+	{
+		793.0f,462.0f,
+		96.0f,96.0f,
+		1.0f,1.0f,0.0f
+	};
+
+	logo[3] =
+	{
+		-80.0f,800.0f,
+		142.0f,146.0f,
+		1.0f,1.0f,0.0f
+	};
+
+	startLogo[3] =
+	{
+		-80.0f,800.0f,
+		96.0f,96.0f,
+		1.0f,1.0f,0.0f
+	};
+
+	endLogo[3] =
+	{
+		793.0f,462.0f,
+		96.0f,96.0f,
 		1.0f,1.0f,0.0f
 	};
 
@@ -134,6 +171,7 @@ void TitleScene::Init() {
 	// エフェクトの変数
 	efectT[0] = 0.0f;
 	efectT[1] = 0.0f;
+	efectT[2] = 0.0f;
 	efectCoolTime = 60;
 	isEfectMove = false;
 	isUnderEfectMove = false;
@@ -156,9 +194,10 @@ void TitleScene::Init() {
 	*cameraPos = { 640.0f,360.0f };
 
 	// 画像番号を格納する
-	titleLogoGh[0] = Novice::LoadTexture("./Resources/Images/titleLogo3.png");
-	titleLogoGh[1] = Novice::LoadTexture("./Resources/Images/titleLogo1.png");
-	titleLogoGh[2] = Novice::LoadTexture("./Resources/Images/titleLogo2.png");
+	titleLogoGh[0] = Novice::LoadTexture("./Resources/Images/titleLogo1.png");
+	titleLogoGh[1] = Novice::LoadTexture("./Resources/Images/titleLogo2.png");
+	titleLogoGh[2] = Novice::LoadTexture("./Resources/Images/titleLogo3.png");
+	titleLogoGh[3] = Novice::LoadTexture("./Resources/Images/titleLogo4.png");
 	buttonGh[0] = Novice::LoadTexture("./Resources/Images/button1.png");
 	buttonGh[1] = Novice::LoadTexture("./Resources/Images/button2.png");
 	buttonGh[2] = Novice::LoadTexture("./Resources/Images/button.png");
@@ -191,8 +230,12 @@ void TitleScene::Update() {
 	// 演出のスキップ処理
 	if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER, Triger)) {
 		isMoveEnd = true;
-		logo[1].pos.x = endLogo[0].pos.x;
-		logo[2].pos.x = endLogo[1].pos.x;
+		logo[0].pos.x = endLogo[0].pos.x;
+		logo[1].pos.x = endLogo[1].pos.x;
+		logo[2].pos.x = endLogo[2].pos.x;
+		logo[3].pos.x = endLogo[3].pos.x;
+		logo[2].pos.y = endLogo[2].pos.y;
+		logo[3].pos.y = endLogo[3].pos.y;
 		returnColor[0] = 0x00000000;
 		returnColor[1] = 0xFFFFFFFF;
 	}
@@ -330,6 +373,23 @@ void TitleScene::Update() {
 	}
 	else if (isEaseStart)
 	{
+		if (efectT[2] < 1.0f)
+		{
+			// メをイージングさせる処理
+			efectT[2] += 0.015f;
+
+			if (efectT[2] >= 1.0f)
+			{
+				efectT[2] = 1.0f;
+				mainCamera.shakeRange = { 50.0f,0.0f };
+			}
+
+			logo[2].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.x, endLogo[2].pos.x);
+			logo[2].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.y, endLogo[2].pos.y);
+			logo[3].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.x, endLogo[3].pos.x);
+			logo[3].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.y, endLogo[3].pos.y);
+		}
+
 		if (efectT[1] < 1.0f)
 		{
 			// ロゴをイージングさせる処理
@@ -354,8 +414,8 @@ void TitleScene::Update() {
 				efectT[0] = 1.0f;
 			}
 
-			logo[1].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[0].pos.x, endLogo[0].pos.x);
-			logo[2].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[1].pos.x, endLogo[1].pos.x);
+			logo[0].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[0].pos.x, endLogo[0].pos.x);
+			logo[1].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[1].pos.x, endLogo[1].pos.x);
 		}
 		else
 		{
@@ -376,15 +436,17 @@ void TitleScene::Draw() {
 	if (efectCoolTime >= 0)
 	{
 		// ロゴの描画処理
+		Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
 		Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
-		Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
 	}
 
 	if (isMoveEnd)
 	{
 		// ロゴの描画処理
+		Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
 		Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
 		Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
+		Render::DrawSprite(logo[3], mainCamera, 0xFFFFFFFF, titleLogoGh[3]);
 		Render::DrawSprite(button[0], mainCamera, returnColor[0], buttonGh[0]);
 		Render::DrawSprite(button[1], mainCamera, returnColor[0], buttonGh[1]);
 
@@ -405,14 +467,14 @@ void TitleScene::Draw() {
 		if (isEfectMove)
 		{
 			// ロゴの描画処理
+			Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
 			Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
-			Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
 		}
 		else if (isUnderEfectMove)
 		{
 			// ロゴの描画処理
+			Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
 			Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
-			Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
 			Render::DrawSprite(button[0], mainCamera, returnColor[0], buttonGh[0]);
 			Render::DrawSprite(button[1], mainCamera, returnColor[0], buttonGh[1]);
 
@@ -420,8 +482,10 @@ void TitleScene::Draw() {
 		else if (isEaseStart)
 		{
 			// ロゴの描画処理
+			Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
 			Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
 			Render::DrawSprite(logo[2], mainCamera, 0xFFFFFFFF, titleLogoGh[2]);
+			Render::DrawSprite(logo[3], mainCamera, 0xFFFFFFFF, titleLogoGh[3]);
 		}
 
 		// PressSpaceの描画処理

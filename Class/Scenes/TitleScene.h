@@ -24,14 +24,14 @@ public:
 private:
 
 	// タイトル用の変数
-	Transform logo[3];
-	Transform startLogo[2];
-	Transform endLogo[2];
+	Transform logo[4];
+	Transform startLogo[4];
+	Transform endLogo[4];
 	Transform button[4];
 	Transform startButton[2];
 	Transform endButton[2];
 	Transform efect[2];
-	float efectT[2];
+	float efectT[3];
 	float alphaValue[4];
 	int efectCoolTime;
 	int isEfectMove;
@@ -49,11 +49,9 @@ private:
 	Vector2* cameraPos;
 
 	// 画像のグラフハンドル
-	int titleLogoGh[3];
-	int buttonGh[3];
+	int titleLogoGh[4];
+	int buttonGh[4];
 	int bigEfectGh[9];
 	int smallEfectGh[9];
-
-	unsigned int EaseInOutQuart(float transitionRate, unsigned int startValue, unsigned int endValue);
 };
 
