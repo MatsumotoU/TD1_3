@@ -52,7 +52,7 @@ void SelectScene::Init() {
 	// AとDの矢印のUIの変数
 	for (int i = 0; i < 2; ++i) {
 		arrow[i] = {
-			{250.0f + i * 780.0f,256.0f},
+			{250.0f + i * 780.0f,288.0f},
 			{160.0f,160.0f},
 			{1.0f,1.0f},
 			0.0f
