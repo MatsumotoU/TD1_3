@@ -2,8 +2,10 @@
 #include "Class/Common/Collision2D.h"
 
 EnemyManager::EnemyManager() {
+	enemyGH = Novice::LoadTexture("./Resources/Images/enemy.png");
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		enemyes[i].Init();
+		enemyes[i].SetGH(&enemyGH);
 	}
 }
 

@@ -2,6 +2,10 @@
 
 #include <algorithm>
 
+MyPhysics2D::MyPhysics2D() {
+	velocityLimit = {24.0f,24.0f};
+}
+
 void MyPhysics2D::Init() {
 
 	velocity = { 0.0f,0.0f };
@@ -15,8 +19,8 @@ void MyPhysics2D::Update(Vector2* worldPos) {
 
 	//acceleration.x = std::clamp(acceleration.x, -1.0f, 1.0f);
 	//acceleration.y = std::clamp(acceleration.y, -1.0f, 1.0f);
-	velocity.x = std::clamp(velocity.x, -24.0f, 24.0f);
-	velocity.y = std::clamp(velocity.y, -24.0f, 24.0f);
+	velocity.x = std::clamp(velocity.x, -velocityLimit.x, velocityLimit.x);
+	velocity.y = std::clamp(velocity.y, -velocityLimit.y, velocityLimit.y);
 
 	// 物理加算処理
 	velocity.x += acceleration.x;
@@ -131,5 +135,9 @@ void MyPhysics2D::SetAirResistance(float setAirResistance) {
 void MyPhysics2D::SetResistance(float set) {
 
 	resistance = set;
+}
+void MyPhysics2D::SetVelocityLimit(Vector2 set) {
+
+	velocityLimit = set;
 }
 #pragma endregion

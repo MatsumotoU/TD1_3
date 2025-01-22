@@ -43,6 +43,18 @@ namespace Render {
 	void DrawSprite(Transform transform, Camera camera, unsigned int color,int gh);
 
 	/// <summary>
+	/// スプライト描画
+	/// </summary>
+	/// <param name="pos">表示する中心座標</param>
+	/// <param name="size">画像サイズ</param>
+	/// <param name="scale">スプライトの大きさ</param>
+	/// <param name="angle">角度</param>
+	/// <param name="camera">使用するカメラ</param>
+	/// <param name="color">色</param>
+	/// <param name="gh">テクスチャ</param>
+	void DrawSprite(Vector2 pos, Vector2 size, Vector2 scale, float angle, Camera camera, unsigned int color, int gh);
+
+	/// <summary>
 	/// 数字を描画
 	/// </summary>
 	/// <param name="pos">座標</param>
@@ -52,7 +64,7 @@ namespace Render {
 	/// <param name="num">描画する数値</param>
 	/// <param name="gh">数字のグラフィック</param>
 	/// <param name="color">数字の色</param>
-	void DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Camera camera, int num, int gh[10], unsigned int color);
+	void DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Camera camera, int num, int* gh, unsigned int color);
 }
 
 

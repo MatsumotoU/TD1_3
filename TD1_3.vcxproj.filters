@@ -119,6 +119,12 @@
     <ClCompile Include="Class\UIobjects\PlayerHpUI.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="Class\UIobjects\RemainEnemyUI.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Class\UIobjects\BounceNumber.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -225,5 +231,7 @@
     <ClInclude Include="Class\Balance\BalanceObject.h" />
     <ClInclude Include="Class\UIobjects\ContorolTutorialUI.h" />
     <ClInclude Include="Class\UIobjects\PlayerHpUI.h" />
+    <ClInclude Include="Class\UIobjects\RemainEnemyUI.h" />
+    <ClInclude Include="Class\UIobjects\BounceNumber.h" />
   </ItemGroup>
 </Project>
