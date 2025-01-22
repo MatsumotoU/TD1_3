@@ -174,7 +174,7 @@ void Render::DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Came
 	}
 
 	for (int i = 0; i < digit; i++) {
-		Vector2 digitPos = { pos.x + ((size.x * static_cast<float>(i)) * 0.5f) - ((size.x * static_cast<float>(digit - (i + 1))) * 0.25f),0.0f };
+		Vector2 digitPos = { ((size.x * static_cast<float>(i)) * 0.5f) - ((size.x * static_cast<float>(digit - (i + 1))) * 0.25f),0.0f };
 		tempTransform.pos -= digitPos;
 
 		DrawSprite(tempTransform,camera, color, gh[numD[i] % 10]);

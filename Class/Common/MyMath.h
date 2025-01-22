@@ -8,6 +8,7 @@ float Dot(Vector2 a, Vector2 b);
 float Cross(Vector2 a, Vector2 b);
 float Length(Vector2 a);
 Vector2 Normalize(Vector2 setVec);
+float Lerp(float a, float b, float t);
 
 template <typename T>
 T Random(T max, T min) {
@@ -15,6 +16,7 @@ T Random(T max, T min) {
 }
 
 unsigned int ColorFade(unsigned int color, float alpha);
+unsigned int ColorGradation(unsigned int fromColor, unsigned int toColor, float t);
 
 template <typename T>
 T Clamp(T t, T min, T max) {

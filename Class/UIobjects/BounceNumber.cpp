@@ -8,20 +8,25 @@ BounceNumber::BounceNumber() {
 	transform = { 0.0f };
 	transform.pos = { 0.0f,0.0f };
 	transform.scale = { 1.0f,1.0f };
+	localScale = { 1.0f,1.0f };
 	transform.size = { 64.0f,64.0f };
 	transform.angle = 0.0f;
 	color = 0;
+	frameCount = 0;
 }
 
 void BounceNumber::Init() {
 	oldNumber = 0;
 	number = 0;
 	targetNumber = 0;
+	frameCount = 0;
 
 	color = WHITE;
 }
 
 void BounceNumber::Update() {
+
+	frameCount++;
 
 	if (number != targetNumber) {
 		if (transform.scale.x > 0.8f && transform.scale.x < 1.2f) {
@@ -43,7 +48,7 @@ void BounceNumber::Update() {
 
 void BounceNumber::Draw(Camera* drawCamera,int* numberGH) {
 
-	Render::DrawNum(transform.pos, transform.size, transform.scale, transform.angle, *drawCamera, number, numberGH, color);
+	Render::DrawNum(transform.pos, transform.size, transform.scale * localScale.y, transform.angle, *drawCamera, number, numberGH, color);
 }
 
 void BounceNumber::SetPos(Vector2 set) {
@@ -54,6 +59,26 @@ void BounceNumber::SetSize(Vector2 set) {
 	transform.size = set;
 }
 
+void BounceNumber::SetScale(Vector2 set) {
+	transform.scale = set;
+}
+
 void BounceNumber::SetTargetNum(int set) {
 	targetNumber = set;
+}
+
+void BounceNumber::SetLocalScale(Vector2 set) {
+	localScale = set;
+}
+
+Transform BounceNumber::GetTransform() {
+	return transform;
+}
+
+Vector2* BounceNumber::GetPosPtr() {
+	return &transform.pos;
+}
+
+Vector2 BounceNumber::GetScale() {
+	return transform.scale;
 }
