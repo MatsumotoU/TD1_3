@@ -4,7 +4,7 @@
 
 void ContorolTutorialUI::Init() {
 	transform = { 0 };
-	transform.pos = { -360.0f,240.0f };
+	transform.pos = { -900.0f,240.0f };
 	transform.scale = { 1.0f,1.0f };
 	transform.size = { 480.0f,192.0f };
 	tutorialCount = 0;
@@ -29,7 +29,7 @@ void ContorolTutorialUI::Init() {
 	controllerTutorialPushGH[1] = Novice::LoadTexture("./Resources/Images/controllerTutorialPush2.png");
 	controllerTutorialPushGH[2] = Novice::LoadTexture("./Resources/Images/controllerTutorialPush3.png");
 
-	isInScreeenUI = true;
+	isInScreeenUI = false;
 	tutorialStep = 0;
 }
 

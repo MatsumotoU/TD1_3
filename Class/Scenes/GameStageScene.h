@@ -118,5 +118,12 @@ private:
 
 	BounceNumber enemyRemainNum;
 	int enemyRemainNumGH[10];
+	BounceNumber waveNumber;
+	Transform clossTransform;
+	int clossGH;
+	Transform enemyTargetTransform;
+	int targetEnemyUiGH;
+	Transform missionTransform;
+	int missionGH;
 };
 

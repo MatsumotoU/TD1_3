@@ -10,12 +10,48 @@ float Cross(Vector2 a, Vector2 b) {
     return a.x * b.y - a.y * b.x;
 }
 
+float Lerp(float a, float b, float t) {
+	return a * t + (1.0f - t) * b;
+}
+
 unsigned int ColorFade(unsigned int color, float alpha) {
 
     unsigned int maskColor = 0xFFFFFF00 & color;
     
 
     return maskColor | static_cast<int>(alpha * 255);;
+}
+
+unsigned int ColorGradation(unsigned int fromColor, unsigned int toColor, float t) {
+
+	float fromR = static_cast<float>(fromColor >> 24);
+	float fromG = static_cast<float>((fromColor >> 16) & 0x000000FF);
+	float fromB = static_cast<float>((fromColor >> 8) & 0x000000FF);
+	float fromAlpha = static_cast<float>(fromColor & 0x000000FF);
+
+
+	float toR = static_cast<float>(toColor >> 24);
+	float toG = static_cast<float>((toColor >> 16) & 0x000000FF);
+	float toB = static_cast<float>((toColor >> 8) & 0x000000FF);
+	float toAlpha = static_cast<float>(toColor & 0x000000FF);
+
+
+	float resultR = Lerp(toR, fromR, t);
+	float resultG = Lerp(toG, fromG, t);
+	float resultB = Lerp(toB, fromB, t);
+	float resultAlpha = Lerp(toAlpha, fromAlpha, t);
+
+
+	unsigned int resultColor = static_cast<int>(resultR);
+	resultColor = resultColor << 8;
+	resultColor += static_cast<unsigned int>(resultG);
+	resultColor = resultColor << 8;
+	resultColor += static_cast<unsigned int>(resultB);
+	resultColor = resultColor << 8;
+	resultColor += static_cast<unsigned int>(resultAlpha);
+
+
+	return resultColor;
 }
 
 float Length(Vector2 a) {
