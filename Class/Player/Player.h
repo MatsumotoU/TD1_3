@@ -4,6 +4,8 @@
 #include "Class/Common/Render.h"
 #include "Class/Common/ParticlManager.h"
 
+class Mapchip;
+
 // プレイヤーで使う定数
 namespace PLR {
 	const int kMaxMoveStackFrame = 15;
@@ -51,6 +53,7 @@ public:
 	void SetIsSheathe(int set);
 	void SetRemainAttackChance(int set);
 	void SetIsDash(int set);
+	void SetMapchip(Mapchip* set);
 
 	int GetIsAlive();
 	int GetIsAttack();
@@ -71,6 +74,8 @@ public:
 private:
 	int frameCount;
 	float seVolume;
+
+	Transform oldTransform;
 
 	Transform rightArm;
 	Transform leftArm;
@@ -130,5 +135,7 @@ private:
 
 	// キー入力受付クラス呼び出し
 	InputManager* input = InputManager::GetInstance();
+
+	Mapchip* map;
 };
 

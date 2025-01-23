@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "Class/Common/MyEasing.h"
+#include "Class/Common/Mapchip.h"
 
 Enemy::Enemy() {
 	transform.pos = { 0.0f,0.0f };
@@ -50,6 +51,7 @@ Enemy::Enemy() {
 	swordTransform.size = { 128.0f,32.0f };
 
 	isExprosion = false;
+	map = nullptr;
 }
 
 void Enemy::Init() {
@@ -62,9 +64,12 @@ void Enemy::Init() {
 	isExprosion = false;
 	isActive = false;
 	isAlive = false;
+	oldTransform = transform;
 }
 
 void Enemy::Update() {
+	oldTransform = transform;
+
 	if (isAlive) {
 		if (stunFrame <= 0) {
 			Move();
@@ -78,6 +83,10 @@ void Enemy::Update() {
 	StateCheck();
 
 	physics.Update(&transform.pos);
+
+	if (!map->GetIsFromToVisionClear(oldTransform.pos, transform.pos)) {
+		transform.pos = oldTransform.pos;
+	}
 }
 
 void Enemy::Draw() {
@@ -150,6 +159,10 @@ void Enemy::SetIsExprosion(int set) {
 
 void Enemy::SetGH(int* set) {
 	enemyGH = set;
+}
+
+void Enemy::SetMapchip(Mapchip* set) {
+	map = set;
 }
 
 int Enemy::GetIsAlive() {
