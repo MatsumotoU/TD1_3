@@ -45,6 +45,7 @@ private:
 
 	Transform bg;
 	unsigned int bgColor[3];
+	float bgTheta[3];
 
 	int shouldClearedMission[stageTotalCount][starTotalCount];
 
