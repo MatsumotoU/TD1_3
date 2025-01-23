@@ -41,6 +41,8 @@ private:
 	int isMoveEnd;
 	int isIncreaseAlpha;
 	int efectNum;
+	int changeSceneCount;
+	int isChangeScene;
 	unsigned int color[3];
 	unsigned int returnColor[3];
 	unsigned int endColor;
