@@ -71,6 +71,19 @@ void ResultScene::Init() {
 		0.0f
 	};
 
+	bg = {
+		{640.0f,360.0f},
+		{1280.0f,720.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+
+	isBgDrawn = false;
+
+	for (int i = 0; i < 3; ++i) {
+		bgColor[i] = 0x22283100;
+	}
+
 	for (int i = 0; i < 2; ++i) {
 		cracker[i] = {
 			{ -128.0f + i * 1536.0f,-128.0f }, // 位置
@@ -124,6 +137,10 @@ void ResultScene::Init() {
 
 	crackerGraphHandle[0] = Novice::LoadTexture("./Resources/Images/cracker1.png");
 	crackerGraphHandle[1] = Novice::LoadTexture("./Resources/Images/cracker2.png");
+
+	bgGraphHandle[0] = Novice::LoadTexture("./Resources/Images/bg1.png");
+	bgGraphHandle[1] = Novice::LoadTexture("./Resources/Images/bg2.png");
+	bgGraphHandle[2] = Novice::LoadTexture("./Resources/Images/bg3.png");
 }
 
 void ResultScene::Update() {
@@ -263,9 +280,8 @@ void ResultScene::Update() {
 
 				if (starT[i] >= 0.80f && starT[i] <= 0.85f) {
 					cameraZoom = { 1.18f,1.18f };
-
-					particleManager.CrackerEffect({ 0.0f,0.0f }, { 48.0f,48.0f }, 4.5f / 13.0f * static_cast<float>(M_PI), 60.0f, 2.0f, -2.0f, 60, 24, 0, 0xffffffff);
-					particleManager.CrackerEffect({ 1300.0f,0.0f }, { 48.0f,48.0f }, 8.5f / 13.0f * static_cast<float>(M_PI), 60.0f, 2.0f, -2.0f, 60, 24, 0, 0xffffffff);
+					particleManager.CrackerEffect({ 0.0f,0.0f }, { 48.0f,48.0f }, 4.5f / 13.0f * static_cast<float>(M_PI), 60.0f, 2.0f, -2.0f, 60, 24, 0, ColorGradation(0xeeeeeeff, 0xd65a31ff, Random(100.0f, 0.0f) / 100.0f));
+					particleManager.CrackerEffect({ 1300.0f,0.0f }, { 48.0f,48.0f }, 8.5f / 13.0f * static_cast<float>(M_PI), 60.0f, 2.0f, -2.0f, 60, 24, 0, ColorGradation(0xeeeeeeff, 0xd65a31ff, Random(100.0f, 0.0f) / 100.0f));
 				}
 
 				if (starT[i] < 0.8f) {
@@ -323,8 +339,14 @@ void ResultScene::Update() {
 				particleManager.PointEffect(
 					{ star[i].pos.x + Random(90.0f,0.0f) * cosf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)),
 					  star[i].pos.y + Random(90.0f,0.0f) * sinf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)) },
-					20, 0
+					20, 0, 0xeeeeeeff
 				);
+
+				/*particleManager.PointEffect(
+					{ star[i].pos.x + Random(90.0f,0.0f) * cosf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)),
+					  star[i].pos.y + Random(90.0f,0.0f) * sinf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)) },
+					20, 0, ColorGradation(0xeeeeeeff, 0xd65a31ff, Random(100.0f, 0.0f) / 100.0f)
+				);*/
 			}
 		}
 	}
@@ -408,10 +430,13 @@ void ResultScene::Update() {
 					missionUIT[i] = 1.0f;
 
 					if (isMissionUIMoving[i]) {
+						isBgDrawn = true;
 						isMissionUIMoving[i] = false;
 						movingOrder++;
 					}
 				}
+
+				bgColor[i] = ColorGradation(0x2228310f, 0xffffff0a, missionUIT[i]);
 
 				missionUI[i].scale.x = Eas::EaseInOutQuart(missionUIT[i], 1.0f, 0.8f);
 				missionUI[i].scale.y = Eas::EaseInOutQuart(missionUIT[i], 1.0f, 0.8f);
@@ -449,6 +474,14 @@ void ResultScene::Update() {
 		}
 	}
 
+	if (isBgDrawn) {
+		for (int i = 0; i < 3; ++i) {
+			if (movingOrder >= 10) {
+				bgColor[i] = ColorFade(0xffffffff, fabsf(cosf(star[i].angle)) * (0.15f - i * 0.06f));
+			}
+		}
+	}
+
 	if (cameraZoom.x > 1.0f) {
 		cameraZoom.x -= 0.015f;
 		if (cameraZoom.x <= 1.0f) {
@@ -471,6 +504,9 @@ void ResultScene::Update() {
 void ResultScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
 
+	for (int i = 0; i < 3; ++i) {
+		Render::DrawSprite(bg, mainCamera, bgColor[i], bgGraphHandle[i]);
+	}
 
 	for (int i = 0; i < starTotalCount; ++i) {
 		// ===================================================================================//

@@ -38,6 +38,10 @@ private:
 
 	Transform spaceUI;
 
+	Transform bg;
+	unsigned int bgColor[3];
+	int isBgDrawn;
+
 	Transform cracker[2];
 	float crackerT[2];
 	unsigned int crackerAlpha[2];
@@ -60,6 +64,7 @@ private:
 	int spaceUIGraphHandle[2];
 	int aUIGraphHandle[2];
 	int crackerGraphHandle[2];
+	int bgGraphHandle[3];
 
 	unsigned int flashAlpha;
 
