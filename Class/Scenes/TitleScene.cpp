@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "TitleScene.h"
 #include "SelectScene.h"
 #include "GameStageScene.h"
@@ -5,56 +6,60 @@
 #include "Class/Common//MyEasing.h"
 #include "Class/Common/Render.h"
 #include "Class/Common/MyMath.h"
+#include "Class/Common/ParticlManager.h"
+#include "math.h"
 
 void TitleScene::Init() {
 	frameCount = 0;
 	isTransition = false;
 	gameStage = 0;
 
-	particleManager.SetCamera(&mainCamera);
 	mainCamera.Init();
+	particleManager.Init();
+	particleManager.SetCamera(&mainCamera);
+
 
 	// タイトルロゴの変数
 
 	logo[0] =
 	{
-		696.0f,460.0f,
-		1280.0f,176.0f,
+		640.0f,460.0f,
+		1280.0f,320.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	startLogo[0] =
 	{
-		696.0f,460.0f,
-		1280.0f,176.0f,
+		640.0f,460.0f,
+		1280.0f,320.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	endLogo[0] =
 	{
-		640.0f,460.0f,
-		1280.0f,88.0f,
+		592.0f,460.0f,
+		1280.0f,320.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	logo[1] =
 	{
-		600.0f,460.0f,
-		1280.0f,176.0f,
+		640.0f,460.0f,
+		1280.0f,320.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	startLogo[1] =
 	{
-		600.0f,460.0f,
-		1280.0f,176.0f,
+		640.0f,460.0f,
+		1280.0f,320.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	endLogo[1] =
 	{
-		640.0f,460.0f,
-		1280.0f,176.0f,
+		688.0f,460.0f,
+		1280.0f,320.0f,
 		1.0f,1.0f,0.0f
 	};
 
@@ -68,14 +73,14 @@ void TitleScene::Init() {
 
 	startLogo[2] =
 	{
-		1360.0f,1360.0f,
+		1185.0f,862.0f,
 		96.0f,96.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	endLogo[2] =
 	{
-		793.0f,462.0f,
+		785.0f,462.0f,
 		96.0f,96.0f,
 		1.0f,1.0f,0.0f
 	};
@@ -89,14 +94,14 @@ void TitleScene::Init() {
 
 	startLogo[3] =
 	{
-		-80.0f,1360.0f,
+		385.0f,862.0f,
 		96.0f,96.0f,
 		1.0f,1.0f,0.0f
 	};
 
 	endLogo[3] =
 	{
-		793.0f,462.0f,
+		785.0f,462.0f,
 		96.0f,96.0f,
 		1.0f,1.0f,0.0f
 	};
@@ -167,11 +172,18 @@ void TitleScene::Init() {
 		1.0f,1.0f,0.0f
 	};
 
-	
+	bg = {
+		{640.0f,360.0f},
+		{1280.0f,720.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+
 	// エフェクトの変数
 	efectT[0] = 0.0f;
 	efectT[1] = 0.0f;
 	efectT[2] = 0.0f;
+	efectT[3] = 0.0f;
 	efectCoolTime = 60;
 	isEfectMove = false;
 	isUnderEfectMove = false;
@@ -189,9 +201,19 @@ void TitleScene::Init() {
 	alphaValue[3] = 0.0f;
 	isIncreaseAlpha = true;
 	efectNum = 0;
+	sword[0] = { 10.0f,10.0f };
+	sword[1] = { 10.0f,10.0f };
+	efectDir[0] = { 10.0f,10.0f };
+	efectDir[1] = { -10.0f,10.0f };
 
 	cameraPos = mainCamera.GetPosPtr();
 	*cameraPos = { 640.0f,360.0f };
+
+	for (int i = 0; i < 3; i++)
+	{
+		bgAngle[i] = 2.0f * static_cast<float>(M_PI) / 3.0f * i;
+		bgColor[i] = ColorFade(0xffffffff, fabsf(sinf(bgAngle[i])) * (0.15f - i * 0.06f));
+	}
 
 	// 画像番号を格納する
 	titleLogoGh[0] = Novice::LoadTexture("./Resources/Images/titleLogo1.png");
@@ -220,6 +242,13 @@ void TitleScene::Init() {
 	smallEfectGh[6] = Novice::LoadTexture("./Resources/Images/smallEfect7.png");
 	smallEfectGh[7] = Novice::LoadTexture("./Resources/Images/smallEfect8.png");
 	smallEfectGh[8] = Novice::LoadTexture("./Resources/Images/smallEfect9.png");
+	bgGraphHandle[0] = Novice::LoadTexture("./Resources/Images/bg1.png");
+	bgGraphHandle[1] = Novice::LoadTexture("./Resources/Images/bg2.png");
+	bgGraphHandle[2] = Novice::LoadTexture("./Resources/Images/bg3.png");
+
+	// 音の変数の初期化
+	dicisionSe = Novice::LoadAudio("./Resources/Sounds/dicision.mp3");
+	isDicision = false;
 
 }
 
@@ -306,17 +335,35 @@ void TitleScene::Update() {
 		}
 		else
 		{
-			if (alphaValue[2] > 0.3f)
+			if (alphaValue[2] > 0.0f)
 			{
 				alphaValue[2] -= 0.01f;
 
-				if (alphaValue[2] <= 0.3f)
+				if (alphaValue[2] <= 0.0f)
 				{
-					alphaValue[2] = 0.3f;
+					alphaValue[2] = 0.0f;
 					isIncreaseAlpha = true;
 				}
 
 			}
+		}
+
+		if (efectT[3] <= 1.0f)
+		{
+			efectT[3] += 0.1f;
+
+			if (efectT[3] > 1.0f)
+			{
+				efectT[3] = 0.0f;
+			}
+
+		}
+
+		for (int i = 0; i < 3; ++i) {
+
+			bgAngle[i] += 1.0f / 180.0f * static_cast<float>(M_PI);
+
+			bgColor[i] = ColorFade(0xffffffff, fabsf(sinf(bgAngle[i])) * (0.15f - i * 0.06f));
 		}
 
 		alphaValue[3] = Eas::EaseInOutQuart(alphaValue[2], 1.0f, 0.1f);
@@ -326,8 +373,9 @@ void TitleScene::Update() {
 		if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER, Triger)) {
 			if (frameCount >= 180) {
 				isTransition = true;// こいつをtrueにすると即座にシーン遷移する(シーンのUpdateは止まる)
+				isDicision = true;
 			}
-			
+
 		}
 	}
 	else if (efectCoolTime >= 0)
@@ -412,7 +460,7 @@ void TitleScene::Update() {
 		if (efectT[2] < 1.0f)
 		{
 			// メをイージングさせる処理
-			efectT[2] += 0.015f;
+			efectT[2] += 0.01f;
 
 			if (efectT[2] >= 1.0f)
 			{
@@ -422,8 +470,10 @@ void TitleScene::Update() {
 
 			logo[2].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.x, endLogo[2].pos.x);
 			logo[2].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.y, endLogo[2].pos.y);
+			particleManager.SlashEffect(logo[2].pos, sword[0], efectDir[0], 10.0f, 5, 10, 10, 0);
 			logo[3].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.x, endLogo[3].pos.x);
 			logo[3].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.y, endLogo[3].pos.y);
+			particleManager.SlashEffect(logo[3].pos, sword[0], efectDir[1], 10.0f, 5, 10, 10, 0);
 		}
 		else
 		{
@@ -431,14 +481,22 @@ void TitleScene::Update() {
 		}
 	}
 
+	particleManager.Update();
 	mainCamera.Update();
 }
 
 void TitleScene::Draw() {
-	
+
+	// 音の処理
+	if (isDicision)
+	{
+		Novice::PlayAudio(dicisionSe, false, 1.0f);
+		isDicision = false;
+	}
+
 	// 背景の描画処理
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
-	
+
 	if (efectCoolTime >= 0)
 	{
 		// ロゴの描画処理
@@ -448,6 +506,11 @@ void TitleScene::Draw() {
 
 	if (isMoveEnd)
 	{
+		// 背景の描画処理
+		for (int i = 0; i < 3; ++i) {
+			Render::DrawSprite(bg, mainCamera, bgColor[i], bgGraphHandle[i]);
+		}
+
 		// ロゴの描画処理
 		Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
 		Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
@@ -495,6 +558,8 @@ void TitleScene::Draw() {
 		}
 		else if (isSwordMove)
 		{
+			particleManager.Draw();
+
 			// ロゴの描画処理
 			Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
 			Render::DrawSprite(logo[1], mainCamera, 0xFFFFFFFF, titleLogoGh[1]);
@@ -505,21 +570,43 @@ void TitleScene::Draw() {
 		// PressSpaceの描画処理
 		if (Novice::GetNumberOfJoysticks() == 0)
 		{
-			// キーボード操作
-			Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[2]);
+			if (isDicision)
+			{
+				if (frameCount % 2 == 0)
+				{
+					Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[2]);
+				}
+			}
+			else
+			{
+				// キーボード操作
+				Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[2]);
+			}
+			
 		}
 		else
 		{
-			// パッド操作
-			Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[3]);
+			if (isDicision)
+			{
+				if (frameCount % 2 == 0)
+				{
+					Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[3]);
+				}
+			}
+			else
+			{
+				// パッド操作
+				Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[3]);
+			}
 		}
 
 		// デタラメ文字列の描画処理
 		Render::DrawSprite(button[0], mainCamera, returnColor[0], buttonGh[0]);
 		Render::DrawSprite(button[1], mainCamera, returnColor[0], buttonGh[1]);
 		// エフェクトの描画処理
-		Render::DrawSprite(efect[0], mainCamera, 0xFFFFFFFF,bigEfectGh[efectNum / 2]);
+		Render::DrawSprite(efect[0], mainCamera, 0xFFFFFFFF, bigEfectGh[efectNum / 2]);
 		Render::DrawSprite(efect[1], mainCamera, 0xFFFFFFFF, smallEfectGh[efectNum / 2]);
+
 	}
 }
 
