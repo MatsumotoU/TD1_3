@@ -6,8 +6,10 @@
 class Mapchip;
 
 namespace ENM {
-	const int kMaxStunFrame = 180;
+	const int kMaxStunFrame = 90;
 	const int kMaxDeathFrame = 60;
+
+	const int kCircleResolution = 64;
 
 	enum Type
 	{
@@ -106,4 +108,8 @@ private:
 	ENM::Type type;
 
 	Mapchip* map;
+
+	float exprosionRadius;
+	Vector2 exprosionRange[ENM::kCircleResolution];
+	Vector2 exprosionMaxRange[ENM::kCircleResolution];
 };

@@ -43,7 +43,7 @@ Enemy::Enemy() {
 	attackCoolDown = 0;
 	attackAnticipationFrame = 0;
 	maxAttackAnticipationFrame = 0;
-	
+
 	swordGH = 0;
 	swordTransform.pos = transform.pos;
 	swordTransform.angle = 0.0f;
@@ -65,6 +65,14 @@ void Enemy::Init() {
 	isActive = false;
 	isAlive = false;
 	oldTransform = transform;
+
+	exprosionRadius = 0.0f;
+	for (int i = 0; i < ENM::kCircleResolution; i++) {
+		exprosionRange[i] = {
+			cosf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius,
+			sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius };
+		exprosionMaxRange[i] = exprosionRange[i];
+	}
 }
 
 void Enemy::Update() {
@@ -77,7 +85,7 @@ void Enemy::Update() {
 			Attack();
 		}
 
-		
+
 	}
 	//UpdateSword();
 	StateCheck();
@@ -87,9 +95,49 @@ void Enemy::Update() {
 	if (!map->GetIsFromToVisionClear(oldTransform.pos, transform.pos)) {
 		transform.pos = oldTransform.pos;
 	}
+
+	for (int i = 0; i < ENM::kCircleResolution; i++) {
+		if (map->GetIsFromToVisionClear(transform.pos, exprosionRange[i] + transform.pos)) {
+			/*exprosionRange[i] = {
+				cosf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius,
+				sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius };*/
+			if (Length(exprosionRange[i]) <= exprosionRadius) {
+				exprosionRange[i] += {
+					cosf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f),
+						sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f)};
+			}
+		} else {
+			exprosionRange[i].x -= (exprosionRange[i].x) * 0.1f;
+			exprosionRange[i].y -= (exprosionRange[i].y) * 0.1f;
+
+			exprosionMaxRange[i].x -= (exprosionMaxRange[i].x) * 0.1f;
+			exprosionMaxRange[i].y -= (exprosionMaxRange[i].y) * 0.1f;
+		}
+
+		exprosionMaxRange[i] = {
+			cosf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * 170.0f,
+			sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * 170.0f };
+	}
 }
 
 void Enemy::Draw() {
+	if (stunFrame > 0) {
+		for (int i = 0; i < ENM::kCircleResolution; i++) {
+
+			Render::DrawLine(
+				exprosionMaxRange[i] + transform.pos,
+				exprosionMaxRange[(i + 1) % ENM::kCircleResolution] + transform.pos,
+				*camera, 0xD65A31FF);
+
+			Render::DrawTriangle(
+				transform.pos,
+				exprosionRange[i] + transform.pos,
+				exprosionRange[(i + 1) % ENM::kCircleResolution] + transform.pos,
+				*camera, 0xD65A3180, kFillModeSolid);
+		}
+	}
+
+
 	Render::DrawSprite(drawTransform, *camera, color, *enemyGH);
 
 	if (isHitAttack) {
@@ -198,7 +246,7 @@ int Enemy::GetIsShot() {
 }
 
 Vector2 Enemy::GetAngleDir() {
-	return {cosf(transform.angle),sinf(transform.angle)};
+	return { cosf(transform.angle),sinf(transform.angle) };
 }
 
 int Enemy::GetIsReqestExprosion() {
@@ -370,11 +418,13 @@ void Enemy::StateCheck() {
 
 		float shakeEnm = static_cast<float>(stunFrame) / static_cast<float>(ENM::kMaxStunFrame);
 
-		drawTransform.scale = { 1.0f + (hitDir.x * shakeEnm) * 0.5f,1.0f + (hitDir.y * shakeEnm)*0.5f };
+		drawTransform.scale = { 1.0f + (hitDir.x * shakeEnm) * 0.5f,1.0f + (hitDir.y * shakeEnm) * 0.5f };
 
 		drawTransform.pos += {
 			Random(transform.size.x * 0.3f * shakeEnm, -transform.size.x * 0.3f * shakeEnm),
 				Random(transform.size.y * 0.3f * shakeEnm, -transform.size.y * 0.3f * shakeEnm)};
+
+		exprosionRadius = Eas::EaseIn(static_cast<float>(stunFrame) / static_cast<float>(ENM::kMaxStunFrame), 2.0f, 170.0f, 0.0f);
 	}
 
 	// 死んでるか
@@ -400,7 +450,7 @@ void Enemy::UpdateSword() {
 			swordTransform.angle = -3.14f * 0.5f;
 		} else {
 
-			Vector2 localSwordPos = { 0.0f,Eas::EaseIn(static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame),5.0f,0.0f,128.0f)};
+			Vector2 localSwordPos = { 0.0f,Eas::EaseIn(static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame),5.0f,0.0f,128.0f) };
 			swordTransform.pos = localSwordPos + transform.pos;
 			swordTransform.angle = -3.14f * 0.5f;
 		}
