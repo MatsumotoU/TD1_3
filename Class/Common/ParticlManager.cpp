@@ -176,7 +176,7 @@ void ParticlManager::FromToEffect(Vector2 fromPos, Vector2* toPos, Vector2 size,
 	}
 }
 
-void ParticlManager::PointEffect(Vector2 pos, int RemainingFrame, int gh) {
+void ParticlManager::PointEffect(Vector2 pos, int RemainingFrame, int gh, unsigned int color) {
 
 	for (int p = 0; p < kPlarticlMax; p++) {
 
@@ -191,6 +191,7 @@ void ParticlManager::PointEffect(Vector2 pos, int RemainingFrame, int gh) {
 			particls[p].SetSize({ 16.0f,16.0f });
 			particls[p].SetRotateDir(static_cast<float>(rand() % 10 - 5) * 0.1f);
 			particls[p].SetGraphHandle(gh);
+			particls[p].SetColor(color);
 			break;
 		}
 	}

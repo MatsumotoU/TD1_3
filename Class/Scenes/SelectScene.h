@@ -33,6 +33,7 @@ private:
 	Transform star[starTotalCount];
 	int isStarMoving[starTotalCount];
 	float starT[starTotalCount];
+	unsigned int starColor[starTotalCount];
 
 	Transform stageIcon[stageTotalCount];
 	float stageIconT[stageTotalCount];
@@ -41,6 +42,9 @@ private:
 	float arrowTheta[2];
 
 	Transform spaceUI;
+
+	Transform bg;
+	unsigned int bgColor[3];
 
 	int shouldClearedMission[stageTotalCount][starTotalCount];
 
@@ -60,6 +64,7 @@ private:
 	int arrowPadGraphHandle[2];
 	int spaceUIGraphHandle[2];
 	int aUIGraphHandle[2];
+	int bgGraphHandle[3];
 
 	int tempGH;
 

@@ -21,7 +21,7 @@ public:
 	void ExplosionEffect(Vector2 pos, Vector2 size, Vector2 force, int particlCap, int gh, unsigned int color);
 	void ShowerEffect(Vector2 pos, Vector2 dir, int diffusivity, int particlCap, int gh);
 	void FromToEffect(Vector2 fromPos, Vector2* toPos, Vector2 size, int stackFrame, int particlCap, int gh, unsigned int color);
-	void PointEffect(Vector2 pos, int RemainingFrame, int gh);
+	void PointEffect(Vector2 pos, int RemainingFrame, int gh, unsigned int color);
 	void SpriteEffect(Vector2 pos, Vector2 size, float angle, int RemainingFrame, int gh);
 	void SlashEffect(Vector2 pos, Vector2 size, Vector2 dir, float power, int rnd, int RemainingFrame, int particlCap, int gh);
 	void AnimEffect(Vector2 pos, Vector2 size, float angle, int animMaxFrame, int animSpeed, int isLoop, int* gh);

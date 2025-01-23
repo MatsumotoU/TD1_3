@@ -29,6 +29,7 @@ void SelectScene::Init() {
 
 		isStarMoving[i] = false;
 		starT[i] = 0.0f;
+		starColor[i] = 0xeeeeeeff;
 	}
 
 	// ステージアイコンの変数
@@ -70,6 +71,17 @@ void SelectScene::Init() {
 		0.0f
 	};
 
+	bg = {
+		{640.0f,360.0f},
+		{1280.0f,720.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+
+	for (int i = 0; i < 3; ++i) {
+		bgColor[i] = ColorFade(0xffffffff, fabsf(sinf(star[i].angle)) * (0.15f - i * 0.06f));
+	}
+
 	// ミッションをクリアしたか
 	for (int i = 0; i < stageTotalCount; ++i) {
 		for (int j = 0; j < starTotalCount; ++j) {
@@ -107,6 +119,10 @@ void SelectScene::Init() {
 
 	aUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/A_DONE.png");
 	aUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/A_DONEB.png");
+
+	bgGraphHandle[0] = Novice::LoadTexture("./Resources/Images/bg1.png");
+	bgGraphHandle[1] = Novice::LoadTexture("./Resources/Images/bg2.png");
+	bgGraphHandle[2] = Novice::LoadTexture("./Resources/Images/bg3.png");
 }
 
 void SelectScene::Update() {
@@ -348,17 +364,30 @@ void SelectScene::Update() {
 			star[i].pos.y = 560.0f + sinf(star[i].angle * 3.0f) * 8.0f;
 		}
 
-		if (frameCount % 5 == 0) {
-			// ===================================================================================//
-			if (shouldClearedMission[gameStage][i]) { //ミッションをクリアしたか
-				//====================================================================================//
+		// ===================================================================================//
+		if (shouldClearedMission[gameStage][i]) { //ミッションをクリアしたか
+			//====================================================================================//
+			if (frameCount % 5 == 0) {
 				particleManager.PointEffect(
 					{ star[i].pos.x + Random(90.0f,0.0f) * cosf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)),
 					  star[i].pos.y + Random(90.0f,0.0f) * sinf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)) },
-					20, 0
+					20, 0, 0xeeeeeeff
 				);
+
+				/*particleManager.PointEffect(
+					{ star[i].pos.x + Random(90.0f,0.0f) * cosf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)),
+					  star[i].pos.y + Random(90.0f,0.0f) * sinf(Random(180.0f, -180.0f) / 180.0f * static_cast<float>(M_PI)) },
+					20, 0, ColorGradation(0xeeeeeeff, 0xe8c9beff, Random(100.0f, 0.0f) / 100.0f)
+				);*/
 			}
+
+			//starColor[i] = ColorGradation(0xeeeeeeff, 0xe8c9beff, fabsf(sinf(star[i].angle)));
+			//starColor[i] = ColorGradation(0xeeeeeeff, 0xe8c9beff, fabsf(sinf(star[i].angle)));
 		}
+	}
+
+	for (int i = 0; i < 3; ++i) {
+		bgColor[i] = ColorFade(0xffffffff, fabsf(sinf(star[i].angle)) * (0.15f - i * 0.06f));
 	}
 
 	if (isZoom) {
@@ -386,6 +415,10 @@ void SelectScene::Update() {
 void SelectScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
 
+	for (int i = 0; i < 3; ++i) {
+		Render::DrawSprite(bg, mainCamera, bgColor[i], bgGraphHandle[i]);
+	}
+
 	particleManager.Draw();
 
 	for (int i = 0; i < stageTotalCount; ++i) {
@@ -396,7 +429,7 @@ void SelectScene::Draw() {
 		// ===================================================================================//
 		if (shouldClearedMission[gameStage][i]) { //ミッションをクリアしたか
 			//====================================================================================//
-			Render::DrawSprite(star[i], mainCamera, 0xEEEEEEFF, starGraphHandle);
+			Render::DrawSprite(star[i], mainCamera, starColor[i], starGraphHandle);
 		} else {
 			Render::DrawSprite(star[i], mainCamera, 0x393E46FF, starGraphHandle);
 		}
