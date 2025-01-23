@@ -18,7 +18,6 @@ void TitleScene::Init() {
 	particleManager.Init();
 	particleManager.SetCamera(&mainCamera);
 
-
 	// タイトルロゴの変数
 
 	logo[0] =
@@ -160,7 +159,7 @@ void TitleScene::Init() {
 
 	efect[0] =
 	{
-		40.0f,460.0f,
+		40.0f,455.0f,
 		0.0f,50.0f,
 		1.0f,1.0f,0.0f
 	};
@@ -201,6 +200,7 @@ void TitleScene::Init() {
 	alphaValue[3] = 0.0f;
 	isIncreaseAlpha = true;
 	efectNum = 0;
+	changeSceneCount = 0;
 	sword[0] = { 10.0f,10.0f };
 	sword[1] = { 10.0f,10.0f };
 	efectDir[0] = { 10.0f,10.0f };
@@ -255,19 +255,6 @@ void TitleScene::Init() {
 void TitleScene::Update() {
 
 	frameCount++;
-
-	// 演出のスキップ処理
-	if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER, Triger)) {
-		isMoveEnd = true;
-		logo[0].pos.x = endLogo[0].pos.x;
-		logo[1].pos.x = endLogo[1].pos.x;
-		logo[2].pos.x = endLogo[2].pos.x;
-		logo[3].pos.x = endLogo[3].pos.x;
-		logo[2].pos.y = endLogo[2].pos.y;
-		logo[3].pos.y = endLogo[3].pos.y;
-		returnColor[0] = 0x00000000;
-		returnColor[1] = 0xFFFFFFFF;
-	}
 
 	if (efectT[1] >= 0.9f)
 	{
@@ -369,118 +356,147 @@ void TitleScene::Update() {
 		alphaValue[3] = Eas::EaseInOutQuart(alphaValue[2], 1.0f, 0.1f);
 		returnColor[2] = ColorFade(color[2], alphaValue[3]);
 
-		//シーン遷移処理
+		if (isChangeScene)
+		{
+			changeSceneCount++;
+
+			if (changeSceneCount > 30)
+			{
+				isTransition = true;// こいつをtrueにすると即座にシーン遷移する(シーンのUpdateは止まる)p
+			}
+		}
+		else
+		{
+			if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER, Triger)) {
+				if (frameCount > 180)
+				{
+					isDicision = true;
+					isChangeScene = true;
+				}
+			}
+		}
+	}
+	else
+	{
+		if (efectCoolTime >= 0)
+		{
+			// エフェクト開始までの待ち時間処理
+			efectCoolTime--;
+
+			if (efectCoolTime == 0)
+			{
+				isEfectMove = true;
+				efectNum = 1;
+				mainCamera.shakeRange = { 50.0f,0.0f };
+			}
+		}
+		else if (isEfectMove)
+		{
+			// エフェクトを横に動かす処理
+			efect[0].size.x += 800.0f;
+
+			if (efect[0].size.x >= 3600.0f)
+			{
+				// エフェクトが右端に到達した時の処理
+				isEfectMove = false;
+				isUnderEfectMove = true;
+				mainCamera.shakeRange = { 50.0f,0.0f };
+			}
+		}
+		else if (isUnderEfectMove)
+		{
+			// エフェクトを横に動かす処理
+			efect[1].size.x += 800.0f;
+			efect[1].pos.x -= 100.0f;
+
+			if (efect[1].size.x >= 3600.0f)
+			{
+				// エフェクトが右端に到達した時の処理	
+				isUnderEfectMove = false;
+				isEaseStart = true;
+				alphaValue[0] = 1.0f;
+				alphaValue[1] = 0.1f;
+			}
+
+		}
+		else if (isEaseStart)
+		{
+			if (efectT[1] < 1.0f)
+			{
+				// ロゴをイージングさせる処理
+				efectT[1] += 0.015f;
+
+				if (efectT[1] >= 1.0f)
+				{
+					efectT[1] = 1.0f;
+				}
+
+				button[0].pos.x = Eas::EaseIn(efectT[1], 4.0f, startButton[0].pos.x, endButton[0].pos.x);
+				button[1].pos.x = Eas::EaseIn(efectT[1], 4.0f, startButton[1].pos.x, endButton[1].pos.x);
+			}
+
+			if (efectT[0] < 1.0f)
+			{
+				// ロゴをイージングさせる処理
+				efectT[0] += 0.015f;
+
+				if (efectT[0] >= 1.0f)
+				{
+					efectT[0] = 1.0f;
+				}
+
+				logo[0].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[0].pos.x, endLogo[0].pos.x);
+				logo[1].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[1].pos.x, endLogo[1].pos.x);
+			}
+			else
+			{
+				// イージング終わった時の処理
+				isEaseStart = false;
+				isSwordMove = true;
+			}
+		}
+		else if (isSwordMove)
+		{
+			if (efectT[2] < 1.0f)
+			{
+				// メをイージングさせる処理
+				efectT[2] += 0.01f;
+
+				if (efectT[2] >= 1.0f)
+				{
+					efectT[2] = 1.0f;
+					mainCamera.shakeRange = { 0.0f,50.0f };
+				}
+
+				logo[2].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.x, endLogo[2].pos.x);
+				logo[2].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.y, endLogo[2].pos.y);
+				particleManager.SlashEffect(logo[2].pos, sword[0], efectDir[0], 10.0f, 5, 10, 10, 0);
+				logo[3].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.x, endLogo[3].pos.x);
+				logo[3].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.y, endLogo[3].pos.y);
+				particleManager.SlashEffect(logo[3].pos, sword[0], efectDir[1], 10.0f, 5, 10, 10, 0);
+			}
+			else
+			{
+				isMoveEnd = true;
+			}
+		}
+
+		// 演出のスキップ処理
 		if (input->GetTriger(DIK_SPACE) || input->GetControl(ENTER, Triger)) {
-			if (frameCount >= 180) {
-				isTransition = true;// こいつをtrueにすると即座にシーン遷移する(シーンのUpdateは止まる)
-				isDicision = true;
-			}
-
-		}
-	}
-	else if (efectCoolTime >= 0)
-	{
-		// エフェクト開始までの待ち時間処理
-		efectCoolTime--;
-
-		if (efectCoolTime == 0)
-		{
-			isEfectMove = true;
-			efectNum = 1;
-			mainCamera.shakeRange = { 50.0f,0.0f };
-		}
-	}
-	else if (isEfectMove)
-	{
-		// エフェクトを横に動かす処理
-		efect[0].size.x += 800.0f;
-
-		if (efect[0].size.x >= 3600.0f)
-		{
-			// エフェクトが右端に到達した時の処理
-			isEfectMove = false;
-			isUnderEfectMove = true;
-			mainCamera.shakeRange = { 50.0f,0.0f };
-		}
-	}
-	else if (isUnderEfectMove)
-	{
-		// エフェクトを横に動かす処理
-		efect[1].size.x += 800.0f;
-		efect[1].pos.x -= 100.0f;
-
-		if (efect[1].size.x >= 3600.0f)
-		{
-			// エフェクトが右端に到達した時の処理	
-			isUnderEfectMove = false;
-			isEaseStart = true;
-			alphaValue[0] = 1.0f;
-			alphaValue[1] = 0.1f;
-		}
-
-	}
-	else if (isEaseStart)
-	{
-		if (efectT[1] < 1.0f)
-		{
-			// ロゴをイージングさせる処理
-			efectT[1] += 0.015f;
-
-			if (efectT[1] >= 1.0f)
-			{
-				efectT[1] = 1.0f;
-			}
-
-			button[0].pos.x = Eas::EaseIn(efectT[1], 4.0f, startButton[0].pos.x, endButton[0].pos.x);
-			button[1].pos.x = Eas::EaseIn(efectT[1], 4.0f, startButton[1].pos.x, endButton[1].pos.x);
-		}
-
-		if (efectT[0] < 1.0f)
-		{
-			// ロゴをイージングさせる処理
-			efectT[0] += 0.015f;
-
-			if (efectT[0] >= 1.0f)
-			{
-				efectT[0] = 1.0f;
-			}
-
-			logo[0].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[0].pos.x, endLogo[0].pos.x);
-			logo[1].pos.x = Eas::EaseIn(efectT[0], 4.0f, startLogo[1].pos.x, endLogo[1].pos.x);
-		}
-		else
-		{
-			// イージング終わった時の処理
-			isEaseStart = false;
-			isSwordMove = true;
-		}
-	}
-	else if (isSwordMove)
-	{
-		if (efectT[2] < 1.0f)
-		{
-			// メをイージングさせる処理
-			efectT[2] += 0.01f;
-
-			if (efectT[2] >= 1.0f)
-			{
-				efectT[2] = 1.0f;
-				mainCamera.shakeRange = { 0.0f,50.0f };
-			}
-
-			logo[2].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.x, endLogo[2].pos.x);
-			logo[2].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.y, endLogo[2].pos.y);
-			particleManager.SlashEffect(logo[2].pos, sword[0], efectDir[0], 10.0f, 5, 10, 10, 0);
-			logo[3].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.x, endLogo[3].pos.x);
-			logo[3].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.y, endLogo[3].pos.y);
-			particleManager.SlashEffect(logo[3].pos, sword[0], efectDir[1], 10.0f, 5, 10, 10, 0);
-		}
-		else
-		{
+			logo[0].pos.x = endLogo[0].pos.x;
+			logo[1].pos.x = endLogo[1].pos.x;
+			logo[2].pos.x = endLogo[2].pos.x;
+			logo[3].pos.x = endLogo[3].pos.x;
+			logo[2].pos.y = endLogo[2].pos.y;
+			logo[3].pos.y = endLogo[3].pos.y;
+			returnColor[0] = 0x00000000;
+			returnColor[1] = 0xFFFFFFFF;
+			frameCount = 170;
 			isMoveEnd = true;
 		}
-	}
 
+
+	}
 	particleManager.Update();
 	mainCamera.Update();
 }
@@ -519,16 +535,36 @@ void TitleScene::Draw() {
 		Render::DrawSprite(button[0], mainCamera, returnColor[0], buttonGh[0]);
 		Render::DrawSprite(button[1], mainCamera, returnColor[0], buttonGh[1]);
 
-		// PressSpaceの描画処理
-		if (Novice::GetNumberOfJoysticks() == 0)
+		if (isChangeScene)
 		{
-			// キーボード操作
-			Render::DrawSprite(button[2], mainCamera, returnColor[2], buttonGh[2]);
+			if (changeSceneCount % 2 == 0)
+			{
+				// PressSpaceの描画処理
+				if (Novice::GetNumberOfJoysticks() == 0)
+				{
+					// キーボード操作
+					Render::DrawSprite(button[2], mainCamera, 0xFFFFFFFF, buttonGh[2]);
+				}
+				else
+				{
+					// パッド操作
+					Render::DrawSprite(button[2], mainCamera, 0xFFFFFFFF, buttonGh[3]);
+				}
+			}
 		}
 		else
 		{
-			// パッド操作
-			Render::DrawSprite(button[2], mainCamera, returnColor[2], buttonGh[3]);
+			// PressSpaceの描画処理
+			if (Novice::GetNumberOfJoysticks() == 0)
+			{
+				// キーボード操作
+				Render::DrawSprite(button[2], mainCamera, returnColor[2], buttonGh[2]);
+			}
+			else
+			{
+				// パッド操作
+				Render::DrawSprite(button[2], mainCamera, returnColor[2], buttonGh[3]);
+			}
 		}
 	}
 	else
@@ -570,34 +606,13 @@ void TitleScene::Draw() {
 		// PressSpaceの描画処理
 		if (Novice::GetNumberOfJoysticks() == 0)
 		{
-			if (isDicision)
-			{
-				if (frameCount % 2 == 0)
-				{
-					Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[2]);
-				}
-			}
-			else
-			{
-				// キーボード操作
-				Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[2]);
-			}
-			
+			// キーボード操作
+			Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[2]);
 		}
 		else
 		{
-			if (isDicision)
-			{
-				if (frameCount % 2 == 0)
-				{
-					Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[3]);
-				}
-			}
-			else
-			{
-				// パッド操作
-				Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[3]);
-			}
+			// パッド操作
+			Render::DrawSprite(button[2], mainCamera, returnColor[1], buttonGh[3]);
 		}
 
 		// デタラメ文字列の描画処理
