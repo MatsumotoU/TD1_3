@@ -40,6 +40,12 @@ void EnemyManager::SetCamera(Camera* set) {
 	}
 }
 
+void EnemyManager::SetMapchip(Mapchip* set) {
+	for (int i = 0; i < EMG::kMaxEnemy; i++) {
+		enemyes[i].SetMapchip(set);
+	}
+}
+
 void EnemyManager::SetPlayerPos(Vector2* set) {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		enemyes[i].SetPlayerPos(set);

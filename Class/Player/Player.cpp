@@ -10,6 +10,8 @@
 Player::Player() {
 	frameCount = 0;
 
+	oldTransform = transform;
+
 	swordGH = Novice::LoadTexture("./Resources/Images/sword.png");
 
 	hpUiDrawFrame = 0;
@@ -193,9 +195,12 @@ void Player::Init() {
 	playerGH = Novice::LoadTexture("./Resources/Images/player.png");
 
 	LoadVariables();
+	oldTransform = transform;
 }
 
 void Player::Update() {
+
+	oldTransform = transform;
 
 	frameCount++;
 
@@ -216,6 +221,10 @@ void Player::Update() {
 
 	if (input->GetTriger(DIK_F)) {
 		Damage();
+	}
+
+	if (!map->GetIsFromToVisionClear(oldTransform.pos, transform.pos)) {
+		transform.pos = oldTransform.pos;
 	}
 }
 
@@ -632,6 +641,10 @@ void Player::SetRemainAttackChance(int set) {
 
 void Player::SetIsDash(int set) {
 	isDash = set;
+}
+
+void Player::SetMapchip(Mapchip* set) {
+	map = set;
 }
 
 int Player::GetIsAlive() {

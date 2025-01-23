@@ -3,6 +3,8 @@
 #include "Class/Common/Render.h"
 #include "Class/Common/GameObject.h"
 
+class Mapchip;
+
 namespace ENM {
 	const int kMaxStunFrame = 180;
 	const int kMaxDeathFrame = 60;
@@ -39,6 +41,7 @@ public:
 	void SetIsShot(int set);
 	void SetIsExprosion(int set);
 	void SetGH(int* set);
+	void SetMapchip(Mapchip* set);
 
 	int GetIsAlive();
 	int GetIsHitAttack();
@@ -63,6 +66,8 @@ public:
 	void TypeInit();
 
 private:
+
+	Transform oldTransform;
 
 	int attackAnticipationFrame;
 	int maxAttackAnticipationFrame;
@@ -99,4 +104,6 @@ private:
 	int nextRouteNum;
 
 	ENM::Type type;
+
+	Mapchip* map;
 };

@@ -16,6 +16,7 @@ public:
 	void Draw();
 
 	void SetCamera(Camera* set);
+	void SetMapchip(Mapchip* set);
 	void SetPlayerPos(Vector2* set);
 
 	int GetRemainEnemies();

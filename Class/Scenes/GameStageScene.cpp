@@ -42,6 +42,7 @@ void GameStageScene::Init() {
 	enemyManager.Init();
 	enemyManager.SetCamera(&mainCamera);
 	enemyManager.SetPlayerPos(player.GetPosPtr());
+	enemyManager.SetMapchip(&map);
 	lastHitEnemyNum = -1;
 
 	particleManager.Init();
@@ -135,6 +136,7 @@ void GameStageScene::Init() {
 	playerHpUI.Init();
 	playerHpUI.SetCamera(&uiCamera);
 	playerHpUI.SetPlayer(&player);
+	player.SetMapchip(&map);
 
 	enemyRemainNum.Init();
 	enemyRemainNum.SetPos({ 0.0f,-128.0f });
@@ -166,7 +168,6 @@ void GameStageScene::Init() {
 
 	lightManager.Init();
 	lightManager.SetCamera(&mainCamera);
-	lightManager.SpawnTrackingLight(player.GetPosPtr(), 300.0f, WHITE, 0.8f);
 }
 
 void GameStageScene::Update() {
@@ -231,7 +232,7 @@ void GameStageScene::ImGuiUpdate() {
 
 	ImGui::Begin("GameScene");
 	ImGui::Text("GameStage = %d Wave = %d", gameStage, wave);
-	ImGui::Text("combo = %d :%d", exprosionComboCount,comboRemainFrame);
+	ImGui::Text("combo = %d :%d", exprosionComboCount, comboRemainFrame);
 	ImGui::InputFloat("x", &testPopEnemyPos.x);
 	ImGui::InputFloat("y", &testPopEnemyPos.y);
 	ImGui::SliderFloat("balanceAngle", &balanceAngle, -3.14f, 3.14f);
@@ -319,8 +320,8 @@ void GameStageScene::WaveManager() {
 
 		// 時間別イベント
 		if (frameCount <= 60) {
-			Eas::SimpleEaseIn(&waveStringTransform.pos.y, 200.0f +32.0f, 0.3f);
-			Eas::SimpleEaseIn(&waveNumber.GetPosPtr()->y,156.0f + 32.0f,0.3f);
+			Eas::SimpleEaseIn(&waveStringTransform.pos.y, 200.0f + 32.0f, 0.3f);
+			Eas::SimpleEaseIn(&waveNumber.GetPosPtr()->y, 156.0f + 32.0f, 0.3f);
 		}
 		if (frameCount >= 60) {
 			waveNumber.Update();
@@ -333,13 +334,13 @@ void GameStageScene::WaveManager() {
 		}
 
 		// 継続イベント
-		waveStringTransform.scale = { 
+		waveStringTransform.scale = {
 			1.0f - sinf(static_cast<float>(frameCount) * 0.1f) * 0.01f,
 			1.0f - sinf(static_cast<float>(frameCount) * 0.1f) * 0.01f };
 		clossTransform = enemyRemainNum.GetTransform();
 		clossTransform.pos.x = 0.0f;
 		clossTransform.scale = { 1.0f,1.0f };
-		waveNumber.SetLocalScale({ 
+		waveNumber.SetLocalScale({
 			1.5f - sinf(static_cast<float>(frameCount) * 0.1f) * 0.05f,
 			1.5f - sinf(static_cast<float>(frameCount) * 0.1f) * 0.05f });
 		enemyTargetTransform = enemyRemainNum.GetTransform();
@@ -350,7 +351,7 @@ void GameStageScene::WaveManager() {
 		missionTransform.pos.y += 152.0f;
 
 		enemyRemainNum.SetLocalScale(waveStringTransform.scale);
-		
+
 		contorolTutorialUI.SetIsActive(false);
 
 		// ウェーブ管理処理演出終了
@@ -462,6 +463,7 @@ void GameStageScene::ObjectCollision() {
 			// 敵
 			for (int e = 0; e < EMG::kMaxEnemy; e++) {
 				if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
+
 					if (enemyManager.GetEnemyes()[e].GetType() == ENM::Melee) {
 						if (enemyManager.GetEnemyes()[e].GetIsAttack()) {
 
@@ -477,6 +479,12 @@ void GameStageScene::ObjectCollision() {
 							}
 						}
 					}
+
+					CollisionEllipse(
+						player.GetPosPtr(), enemyManager.GetEnemyes()[e].GetPosPtr(),
+						player.GetPhysics()->GetVelocity(), enemyManager.GetEnemyes()[e].GetPhysics()->GetVelocity(),
+						Length(player.GetPhysics()->GetVelocity()), Length(enemyManager.GetEnemyes()[e].GetPhysics()->GetVelocity()),
+						player.GetSize().x * 0.5f, enemyManager.GetEnemyes()[e].GetSize().x * 0.5f, true, false, false);
 				}
 			}
 		}
@@ -524,7 +532,7 @@ void GameStageScene::EnemyCollision() {
 						mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 30.0f;
 					}
 					player.SetIsAttack(false);
-					
+
 				}
 			}
 
@@ -648,7 +656,7 @@ void GameStageScene::ExprodeEnemy() {
 					enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
 					-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);*/
 
-				// 爆発
+					// 爆発
 				particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
 
 				// ラストヒット
@@ -959,7 +967,7 @@ void GameStageScene::ControlInfoDraw() {
 		} else {
 			Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, contorolInfoGH[3]);
 		}
-		
+
 
 	} else {
 
@@ -983,7 +991,7 @@ void GameStageScene::ControlInfoDraw() {
 			}*/
 		} else {
 			if (Length(input->GetControlDir()) > 0.0f) {
-				Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF,contorolInfoGH[0]);
+				Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF, contorolInfoGH[0]);
 			} else {
 				Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, contorolInfoGH[0]);
 			}
@@ -1000,7 +1008,7 @@ void GameStageScene::ControlInfoDraw() {
 				Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, contorolInfoGH[2]);
 			}*/
 		}
-		
+
 
 	}
 }
@@ -1011,14 +1019,14 @@ void GameStageScene::CameraUpdate() {
 		if (player.GetIsAlive()) {
 			Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->x, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().x, 0.1f);
 			Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->y, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().y, 0.1f);
-			
+
 		} else {
 			*cameraPos = player.GetPos();
 		}
 
 		mainCamera.shakeRange = { static_cast<float>(clearStageTimeBuffer) * 0.1f,static_cast<float>(clearStageTimeBuffer) * 0.1f };
 		mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer), 0.1f, 1.0f);
-		
+
 	} else {
 		*cameraPos = player.GetPos();
 	}
