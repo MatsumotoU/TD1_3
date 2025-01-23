@@ -163,6 +163,10 @@ void GameStageScene::Init() {
 	// 一番最初の位置バグ修正用
 	player.Update();
 	mainCamera.SetPos(player.GetPos());
+
+	lightManager.Init();
+	lightManager.SetCamera(&mainCamera);
+	lightManager.SpawnTrackingLight(player.GetPosPtr(), 300.0f, WHITE, 0.8f);
 }
 
 void GameStageScene::Update() {
@@ -174,6 +178,7 @@ void GameStageScene::Update() {
 	ControlInfoUpdate();
 	contorolTutorialUI.Update();
 	playerHpUI.Update();
+	lightManager.Update();
 
 	if (!isChangeWave) {
 		if (stopObjectUpdateFrame <= 0) {
@@ -211,6 +216,8 @@ void GameStageScene::Draw() {
 	WaveUiDraw();
 	ControlInfoDraw();
 	contorolTutorialUI.Draw();
+
+	lightManager.Draw();
 
 	if (flashScreenFrame > 0) {
 		if (flashScreenFrame % 12 <= 6) {

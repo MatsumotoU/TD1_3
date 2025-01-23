@@ -125,6 +125,12 @@
     <ClCompile Include="Class\UIobjects\BounceNumber.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="Class\Common\Light.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Class\Common\LightManager.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -233,5 +239,7 @@
     <ClInclude Include="Class\UIobjects\PlayerHpUI.h" />
     <ClInclude Include="Class\UIobjects\RemainEnemyUI.h" />
     <ClInclude Include="Class\UIobjects\BounceNumber.h" />
+    <ClInclude Include="Class\Common\Light.h" />
+    <ClInclude Include="Class\Common\LightManager.h" />
   </ItemGroup>
 </Project>

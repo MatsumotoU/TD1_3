@@ -108,6 +108,8 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Class\Common\Light.cpp" />
+    <ClCompile Include="Class\Common\LightManager.cpp" />
     <ClCompile Include="Class\UIobjects\BounceNumber.cpp" />
     <ClCompile Include="Class\Balance\BalanceObject.cpp" />
     <ClCompile Include="C:\KamataEngine\DirectXGame\base\StringUtility.cpp" />
@@ -147,6 +149,8 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Class\UIobjects\RemainEnemyUI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Class\Common\Light.h" />
+    <ClInclude Include="Class\Common\LightManager.h" />
     <ClInclude Include="Class\UIobjects\BounceNumber.h" />
     <ClInclude Include="Class\Balance\BalanceObject.h" />
     <ClInclude Include="C:\KamataEngine\DirectXGame\base\StringUtility.h" />

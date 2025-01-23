@@ -4,6 +4,7 @@
 #include "Class/Bullet/BulletManager.h"
 #include "Class/Enemy/EnemyManager.h"
 #include "Class/Common/ParticlManager.h"
+#include "Class/Common/LightManager.h"
 #include "Class/Common/Mapchip.h"
 #include "Class/Balance/BalanceObject.h"
 #include "Class/UIobjects/BounceNumber.h"
@@ -125,5 +126,7 @@ private:
 	int targetEnemyUiGH;
 	Transform missionTransform;
 	int missionGH;
+
+	LightManager lightManager;
 };
 
