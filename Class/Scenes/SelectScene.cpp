@@ -79,6 +79,7 @@ void SelectScene::Init() {
 	};
 
 	for (int i = 0; i < 3; ++i) {
+		bgTheta[i] = 2.0f * static_cast<float>(M_PI) / 3.0f * i; // 角度
 		bgColor[i] = ColorFade(0xffffffff, fabsf(sinf(star[i].angle)) * (0.15f - i * 0.06f));
 	}
 
@@ -387,7 +388,8 @@ void SelectScene::Update() {
 	}
 
 	for (int i = 0; i < 3; ++i) {
-		bgColor[i] = ColorFade(0xffffffff, fabsf(sinf(star[i].angle)) * (0.15f - i * 0.06f));
+		bgTheta[i] += 1.0f / 180.0f * static_cast<float>(M_PI);
+		bgColor[i] = ColorFade(0xffffffff, fabsf(sinf(bgTheta[i])) * (0.15f - i * 0.06f));
 	}
 
 	if (isZoom) {
