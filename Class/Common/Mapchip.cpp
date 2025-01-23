@@ -80,8 +80,12 @@ int Mapchip::GetEnemyNum() {
 int Mapchip::GetIsFromToVisionClear(Vector2 from, Vector2 to) {
 	for (float i = 0.0f; i <= 1.0f; i += 0.1f) {
 
-		int x = static_cast<int>(((from.x * i) + (to.x * (1.0f - i))) / kMapChipSize.y);
+		int x = static_cast<int>(((from.x * i) + (to.x * (1.0f - i))) / kMapChipSize.x);
 		int y = static_cast<int>(((from.y * i) + (to.y * (1.0f - i))) / kMapChipSize.y);
+
+		if (x < 0 || x > kMapSizeX || y < 0 || y > kMapSizeY) {
+			return false;
+		}
 
 		if (map[y][x] == 1) {
 			return false;

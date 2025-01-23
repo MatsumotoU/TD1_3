@@ -42,6 +42,20 @@ void Render::DrawEllipse(Vector2 pos, Vector2 radius, float angle, Camera camera
 		static_cast<int>(radius.x), static_cast<int>(radius.y), angle, color, fillMode);
 }
 
+void Render::DrawTriangle(Vector2 pos1, Vector2 pos2, Vector2 pos3, Camera camera, unsigned int color, FillMode fillMode) {
+
+	Vector2 resultPos[3] = { 0 };
+	resultPos[0] = pos1* camera.GetWvpVpMatrix({ 0.0f,0.0f }, { 1.0f,1.0f }, 0.0f);
+	resultPos[1] = pos2* camera.GetWvpVpMatrix({ 0.0f,0.0f }, { 1.0f,1.0f }, 0.0f);
+	resultPos[2] = pos3* camera.GetWvpVpMatrix({ 0.0f,0.0f }, { 1.0f,1.0f }, 0.0f);
+
+	Novice::DrawTriangle(
+		static_cast<int>(resultPos[0].x), static_cast<int>(resultPos[0].y),
+		static_cast<int>(resultPos[1].x), static_cast<int>(resultPos[1].y),
+		static_cast<int>(resultPos[2].x), static_cast<int>(resultPos[2].y),
+		color, fillMode);
+}
+
 void Render::DrawSprite(Transform transform, Camera camera, unsigned int color, int gh) {
 
 	// 画像が差し込まれているか

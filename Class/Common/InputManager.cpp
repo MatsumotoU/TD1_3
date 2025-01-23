@@ -165,7 +165,7 @@ int InputManager::GetControl(ControlKey control, KeyState keyState) {
 				if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] ||
 					keys[DIK_RETURN] && !preKeys[DIK_RETURN] ||
 					keys[DIK_Z] && !preKeys[DIK_Z] || 
-					Novice::IsTriggerButton(0, kPadButton11)) {
+					Novice::IsTriggerButton(0, kPadButton10)) {
 
 					return true;
 				}
@@ -176,7 +176,7 @@ int InputManager::GetControl(ControlKey control, KeyState keyState) {
 
 				if (keys[DIK_BACKSPACE] && !preKeys[DIK_BACKSPACE] ||
 					keys[DIK_X] && !preKeys[DIK_X]
-					|| Novice::IsTriggerButton(0, kPadButton10)) {
+					|| Novice::IsTriggerButton(0, kPadButton11)) {
 
 					return true ;
 				}
@@ -280,7 +280,7 @@ int InputManager::GetControl(ControlKey control, KeyState keyState) {
 			case ENTER:
 
 				if (keys[DIK_SPACE] || keys[DIK_RETURN] || keys[DIK_Z]||
-					Novice::IsPressButton(0, kPadButton11)) {
+					Novice::IsPressButton(0, kPadButton10)) {
 
 					return true;
 				}
@@ -290,7 +290,7 @@ int InputManager::GetControl(ControlKey control, KeyState keyState) {
 			case BACK:
 
 				if (keys[DIK_BACKSPACE] || keys[DIK_X] ||
-					Novice::IsPressButton(0, kPadButton10)) {
+					Novice::IsPressButton(0, kPadButton11)) {
 
 					return true;
 				}

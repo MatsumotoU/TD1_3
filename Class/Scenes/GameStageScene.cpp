@@ -206,17 +206,19 @@ void GameStageScene::Update() {
 void GameStageScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
 
-	map.Draw();
-
 	bulletManager.Draw();
 	enemyManager.Draw();
 	player.Draw();
+
+	map.Draw();
 
 	playerHpUI.Draw();
 	particleManager.Draw();
 	WaveUiDraw();
 	ControlInfoDraw();
 	contorolTutorialUI.Draw();
+
+	
 
 	lightManager.Draw();
 
@@ -578,7 +580,7 @@ void GameStageScene::EnemyCollision() {
 
 								bulletManager.ShotBullet(
 									enemyManager.GetEnemyes()[e].GetPos(), { GMScene::exprodeRange,GMScene::exprodeRange },
-									enemyManager.GetEnemyes()[e].GetHitDir(), 0.0f, 60, "exprosion", 0);
+									enemyManager.GetEnemyes()[e].GetHitDir(), 0.0f, 5, "exprosion", 0);
 								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
 							}
 
@@ -647,7 +649,7 @@ void GameStageScene::ExprodeEnemy() {
 
 				bulletManager.ShotBullet(
 					enemyManager.GetEnemyes()[e].GetPos(), { GMScene::exprodeRange,GMScene::exprodeRange },
-					enemyManager.GetEnemyes()[e].GetHitDir(), 0.0f, 60, "exprosion", 0);
+					enemyManager.GetEnemyes()[e].GetHitDir(), 0.0f, 5, "exprosion", 0);
 
 				/*bulletManager.ShotBullet(
 					enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),

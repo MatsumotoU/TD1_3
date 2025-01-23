@@ -33,6 +33,8 @@ namespace Render {
 	/// <param name="fillMode"></param>
 	void DrawEllipse(Vector2 pos, Vector2 radius,float angle, Camera camera, unsigned int color, FillMode fillMode);
 
+	void DrawTriangle(Vector2 pos1, Vector2 pos2, Vector2 pos3, Camera camera, unsigned int color, FillMode fillMode);
+
 	/// <summary>
 	/// スプライト描画
 	/// </summary>
