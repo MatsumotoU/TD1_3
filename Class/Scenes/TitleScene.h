@@ -31,7 +31,7 @@ private:
 	Transform startButton[2];
 	Transform endButton[2];
 	Transform efect[2];
-	float efectT[3];
+	float efectT[4];
 	float alphaValue[4];
 	int efectCoolTime;
 	int isEfectMove;
@@ -48,11 +48,23 @@ private:
 	ParticlManager particleManager;
 	Camera mainCamera;
 	Vector2* cameraPos;
+	Vector2 sword[2];
+	Vector2 efectDir[2];
 
 	// 画像のグラフハンドル
 	int titleLogoGh[4];
 	int buttonGh[4];
 	int bigEfectGh[9];
 	int smallEfectGh[9];
+	int bgGraphHandle[3];
+
+	// 背景の変数
+	float bgAngle[3];
+	Transform bg;
+	unsigned int bgColor[3];
+
+	// 音の変数
+	int dicisionSe;
+	int isDicision;
 };
 
