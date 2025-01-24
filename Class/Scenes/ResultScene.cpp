@@ -97,6 +97,10 @@ void ResultScene::Init() {
 		isCrackerMoving[i] = false;
 	}
 
+	for (int i = 0; i < 10; ++i) {
+		playSEHandle[i] = -1;
+	}
+
 	cracker[0].angle = 1.0f / 10.0f * static_cast<float>(M_PI);
 	cracker[1].angle = 19.0f / 10.0f * static_cast<float>(M_PI);
 
@@ -141,6 +145,11 @@ void ResultScene::Init() {
 	bgGraphHandle[0] = Novice::LoadTexture("./Resources/Images/bg1.png");
 	bgGraphHandle[1] = Novice::LoadTexture("./Resources/Images/bg2.png");
 	bgGraphHandle[2] = Novice::LoadTexture("./Resources/Images/bg3.png");
+
+	sEHandle[0] = Novice::LoadAudio("./Resources/Sounds/dicision.mp3");
+	sEHandle[1] = Novice::LoadAudio("./Resources/Sounds/cracker.mp3");
+	sEHandle[2] = Novice::LoadAudio("./Resources/Sounds/select.mp3");
+	sEHandle[3] = Novice::LoadAudio("./Resources/Sounds/slide.mp3");
 }
 
 void ResultScene::Update() {
@@ -159,6 +168,8 @@ void ResultScene::Update() {
 		if (!shouldPressedRight) {
 			shouldPressedRight = true;
 			shouldPressedLeft = false;
+
+			playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.8f);
 		}
 	}
 
@@ -166,6 +177,8 @@ void ResultScene::Update() {
 		if (!shouldPressedLeft) {
 			shouldPressedRight = false;
 			shouldPressedLeft = true;
+
+			playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.8f);
 		}
 	}
 
@@ -187,6 +200,10 @@ void ResultScene::Update() {
 			}
 
 			isTransition = true;
+
+			if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
+				playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.8f);
+			}
 		} else {
 			movingOrder = 18;
 			for (int i = 0; i < starTotalCount; ++i) {
@@ -275,6 +292,10 @@ void ResultScene::Update() {
 				if (starT[i] >= 0.75f && starT[i] <= 0.80f) {
 					if (i < 2) {
 						cracker[i].scale = { 1.4f,1.4f };
+
+						if (!Novice::IsPlayingAudio(playSEHandle[1]) && playSEHandle[1] == -1) {
+							playSEHandle[1] = Novice::PlayAudio(sEHandle[1], false, 0.2f);
+						}
 					}
 				}
 
@@ -396,6 +417,10 @@ void ResultScene::Update() {
 	if (movingOrder < 4) {
 		for (int i = 0; i < movingOrder; ++i) {
 			if (isMissionUIMoving[i]) {
+
+				if (missionUIT[i] == 0.0f) {
+					playSEHandle[3] = Novice::PlayAudio(sEHandle[3], false, 0.8f);
+				}
 
 				// tに値を加算
 				if (missionUIT[i] < 1.0f) {

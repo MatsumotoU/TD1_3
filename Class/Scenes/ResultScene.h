@@ -49,6 +49,8 @@ private:
 
 	int movingOrder;
 
+	int playSEHandle[10];
+
 	int shouldClearedMission[starTotalCount];
 
 	int shouldPressedRight;
@@ -67,6 +69,8 @@ private:
 	int bgGraphHandle[3];
 
 	unsigned int flashAlpha;
+
+	int sEHandle[10];
 
 	Vector2 cameraZoom;
 	Vector2* cameraPos[2];

@@ -47,6 +47,8 @@ private:
 	unsigned int bgColor[3];
 	float bgTheta[3];
 
+	int playSEHandle[10];
+
 	int shouldClearedMission[stageTotalCount][starTotalCount];
 
 	int shouldPressedRight;
@@ -68,6 +70,8 @@ private:
 	int bgGraphHandle[3];
 
 	int tempGH;
+
+	int sEHandle[10];
 
 	Vector2* cameraPos;
 	Vector2 cameraZoom;
