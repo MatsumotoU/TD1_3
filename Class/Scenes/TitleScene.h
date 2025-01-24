@@ -31,7 +31,7 @@ private:
 	Transform startButton[2];
 	Transform endButton[2];
 	Transform efect[2];
-	float efectT[4];
+	float efectT[3];
 	float alphaValue[4];
 	int efectCoolTime;
 	int isEfectMove;
@@ -43,6 +43,7 @@ private:
 	int efectNum;
 	int changeSceneCount;
 	int isChangeScene;
+	int flashAlpha;
 	unsigned int color[3];
 	unsigned int returnColor[3];
 	unsigned int endColor;
