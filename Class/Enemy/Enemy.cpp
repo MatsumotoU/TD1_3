@@ -73,6 +73,7 @@ void Enemy::Init() {
 			sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius };
 		exprosionMaxRange[i] = exprosionRange[i];
 	}
+	rotateSpeed = 0.2f;
 }
 
 void Enemy::Update() {
@@ -103,8 +104,8 @@ void Enemy::Update() {
 				sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius };*/
 			if (Length(exprosionRange[i]) <= exprosionRadius) {
 				exprosionRange[i] += {
-					cosf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f),
-						sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f)};
+					cosf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f),
+						sinf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f)};
 			}
 		} else {
 			exprosionRange[i].x -= (exprosionRange[i].x) * 0.1f;
@@ -305,9 +306,9 @@ void Enemy::LockOn() {
 		// プレイヤーを見る
 		angleDir = { cosf(transform.angle),sinf(transform.angle) };
 		if (Cross(angleDir, Normalize(*playerPos - transform.pos)) >= 0.0f) {
-			transform.angle += Length(angleDir - Normalize(*playerPos - transform.pos)) * 0.2f;
+			transform.angle += Length(angleDir - Normalize(*playerPos - transform.pos)) * rotateSpeed;
 		} else {
-			transform.angle -= Length(angleDir - Normalize(*playerPos - transform.pos)) * 0.2f;
+			transform.angle -= Length(angleDir - Normalize(*playerPos - transform.pos)) * rotateSpeed;
 		}
 
 	} else {
@@ -315,9 +316,9 @@ void Enemy::LockOn() {
 		// 移動方向を見る
 		angleDir = { cosf(transform.angle),sinf(transform.angle) };
 		if (Cross(angleDir, moveDir) >= 0.0f) {
-			transform.angle += Length(angleDir - moveDir) * 0.2f;
+			transform.angle += Length(angleDir - moveDir) * rotateSpeed;
 		} else {
-			transform.angle -= Length(angleDir - moveDir) * 0.2f;
+			transform.angle -= Length(angleDir - moveDir) * rotateSpeed;
 		}
 	}
 
@@ -439,6 +440,13 @@ void Enemy::StateCheck() {
 			isActive = false;
 		}
 	}
+
+	// 攻撃してるかどうか
+	if (isAttacking) {
+		drawTransform.scale += {
+			(1.0f - static_cast<float>(attackAnticipationFrame) / static_cast<float>(maxAttackAnticipationFrame)) * 0.5f,
+			(1.0f - static_cast<float>(attackAnticipationFrame) / static_cast<float>(maxAttackAnticipationFrame)) * 0.5f};
+	}
 }
 
 void Enemy::UpdateSword() {
@@ -476,6 +484,7 @@ void Enemy::TypeInit() {
 		transform.size = { 64.0f,64.0f };
 		attackAnticipationFrame = 0;
 		maxAttackAnticipationFrame = 60;
+		rotateSpeed = 0.2f;
 		break;
 	case ENM::Shot:
 		attackRange = 512.0f;
@@ -483,6 +492,7 @@ void Enemy::TypeInit() {
 		transform.size = { 64.0f,64.0f };
 		attackAnticipationFrame = 0;
 		maxAttackAnticipationFrame = 120;
+		rotateSpeed = 0.2f;
 		break;
 	case ENM::Shield:
 		attackRange = 128.0f;
@@ -490,6 +500,7 @@ void Enemy::TypeInit() {
 		transform.size = { 64.0f,64.0f };
 		attackAnticipationFrame = 0;
 		maxAttackAnticipationFrame = 120;
+		rotateSpeed = 0.02f;
 		break;
 	default:
 		break;

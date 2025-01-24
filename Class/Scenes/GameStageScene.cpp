@@ -33,7 +33,7 @@ void GameStageScene::Init() {
 	flashScreenFrame = 0;
 
 	stopObjectUpdateFrame = 0;
-	exprosionHitStopFrame = 15;
+	exprosionHitStopFrame = 7;
 
 	player.Init();
 	player.SetCamera(&mainCamera);
@@ -168,9 +168,14 @@ void GameStageScene::Init() {
 
 	lightManager.Init();
 	lightManager.SetCamera(&mainCamera);
+
+	cameraLocalScale = 1.45f;
+	mainCamera.SetLocalScale({ cameraLocalScale,cameraLocalScale });
 }
 
 void GameStageScene::Update() {
+
+	mainCamera.SetLocalScale({ cameraLocalScale,cameraLocalScale });
 
 	mainCamera.Update();
 	frameCount++;
@@ -233,13 +238,15 @@ void GameStageScene::ImGuiUpdate() {
 #ifdef _DEBUG
 
 	ImGui::Begin("GameScene");
+	ImGui::InputFloat("cameraScale", &cameraLocalScale);
+	
 	ImGui::Text("GameStage = %d Wave = %d", gameStage, wave);
 	ImGui::Text("combo = %d :%d", exprosionComboCount, comboRemainFrame);
 	ImGui::InputFloat("x", &testPopEnemyPos.x);
 	ImGui::InputFloat("y", &testPopEnemyPos.y);
 	ImGui::SliderFloat("balanceAngle", &balanceAngle, -3.14f, 3.14f);
 	if (ImGui::Button("PopEnemy")) {
-		enemyManager.SpawnEnemy(testPopEnemyPos, ENM::None);
+		enemyManager.SpawnEnemy(testPopEnemyPos, ENM::Melee);
 	}
 
 	if (ImGui::Button("CreateEnemyRoute")) {
@@ -508,19 +515,49 @@ void GameStageScene::EnemyCollision() {
 					player.GetSize().x * 0.5f, enemyManager.GetEnemyes()[e].GetSize().x * 0.5f)) {
 
 					if (!enemyManager.GetEnemyes()[e].GetIsHitAttack() && player.GetCanAttack()) {
-						enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
-						enemyManager.GetEnemyes()[e].SetHitAttackDir(
-							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
-						player.CountDownRemainAttackChance();
 
-						particleManager.SlashEffect(
-							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
-							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 10.0f, 5, 30, 5, 0);
+						if (enemyManager.GetEnemyes()[e].GetType() == ENM::Shield) {
 
-						// カメラを揺らす
-						mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 100.0f;
+							if (Dot(enemyManager.GetEnemyes()[e].GetAngleDir(), player.GetAngleDir()) > 0.0f) {
+								
+								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
+								enemyManager.GetEnemyes()[e].SetHitAttackDir(
+									Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
+								player.CountDownRemainAttackChance();
 
-						enemyManager.GetEnemyes()[e].Stun();
+								particleManager.SlashEffect(
+									enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
+									Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 10.0f, 5, 30, 5, 0);
+
+								// カメラを揺らす
+								mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 100.0f;
+
+								enemyManager.GetEnemyes()[e].Stun();
+
+							} else {
+
+								player.GetPhysics()->InversVelocity();
+
+								// カメラを揺らす
+								mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 30.0f;
+							}
+
+						} else {
+							enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
+							enemyManager.GetEnemyes()[e].SetHitAttackDir(
+								Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
+							player.CountDownRemainAttackChance();
+
+							particleManager.SlashEffect(
+								enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
+								Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 10.0f, 5, 30, 5, 0);
+
+							// カメラを揺らす
+							mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 100.0f;
+
+							enemyManager.GetEnemyes()[e].Stun();
+						}
+						
 					} else {
 
 						enemyManager.GetEnemyes()[e].GetPhysics()->AddForce(player.GetPhysics()->GetVelocity() * 20.0f, IMPACT);

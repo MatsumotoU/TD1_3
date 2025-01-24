@@ -67,6 +67,7 @@ public:
 	int GetGraphHandle();
 	int GetHp();
 	int GetMaxHp();
+	Vector2 GetAngleDir();
 
 	void CountDownRemainAttackChance();
 	void Damage();
