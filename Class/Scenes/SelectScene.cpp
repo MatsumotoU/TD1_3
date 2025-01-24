@@ -90,6 +90,10 @@ void SelectScene::Init() {
 		}
 	}
 
+	for (int i = 0; i < 10; ++i) {
+		playSEHandle[i] = -1;
+	}
+
 	// 左右キーを押したときステージアイコンなどが動く時間
 	movingFrameCount = 25.0f;
 
@@ -124,6 +128,9 @@ void SelectScene::Init() {
 	bgGraphHandle[0] = Novice::LoadTexture("./Resources/Images/bg1.png");
 	bgGraphHandle[1] = Novice::LoadTexture("./Resources/Images/bg2.png");
 	bgGraphHandle[2] = Novice::LoadTexture("./Resources/Images/bg3.png");
+
+	sEHandle[0] = Novice::LoadAudio("./Resources/Sounds/dicision.mp3");
+	sEHandle[1] = Novice::LoadAudio("./Resources/Sounds/slide.mp3");
 }
 
 void SelectScene::Update() {
@@ -155,6 +162,10 @@ void SelectScene::Update() {
 							arrowTheta[i] = 0.0f;
 							arrow[i].angle = 0.0f;
 						}
+
+						if (!Novice::IsPlayingAudio(playSEHandle[1]) || playSEHandle[1] == -1) {
+							playSEHandle[1] = Novice::PlayAudio(sEHandle[1], false, 0.8f);
+						}
 					}
 				}
 			}
@@ -184,6 +195,10 @@ void SelectScene::Update() {
 							arrowTheta[i] = 0.0f;
 							arrow[i].angle = 0.0f;
 						}
+
+						if (!Novice::IsPlayingAudio(playSEHandle[1]) || playSEHandle[1] == -1) {
+							playSEHandle[1] = Novice::PlayAudio(sEHandle[1], false, 0.8f);
+						}
 					}
 				}
 			}
@@ -195,6 +210,9 @@ void SelectScene::Update() {
 		// ステージに遷移する
 		if (!isZoom) {
 			isZoom = true;
+			if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
+				playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.8f);
+			}
 		}
 	}
 
