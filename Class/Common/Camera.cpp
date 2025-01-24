@@ -17,20 +17,21 @@ Camera::Camera() {
 	angleShake = 0.0f;
 	angleShakeRange = 0.0f;
 	panRange = 0.0f;
+	localScale = { 1.0f,1.0f };
 }
 
 int Camera::IsInScreen(Vector2 pos, Vector2 size) {
 	int inX = false;
 	int inY = false;
 
-	if (transform.pos.x + size.x * 0.5f >= pos.x - (screenSize.x * 0.5f) &&
-		transform.pos.x - size.x * 0.5f <= pos.x + (screenSize.x * 0.5f)) {
+	if (transform.pos.x + size.x * 0.5f >= pos.x - (screenSize.x * localScale.x * 0.5f) &&
+		transform.pos.x - size.x * 0.5f <= pos.x + (screenSize.x * localScale.x * 0.5f)) {
 
 		inX = true;
 	}
 
-	if (transform.pos.y + size.y * 0.5f >= pos.y - (screenSize.y * 0.5f) &&
-		transform.pos.y - size.y * 0.5f <= pos.y + (screenSize.y * 0.5f)) {
+	if (transform.pos.y + size.y * 0.5f >= pos.y - (screenSize.y * localScale.y * 0.5f) &&
+		transform.pos.y - size.y * 0.5f <= pos.y + (screenSize.y * localScale.y * 0.5f)) {
 
 		inY = true;
 	}
@@ -61,7 +62,7 @@ Matrix3x3 Camera::GetWvpVpMatrix(Vector2 setPos, Vector2 setScale, float setAngl
 	Matrix3x3 result = { 0 };
 	Matrix3x3 objWorldMatrix = MakeAffineMatrix(setScale, setAngle, setPos);
 
-	Matrix3x3 cameraWorldMatrix = MakeAffineMatrix(transform.scale, transform.angle + angleShake, transform.pos + shake);
+	Matrix3x3 cameraWorldMatrix = MakeAffineMatrix(transform.scale * localScale, transform.angle + angleShake, transform.pos + shake);
 	Matrix3x3 viewMatrix = Inverse(cameraWorldMatrix);
 	Matrix3x3 orthoMatrix = MakeOrthographicMatrix(-screenSize.x * 0.5f, screenSize.y * 0.5f, screenSize.x * 0.5f, -screenSize.y * 0.5f);
 	Matrix3x3 viewportMatrix = MakeViewportMatrix(0.0f, 0.0f, screenSize.x, screenSize.y);
@@ -84,6 +85,10 @@ Transform* Camera::GetTransformPtr() {
 
 void Camera::SetScreenSize(Vector2 set) {
 	screenSize = set;
+}
+
+void Camera::SetLocalScale(Vector2 set) {
+	localScale = set;
 }
 
 void Camera::DrawGrid(Vector2 gridSize) {
@@ -135,6 +140,7 @@ void Camera::Init() {
 	shakeRange = { 0.0f,0.0f };
 	angleShake = 0.0f;
 	angleShakeRange = 0.0f;
+	localScale = { 1.0f,1.0f };
 }
 
 void Camera::Update() {

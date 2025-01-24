@@ -19,6 +19,7 @@ public:
 	Transform* GetTransformPtr();
 
 	void SetScreenSize(Vector2 set);
+	void SetLocalScale(Vector2 set);
 
 	int IsInScreen(Vector2 pos,Vector2 size);
 	void CameraMoveLimit(Vector2 min, Vector2 max);
@@ -33,6 +34,7 @@ private:
 	Vector2 shake;
 	float angleShake;
 	Vector2 screenSize;
+	Vector2 localScale;
 
 	TimeManager* time = TimeManager::GetInstance();
 };

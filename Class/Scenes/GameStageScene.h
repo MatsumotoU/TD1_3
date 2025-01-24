@@ -128,5 +128,7 @@ private:
 	int missionGH;
 
 	LightManager lightManager;
+
+	float cameraLocalScale;
 };
 

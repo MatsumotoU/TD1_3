@@ -86,6 +86,7 @@ private:
 	Vector2 angleDir;
 	Vector2 moveDir;
 	Transform drawTransform;
+	float rotateSpeed;
 
 	int stunFrame;
 

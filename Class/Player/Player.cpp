@@ -698,6 +698,10 @@ int Player::GetMaxHp() {
 	return maxHp;
 }
 
+Vector2 Player::GetAngleDir() {
+	return angleDir;
+}
+
 void Player::CountDownRemainAttackChance() {
 	remainAttackChance--;
 	if (remainAttackChance <= 0) {
