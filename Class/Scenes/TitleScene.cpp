@@ -182,7 +182,6 @@ void TitleScene::Init() {
 	efectT[0] = 0.0f;
 	efectT[1] = 0.0f;
 	efectT[2] = 0.0f;
-	efectT[3] = 0.0f;
 	efectCoolTime = 60;
 	isEfectMove = false;
 	isUnderEfectMove = false;
@@ -205,6 +204,7 @@ void TitleScene::Init() {
 	sword[1] = { 10.0f,10.0f };
 	efectDir[0] = { 10.0f,10.0f };
 	efectDir[1] = { -10.0f,10.0f };
+	flashAlpha = 0;
 
 	cameraPos = mainCamera.GetPosPtr();
 	*cameraPos = { 640.0f,360.0f };
@@ -335,19 +335,8 @@ void TitleScene::Update() {
 			}
 		}
 
-		if (efectT[3] <= 1.0f)
-		{
-			efectT[3] += 0.1f;
-
-			if (efectT[3] > 1.0f)
-			{
-				efectT[3] = 0.0f;
-			}
-
-		}
-
+		// 背景の点滅処理
 		for (int i = 0; i < 3; ++i) {
-
 			bgAngle[i] += 1.0f / 180.0f * static_cast<float>(M_PI);
 
 			bgColor[i] = ColorFade(0xffffffff, fabsf(sinf(bgAngle[i])) * (0.15f - i * 0.06f));
@@ -356,6 +345,17 @@ void TitleScene::Update() {
 		alphaValue[3] = Eas::EaseInOutQuart(alphaValue[2], 1.0f, 0.1f);
 		returnColor[2] = ColorFade(color[2], alphaValue[3]);
 
+		// 演出スキップ時のフラッシュ処理
+		if (flashAlpha > 0)
+		{
+			flashAlpha -= 8;
+
+			if (flashAlpha < 0)
+			{
+				flashAlpha = 0;
+			}
+		}
+		// シーン遷移処理
 		if (isChangeScene)
 		{
 			changeSceneCount++;
@@ -492,6 +492,7 @@ void TitleScene::Update() {
 			returnColor[0] = 0x00000000;
 			returnColor[1] = 0xFFFFFFFF;
 			frameCount = 170;
+			flashAlpha = 255;
 			isMoveEnd = true;
 		}
 
@@ -621,8 +622,10 @@ void TitleScene::Draw() {
 		// エフェクトの描画処理
 		Render::DrawSprite(efect[0], mainCamera, 0xFFFFFFFF, bigEfectGh[efectNum / 2]);
 		Render::DrawSprite(efect[1], mainCamera, 0xFFFFFFFF, smallEfectGh[efectNum / 2]);
-
 	}
+
+	// フラッシュの描画処理
+	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xFFFFFF00 + flashAlpha, kFillModeSolid);
 }
 
 IScene* TitleScene::GetNextScene() {
