@@ -54,6 +54,7 @@ public:
 	void SetRemainAttackChance(int set);
 	void SetIsDash(int set);
 	void SetMapchip(Mapchip* set);
+	void SetDrawLockOn(int set);
 
 	int GetIsAlive();
 	int GetIsAttack();
@@ -129,6 +130,7 @@ private:
 	Vector2 targetPos;
 	Transform targetTransform;
 	int lockOnGH;
+	int isDrawLockOn;
 
 	Camera* camera;
 
