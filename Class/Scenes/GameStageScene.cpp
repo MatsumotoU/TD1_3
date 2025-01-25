@@ -518,6 +518,12 @@ void GameStageScene::ObjectCollision() {
 								mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
 
 								playerAttackStopFrame = 0;
+
+								if (player.GetHp() <= 0) {
+									stopObjectUpdateFrame = 90;
+									player.GetPhysics()->SetResistance(1.0f);
+									player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
+								}
 							}
 						}
 
@@ -535,6 +541,12 @@ void GameStageScene::ObjectCollision() {
 								mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
 
 								playerAttackStopFrame = 0;
+
+								if (player.GetHp() <= 0) {
+									stopObjectUpdateFrame = 90;
+									player.GetPhysics()->SetResistance(1.0f);
+									player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
+								}
 							}
 						}
 					}
@@ -558,6 +570,12 @@ void GameStageScene::ObjectCollision() {
 								mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * 100.0f;
 
 								playerAttackStopFrame = 0;
+
+								if (player.GetHp() <= 0) {
+									stopObjectUpdateFrame = 90;
+									player.GetPhysics()->SetResistance(1.0f);
+									player.GetPhysics()->AddForce(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos(), IMPACT);
+								}
 							}
 						}
 					}
@@ -1155,12 +1173,10 @@ void GameStageScene::CameraUpdate() {
 			Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->x, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().x, 0.1f);
 			Eas::SimpleEaseIn(&mainCamera.GetPosPtr()->y, enemyManager.GetEnemyes()[lastHitEnemyNum].GetPos().y, 0.1f);
 
-		} else {
-			*cameraPos = player.GetPos();
 		}
 
 		mainCamera.shakeRange = { static_cast<float>(clearStageTimeBuffer) * 0.1f,static_cast<float>(clearStageTimeBuffer) * 0.1f };
-		mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer), 0.1f, 1.0f);
+		//mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer), 0.1f, 1.0f);
 
 	} else {
 		*cameraPos = player.GetPos();

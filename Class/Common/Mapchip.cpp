@@ -129,11 +129,25 @@ void Mapchip::PlayerMapCollision() {
 				if (map[y][x] == 1) {
 					if (IsHitRectangle(player->GetPos(), player->GetSize(), blockPos, kMapChipSize)) {
 
-						CollisionRectangle(player->GetPosPtr(), player->GetSize(), blockPos, kMapChipSize, true, true);
+						if (player->GetIsAlive()) {
+							CollisionRectangle(player->GetPosPtr(), player->GetSize(), blockPos, kMapChipSize, true, true);
 
-						if (player->GetIsDash()) {
-							camera->shakeRange += player->GetPhysics()->GetVelocity();
-							player->SetIsDash(false);
+							if (player->GetIsDash()) {
+								camera->shakeRange += player->GetPhysics()->GetVelocity();
+								player->SetIsDash(false);
+
+							}
+						} else {
+
+							if (fabsf(player->GetPos().x - blockPos.x) <= fabsf(player->GetPos().y - blockPos.y)) {
+								player->GetPhysics()->SetVelocity(
+									{ player->GetPhysics()->GetVelocity().x,
+									-player->GetPhysics()->GetVelocity().y });
+							} else {
+								player->GetPhysics()->SetVelocity(
+									{ -player->GetPhysics()->GetVelocity().x,
+									player->GetPhysics()->GetVelocity().y });
+							}
 							
 						}
 					}
