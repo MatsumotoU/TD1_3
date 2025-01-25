@@ -22,6 +22,8 @@ public:
 	int GetRemainEnemies();
 	int GetIsThereHitEnemy();
 	Enemy* GetEnemyes();
+	int GetIsThereEnemies(Vector2 pos,Vector2 size);
+	int GetIsHitScreenEnemies(Vector2 pos, Vector2 size);
 
 	void EnemyCollision();
 	void SpawnEnemy(Vector2 pos,ENM::Type set);

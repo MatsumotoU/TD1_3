@@ -132,6 +132,7 @@ void GameStageScene::Init() {
 	contorolTutorialUI.Init();
 	contorolTutorialUI.SetCamera(&uiCamera);
 	contorolTutorialUI.SetPlayer(&player);
+	contorolTutorialUI.SetEnemyManager(&enemyManager);
 
 	playerHpUI.Init();
 	playerHpUI.SetCamera(&uiCamera);
@@ -1006,50 +1007,49 @@ void GameStageScene::ControlInfoDraw() {
 		} else {
 			Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, contorolInfoGH[3]);
 		}
+	} 
+	//else {
+
+	//	if (Novice::GetNumberOfJoysticks() > 0) {
+	//		if (Length(input->GetControlDir()) > 0.0f) {
+	//			Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF, rcContorolInfoGH[0]);
+	//		} else {
+	//			Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, rcContorolInfoGH[0]);
+	//		}
+
+	//		if (player.GetIsDash()) {
+	//			Render::DrawSprite(contorolInfoTransform[1], uiCamera, 0x232323FF, rcContorolInfoGH[1]);
+	//		} else {
+	//			Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, rcContorolInfoGH[1]);
+	//		}
+
+	//		/*if (enemyManager.GetIsThereHitEnemy() || player.GetRemainAttackChance() <= 0) {
+	//			Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xD65A31FF, rcContorolInfoGH[2]);
+	//		} else {
+	//			Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, rcContorolInfoGH[2]);
+	//		}*/
+	//	} else {
+	//		if (Length(input->GetControlDir()) > 0.0f) {
+	//			Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF, contorolInfoGH[0]);
+	//		} else {
+	//			Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, contorolInfoGH[0]);
+	//		}
+
+	//		if (player.GetIsDash()) {
+	//			Render::DrawSprite(contorolInfoTransform[1], uiCamera, 0x232323FF, rcContorolInfoGH[1]);
+	//		} else {
+	//			Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, contorolInfoGH[1]);
+	//		}
+
+	//		/*if (enemyManager.GetIsThereHitEnemy() || player.GetRemainAttackChance() <= 0) {
+	//			Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xD65A31FF, rcContorolInfoGH[2]);
+	//		} else {
+	//			Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, contorolInfoGH[2]);
+	//		}*/
+	//	}
 
 
-	} else {
-
-		if (Novice::GetNumberOfJoysticks() > 0) {
-			if (Length(input->GetControlDir()) > 0.0f) {
-				Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF, rcContorolInfoGH[0]);
-			} else {
-				Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, rcContorolInfoGH[0]);
-			}
-
-			if (player.GetIsDash()) {
-				Render::DrawSprite(contorolInfoTransform[1], uiCamera, 0x232323FF, rcContorolInfoGH[1]);
-			} else {
-				Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, rcContorolInfoGH[1]);
-			}
-
-			/*if (enemyManager.GetIsThereHitEnemy() || player.GetRemainAttackChance() <= 0) {
-				Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xD65A31FF, rcContorolInfoGH[2]);
-			} else {
-				Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, rcContorolInfoGH[2]);
-			}*/
-		} else {
-			if (Length(input->GetControlDir()) > 0.0f) {
-				Render::DrawSprite(contorolInfoTransform[0], uiCamera, 0x232323FF, contorolInfoGH[0]);
-			} else {
-				Render::DrawSprite(contorolInfoTransform[0], uiCamera, WHITE, contorolInfoGH[0]);
-			}
-
-			if (player.GetIsDash()) {
-				Render::DrawSprite(contorolInfoTransform[1], uiCamera, 0x232323FF, rcContorolInfoGH[1]);
-			} else {
-				Render::DrawSprite(contorolInfoTransform[1], uiCamera, WHITE, contorolInfoGH[1]);
-			}
-
-			/*if (enemyManager.GetIsThereHitEnemy() || player.GetRemainAttackChance() <= 0) {
-				Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xD65A31FF, rcContorolInfoGH[2]);
-			} else {
-				Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0x232323FF, contorolInfoGH[2]);
-			}*/
-		}
-
-
-	}
+	//}
 }
 
 void GameStageScene::CameraUpdate() {

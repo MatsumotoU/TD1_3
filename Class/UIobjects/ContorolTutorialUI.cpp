@@ -1,13 +1,22 @@
 #include "ContorolTutorialUI.h"
 #include "Class/Common/MyEasing.h"
 #include "Class/Player/Player.h"
+#include "Class/Enemy/EnemyManager.h"
+#include "Class/Common/Collision2D.h"
 
 void ContorolTutorialUI::Init() {
+	alpha = 1.0f;
+
 	transform = { 0 };
-	transform.pos = { -900.0f,240.0f };
+	transform.pos = { 900.0f,240.0f };
 	transform.scale = { 1.0f,1.0f };
 	transform.size = { 480.0f,192.0f };
 	tutorialCount = 0;
+
+	hintTransform = transform;
+
+	hintGH[0] = Novice::LoadTexture("./Resources/Images/hint1.png");
+	hintGH[1] = Novice::LoadTexture("./Resources/Images/hint2.png");
 
 	windowGH = Novice::LoadTexture("./Resources/Images/controlrTutorialWindow.png");
 
@@ -29,19 +38,34 @@ void ContorolTutorialUI::Init() {
 	controllerTutorialPushGH[1] = Novice::LoadTexture("./Resources/Images/controllerTutorialPush2.png");
 	controllerTutorialPushGH[2] = Novice::LoadTexture("./Resources/Images/controllerTutorialPush3.png");
 
-	isInScreeenUI = false;
+	isHideUI = false;
+	isInScreeenUI = true;
+	enemyManager = nullptr;
 	tutorialStep = 0;
+	frameCount = 0;
 }
 
 void ContorolTutorialUI::Update() {
 
+	frameCount++;
+
 	if (isActive) {
-		
-		if (player->GetPos().x <= 564.0f && player->GetPos().y >= 64.0f * 25.0f) {
-			isInScreeenUI = false;
-		} else {
-			isInScreeenUI = true;
+
+		if (input->GetTriger(DIK_H) || Novice::IsTriggerButton(0, kPadButton12)) {
+			if (isInScreeenUI) {
+				isInScreeenUI = false;
+			} else {
+				isInScreeenUI = true;
+			}
 		}
+		
+		Vector2 zeroVec = { 0.0f,0.0f };
+		if (isHideUI || enemyManager->GetIsHitScreenEnemies({1020.0f,120.0f}, transform.size)) {
+			Eas::SimpleEaseIn(&alpha, 0.05f, 0.2f);
+		} else {
+			Eas::SimpleEaseIn(&alpha, 1.0f, 0.1f);
+		}
+
 	} else {
 		isInScreeenUI = false;
 	}
@@ -64,62 +88,73 @@ void ContorolTutorialUI::Update() {
 		}
 	}
 
-	if (tutorialStep >= 100 && tutorialCount < 3) {
+	if (tutorialStep >= 100 && tutorialCount < 2) {
 		tutorialCount++;
 		tutorialStep = 0;
 	}
 
 	if (isInScreeenUI) {
-		Eas::SimpleEaseIn(&transform.pos.x, -360.0f, 0.3f);
+		Eas::SimpleEaseIn(&transform.pos.x, 360.0f, 0.3f);
+		Eas::SimpleEaseIn(&hintTransform.pos.x, 900.0f, 0.3f);
 	} else {
-		Eas::SimpleEaseIn(&transform.pos.x, -900.0f, 0.2f);
+		Eas::SimpleEaseIn(&transform.pos.x, 900.0f, 0.2f);
+		Eas::SimpleEaseIn(&hintTransform.pos.x, 360.0f, 0.2f);
 	}
+
+	transform.pos.y += sinf(static_cast<float>(frameCount) * 0.1f)*0.3f;
 }
 
 void ContorolTutorialUI::Draw() {
 
-	Render::DrawSprite(transform, *camera, WHITE, windowGH);
+	Render::DrawSprite(transform, *camera, ColorFade(WHITE,alpha), windowGH);
+	if (isActive) {
+		if (Novice::GetNumberOfJoysticks() > 0) {
+			Render::DrawSprite(hintTransform, *camera, ColorFade(WHITE, alpha), hintGH[1]);
+		} else {
+			Render::DrawSprite(hintTransform, *camera, ColorFade(WHITE, alpha), hintGH[0]);
+		}
+	}
 
 	if (Novice::GetNumberOfJoysticks() > 0) {
 
 		if (input->GetControl(DASH, Press)) {
-			Render::DrawSprite(transform, *camera, WHITE, controllerTutorialPushGH[1]);
+			Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), controllerTutorialPushGH[1]);
 		}
 
 		if (input->GetPress(DIK_E) || input->GetControl(ATTACK, Press)) {
-			Render::DrawSprite(transform, *camera, WHITE, controllerTutorialPushGH[2]);
+			Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), controllerTutorialPushGH[2]);
 		}
 
-		Render::DrawSprite(transform, *camera, WHITE, controllerTutorialGH[tutorialCount % 4]);
+		Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), controllerTutorialGH[tutorialCount % 4]);
 		
-		if (tutorialCount == 0 ||tutorialCount >= 3) {
+		if (tutorialCount == 0 ||tutorialCount >= 2) {
 			if (Length(input->GetControlDir()) > 0) {
 				Transform drawStickTransform = transform;
 				drawStickTransform.pos += input->GetControlDir() * 4.0f;
 
-				Render::DrawSprite(drawStickTransform, *camera, 0xd65a31FF, controllerTutorialPushGH[0]);
+				Render::DrawSprite(drawStickTransform, *camera, ColorFade(0xd65a31FF, alpha), controllerTutorialPushGH[0]);
 			} else {
-				Render::DrawSprite(transform, *camera, 0xEEEEEEFF, controllerTutorialPushGH[0]);
+				Render::DrawSprite(transform, *camera, ColorFade(0xEEEEEEFF, alpha), controllerTutorialPushGH[0]);
 			}
 		} else {
-			Render::DrawSprite(transform, *camera, WHITE, controllerTutorialPushGH[0]);
+			Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), controllerTutorialPushGH[0]);
 		}
 
 	} else {
 
 		if (Length(input->GetControlDir()) > 0) {
-			Render::DrawSprite(transform, *camera, WHITE, keyTutorialPushGH[0]);
+			Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), keyTutorialPushGH[0]);
 		}
 
 		if (input->GetControl(DASH, Press)) {
-			Render::DrawSprite(transform, *camera, WHITE, keyTutorialPushGH[1]);
+			Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), keyTutorialPushGH[1]);
 		}
 
 		if (input->GetPress(DIK_E) || input->GetControl(ATTACK, Press)) {
-			Render::DrawSprite(transform, *camera, WHITE, keyTutorialPushGH[2]);
+			Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), keyTutorialPushGH[2]);
 		}
 
-		Render::DrawSprite(transform, *camera, WHITE, keyTutorialGH[tutorialCount % 4]);
+		Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), keyTutorialGH[tutorialCount % 4]);
 	}
 	
 }
@@ -134,4 +169,8 @@ void ContorolTutorialUI::SetPlayer(Player* set) {
 
 void ContorolTutorialUI::SetIsInScreen(int set) {
 	isInScreeenUI = set;
+}
+
+void ContorolTutorialUI::SetEnemyManager(EnemyManager* set) {
+	enemyManager = set;
 }

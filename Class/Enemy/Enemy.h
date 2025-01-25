@@ -55,6 +55,7 @@ public:
 	int GetIsShot();
 	Vector2 GetAngleDir();
 	int GetIsReqestExprosion();
+	Vector2 GetScreenPos();
 
 	void Move();
 	void LockOn();

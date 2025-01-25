@@ -3,7 +3,7 @@
 
 void PlayerHpUI::Init() {
 	transform = { 0.0f };
-	transform.pos = { 320.0f,320.0f };
+	transform.pos = { -570.0f,310.0f };
 	transform.size = { 64.0f,64.0f };
 	transform.scale = { 1.0f,1.0f };
 	transform.angle = 0.0f;

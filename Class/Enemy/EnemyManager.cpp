@@ -75,6 +75,28 @@ Enemy* EnemyManager::GetEnemyes() {
 	return enemyes;
 }
 
+int EnemyManager::GetIsThereEnemies(Vector2 pos, Vector2 size) {
+	for (int i = 0; i < EMG::kMaxEnemy; i++) {
+		if (enemyes[i].GetIsAlive()) {
+			if(IsHitRectangle(pos, size, enemyes[i].GetPos(), enemyes[i].GetSize())){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+int EnemyManager::GetIsHitScreenEnemies(Vector2 pos, Vector2 size) {
+	for (int i = 0; i < EMG::kMaxEnemy; i++) {
+		if (enemyes[i].GetIsAlive()) {
+			if (IsHitRectangle(pos, size, enemyes[i].GetScreenPos(), enemyes[i].GetSize())) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void EnemyManager::EnemyCollision() {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		if (enemyes[i].GetIsActive() && enemyes[i].GetIsAlive()) {
