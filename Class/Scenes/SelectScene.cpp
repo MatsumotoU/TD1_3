@@ -86,7 +86,7 @@ void SelectScene::Init() {
 	// ミッションをクリアしたか
 	for (int i = 0; i < stageTotalCount; ++i) {
 		for (int j = 0; j < starTotalCount; ++j) {
-			shouldClearedMission[i][j] = true;
+			shouldClearedMission[i][j] = sceneObj->shouldClearedMission[i][j];
 		}
 	}
 
