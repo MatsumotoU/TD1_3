@@ -200,6 +200,15 @@ void Player::Init() {
 
 void Player::Update() {
 
+	if (!isAlive) {
+		transform.angle += 0.5f;
+		physics.Update(&transform.pos);
+
+		if (frameCount % 2) {
+			particleManager.SlashEffect(transform.pos, { 32.0f,32.0f }, -angleDir, 1.0f, 100, 30, 1, featherGH);
+		}
+	}
+
 	oldTransform = transform;
 
 	frameCount++;
@@ -208,11 +217,13 @@ void Player::Update() {
 	particleManager.Update();
 	angleDir = { cosf(transform.angle),sinf(transform.angle) };
 
-	Move();
-	LockOn();
-	Dash();
-	//Sheathe();
-	StateCheck();
+	if (isAlive) {
+		Move();
+		LockOn();
+		Dash();
+		//Sheathe();
+		StateCheck();
+	}
 
 	HaloMove();
 	WingMove();
@@ -480,7 +491,6 @@ void Player::WingMove() {
 	rightWingTransform.pos = { -16.0f,-24.0f };
 	rightWingTransform.pos = rightWingTransform.pos * MakeAffineMatrix(transform.scale, transform.angle + (-sinf(static_cast<float>(frameCount) * 0.2f) * 0.1f) + (-flapping * 0.5f), transform.pos);
 	rightWingTransform.angle = transform.angle - sinf(static_cast<float>(frameCount) * 0.2f) * 0.1f + (-flapping * 1.2f);
-
 }
 
 void Player::WingDraw() {
