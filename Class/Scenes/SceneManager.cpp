@@ -70,14 +70,14 @@ void SceneManager::Update() {
 				// 現在のシーンを次のシーンへ
 				scene = temp;
 
+				scene->SetSceneObj(&sceneObject);
+
 				// 現在のシーンの初期化処理
 				scene->Init();
 
 				// ゲームステージ引き継ぎ
 				scene->SetGameStage(gameStage);
 			}
-
-			scene->SetSceneObj(&sceneObject);
 		}
 	}
 

@@ -60,8 +60,33 @@ void ResultScene::Init() {
 	button[1].scale = { 1.0f,1.0f };
 
 	// ミッションをクリアしたか
-	for (int i = 0; i < starTotalCount; ++i) {
-		shouldClearedMission[i] = true;
+	
+	if (sceneObj->isNotDeathClear) {
+		shouldClearedMission[0] = true;
+		if (!sceneObj->shouldClearedMission[gameStage][0]) {
+			sceneObj->shouldClearedMission[gameStage][0] = true;
+		}
+	} else {
+		shouldClearedMission[0] = false;
+	}
+
+	if (sceneObj->score >= 10000) {
+		shouldClearedMission[1] = true;
+
+		if (!sceneObj->shouldClearedMission[gameStage][1]) {
+			sceneObj->shouldClearedMission[gameStage][1] = true;
+		}
+
+	} else {
+		shouldClearedMission[1] = false;
+	}
+	if (shouldClearedMission[0] && shouldClearedMission[1]) {
+		shouldClearedMission[2] = true;
+		if (!sceneObj->shouldClearedMission[gameStage][2]) {
+			sceneObj->shouldClearedMission[gameStage][2] = true;
+		}
+	} else {
+		shouldClearedMission[2] = false;
 	}
 
 	spaceUI = {
