@@ -19,6 +19,7 @@ void SceneManager::Init() {
 
 	scene->Init();
 	sceneTransition.Init();
+	scene->SetSceneObj(&sceneObject);
 
 	frameCount = 0;
 	gameStage = 0;
@@ -74,8 +75,9 @@ void SceneManager::Update() {
 
 				// ゲームステージ引き継ぎ
 				scene->SetGameStage(gameStage);
-
 			}
+
+			scene->SetSceneObj(&sceneObject);
 		}
 	}
 
@@ -105,6 +107,8 @@ void SceneManager::Update() {
 			// 現在のシーンの初期化処理
 			scene->Init();
 		}
+
+		scene->SetSceneObj(&sceneObject);
 	}
 
 	// Iキーが押されたら

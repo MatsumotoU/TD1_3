@@ -35,9 +35,9 @@ void BounceNumber::Update() {
 			transform.scale.x = 0.3f;
 
 			if (number - targetNumber < 0) {
-				number += 1;
+				number += ((targetNumber - number) / 2) +1;
 			} else {
-				number -= 1;
+				number -= ((targetNumber - number) / 2) + 1;
 			}
 		}
 	}
@@ -81,4 +81,20 @@ Vector2* BounceNumber::GetPosPtr() {
 
 Vector2 BounceNumber::GetScale() {
 	return transform.scale;
+}
+
+int BounceNumber::GetNumber() {
+	return number;
+}
+
+int BounceNumber::GetDigit() {
+	int tempNum = targetNumber;
+	int digit = 1;
+
+	while (tempNum >= 10)
+	{
+		tempNum /= 10;
+		digit++;
+	}
+	return digit;
 }

@@ -8,7 +8,7 @@ void ContorolTutorialUI::Init() {
 	alpha = 1.0f;
 
 	transform = { 0 };
-	transform.pos = { 900.0f,240.0f };
+	transform.pos = { -900.0f,150.0f };
 	transform.scale = { 1.0f,1.0f };
 	transform.size = { 480.0f,192.0f };
 	tutorialCount = 0;
@@ -60,7 +60,7 @@ void ContorolTutorialUI::Update() {
 		}
 		
 		Vector2 zeroVec = { 0.0f,0.0f };
-		if (isHideUI || enemyManager->GetIsHitScreenEnemies({1020.0f,120.0f}, transform.size)) {
+		if (isHideUI || enemyManager->GetIsHitScreenEnemies({240.0f,120.0f}, transform.size)) {
 			Eas::SimpleEaseIn(&alpha, 0.05f, 0.2f);
 		} else {
 			Eas::SimpleEaseIn(&alpha, 1.0f, 0.1f);
@@ -94,11 +94,11 @@ void ContorolTutorialUI::Update() {
 	}
 
 	if (isInScreeenUI) {
-		Eas::SimpleEaseIn(&transform.pos.x, 360.0f, 0.3f);
-		Eas::SimpleEaseIn(&hintTransform.pos.x, 900.0f, 0.3f);
+		Eas::SimpleEaseIn(&transform.pos.x, -360.0f, 0.3f);
+		Eas::SimpleEaseIn(&hintTransform.pos.x, -900.0f, 0.3f);
 	} else {
-		Eas::SimpleEaseIn(&transform.pos.x, 900.0f, 0.2f);
-		Eas::SimpleEaseIn(&hintTransform.pos.x, 360.0f, 0.2f);
+		Eas::SimpleEaseIn(&transform.pos.x, -900.0f, 0.2f);
+		Eas::SimpleEaseIn(&hintTransform.pos.x, -360.0f, 0.2f);
 	}
 
 	transform.pos.y += sinf(static_cast<float>(frameCount) * 0.1f)*0.3f;

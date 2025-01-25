@@ -172,6 +172,34 @@ void GameStageScene::Init() {
 
 	cameraLocalScale = 1.45f;
 	mainCamera.SetLocalScale({ cameraLocalScale,cameraLocalScale });
+
+	comboUI.Init();
+	comboUI.SetCamera(&uiCamera);
+	comboUI.SetCombo(&exprosionComboCount,&comboRemainFrame);
+	playerAttackStopFrame = 0;
+
+	playerAttackHitCount = 0;
+	playerStopClockUI.Init();
+	playerStopClockUI.SetCamera(&uiCamera);
+	playerStopClockUI.SetPlayerAttackStopFrame(&playerAttackStopFrame);
+	playerStopClockUI.SetPlayerAttackComboCount(&playerAttackHitCount);
+
+	scoreUIManager.Init();
+	scoreUIManager.SetCamera(&mainCamera);
+
+	score = 0;
+
+	gameScore.Init();
+	gameScore.SetSize({ 128.0f,128.0f });
+	gameScore.SetPos({ 580.0f,280.0f });
+
+	scoreTitle = {0.0f};
+	scoreTitle.pos = { 0.0f,285.0f };
+	scoreTitle.size = { 512.0f,128.0f };
+	scoreTitle.scale = { 1.0f,1.0f };
+	scoreTitleGH = Novice::LoadTexture("./Resources/Images/ScoreTitle.png");
+
+	isNotDeath = true;
 }
 
 void GameStageScene::Update() {
@@ -186,6 +214,11 @@ void GameStageScene::Update() {
 	contorolTutorialUI.Update();
 	playerHpUI.Update();
 	lightManager.Update();
+	comboUI.Update();
+	playerStopClockUI.Update();
+	scoreUIManager.Update();
+	gameScore.Update();
+	gameScore.SetTargetNum(score);
 
 	if (!isChangeWave) {
 		if (stopObjectUpdateFrame <= 0) {
@@ -207,26 +240,52 @@ void GameStageScene::Update() {
 	if (flashScreenFrame > 0) {
 		flashScreenFrame--;
 	}
+
+	if (playerAttackStopFrame > 0) {
+		playerAttackStopFrame--;
+	} else {
+		playerAttackHitCount = 0;
+	}
+
+	sceneObj->score = score;
 }
 
 void GameStageScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
 
-	bulletManager.Draw();
-	enemyManager.Draw();
-	player.Draw();
+	playerStopClockUI.Draw();
 
-	map.Draw();
+	if (playerAttackStopFrame <= 0) {
 
+		bulletManager.Draw();
+		enemyManager.Draw();
+		player.Draw();
+		map.Draw();
+
+	} else {
+
+		Novice::SetBlendMode(kBlendModeExclusion);
+		bulletManager.Draw();
+		enemyManager.Draw();
+		map.Draw();
+		Novice::SetBlendMode(kBlendModeNormal);
+		
+		player.Draw();
+	}
+
+	scoreUIManager.Draw();
 	playerHpUI.Draw();
 	particleManager.Draw();
 	WaveUiDraw();
 	ControlInfoDraw();
 	contorolTutorialUI.Draw();
-
-	
-
+	comboUI.Draw();
 	lightManager.Draw();
+
+	if (!isChangeWave) {
+		gameScore.Draw(&uiCamera, enemyRemainNumGH);
+		Render::DrawSprite(scoreTitle, uiCamera, WHITE, scoreTitleGH);
+	}
 
 	if (flashScreenFrame > 0) {
 		if (flashScreenFrame % 12 <= 6) {
@@ -273,6 +332,10 @@ void GameStageScene::WaveManager() {
 
 	if (enemyManager.GetRemainEnemies() <= 0 || !player.GetIsAlive()) {
 		if (!isChangeWave) {
+
+			if (!player.GetIsAlive()) {
+				isNotDeath = false;
+			}
 
 			frameCount = 0;
 
@@ -396,6 +459,7 @@ void GameStageScene::LoadWave() {
 		map.LoadMap("Resources/Maps/stage1w3.txt");
 	} else {
 		// stageClear
+		sceneObj->isNotDeathClear = isNotDeath;
 		nextScene = new ResultScene();
 		isTransition = true;
 	}
@@ -417,12 +481,14 @@ void GameStageScene::ObjectUpdate() {
 	player.Update();
 	PlayerLockOn();
 
-	bulletManager.Update();
+	if (playerAttackStopFrame <= 0) {
+		bulletManager.Update();
 
-	enemyManager.Update();
-	ExprodeEnemy();
-	EnemyMoveToPlayer();
-	EnemyAttack();
+		enemyManager.Update();
+		ExprodeEnemy();
+		EnemyMoveToPlayer();
+		EnemyAttack();
+	}
 }
 
 void GameStageScene::ObjectCollision() {
@@ -450,6 +516,8 @@ void GameStageScene::ObjectCollision() {
 
 								// カメラを揺らす
 								mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+
+								playerAttackStopFrame = 0;
 							}
 						}
 
@@ -465,6 +533,8 @@ void GameStageScene::ObjectCollision() {
 
 								// カメラを揺らす
 								mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+
+								playerAttackStopFrame = 0;
 							}
 						}
 					}
@@ -486,6 +556,8 @@ void GameStageScene::ObjectCollision() {
 
 								// カメラを揺らす
 								mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * 100.0f;
+
+								playerAttackStopFrame = 0;
 							}
 						}
 					}
@@ -557,6 +629,18 @@ void GameStageScene::EnemyCollision() {
 							mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 100.0f;
 
 							enemyManager.GetEnemyes()[e].Stun();
+
+							if (playerAttackStopFrame > 0) {
+								playerAttackHitCount++;
+							}
+
+							if (enemyManager.GetRemainEnemies() > 1) {
+								playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount +1);
+							}
+							
+							if (exprosionComboCount > 0) {
+								comboRemainFrame = GMScene::maxComboRemainFrame;
+							}
 						}
 						
 					} else {
@@ -640,6 +724,10 @@ void GameStageScene::EnemyCollision() {
 							}
 							enemyManager.GetEnemyes()[e].SetIsAlive(false);
 
+							int tempScore = 100 * (exprosionComboCount + 1);
+							score += tempScore;
+							scoreUIManager.SpawnScore(enemyManager.GetEnemyes()[e].GetPos(), tempScore);
+
 							// ラストヒット
 							if (enemyManager.GetRemainEnemies() <= 0) {
 								if (lastHitEnemyNum == -1) {
@@ -649,6 +737,8 @@ void GameStageScene::EnemyCollision() {
 									return;
 								}
 							}
+
+							
 							return;
 						}
 					}
@@ -699,6 +789,10 @@ void GameStageScene::ExprodeEnemy() {
 					// 爆発
 				particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
 
+				int tempScore = 100 * (exprosionComboCount + 1);
+				score += tempScore;
+				scoreUIManager.SpawnScore(enemyManager.GetEnemyes()[e].GetPos(), tempScore);
+
 				// ラストヒット
 				if (enemyManager.GetRemainEnemies() <= 0) {
 					if (lastHitEnemyNum == -1) {
@@ -708,6 +802,8 @@ void GameStageScene::ExprodeEnemy() {
 						return;
 					}
 				}
+
+				
 			}
 		}
 	}

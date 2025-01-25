@@ -144,9 +144,14 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Class\Scenes\SelectScene.cpp" />
     <ClCompile Include="Class\Scenes\TitleScene.cpp" />
     <ClCompile Include="Class\UIobjects\ContorolTutorialUI.cpp" />
+    <ClCompile Include="Class\UIobjects\ComboUI.cpp" />
+    <ClCompile Include="Class\UIobjects\GameScore.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Class\UIobjects\PlayerHpUI.cpp" />
     <ClCompile Include="Class\UIobjects\RemainEnemyUI.cpp" />
+    <ClCompile Include="Class\Scenes\SceneObject.cpp" />
+    <ClCompile Include="Class\UIobjects\PlayerStopClockUI.cpp" />
+    <ClCompile Include="Class\UIobjects\ScoreUIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Class\Common\Light.h" />
@@ -208,11 +213,16 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="Class\Scenes\SelectScene.h" />
     <ClInclude Include="Class\Scenes\TitleScene.h" />
     <ClInclude Include="Class\UIobjects\ContorolTutorialUI.h" />
+    <ClInclude Include="Class\UIobjects\ComboUI.h" />
     <ClInclude Include="External\nlohmann\json.hpp" />
     <ClInclude Include="External\nlohmann\json_fwd.hpp" />
     <ClInclude Include="Class\UIobjects\PlayerHpUI.h" />
     <ClInclude Include="Class\UIobjects\RemainEnemyUI.h" />
+    <ClInclude Include="Class\UIobjects\PlayerStopClockUI.h" />
+    <ClInclude Include="Class\UIobjects\GameScore.h" />
     <ClInclude Include="Resources\ConstantVariables\filePath.h" />
+    <ClInclude Include="Class\Scenes\SceneObject.h" />
+    <ClInclude Include="Class\UIobjects\ScoreUIManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
