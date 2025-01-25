@@ -111,6 +111,10 @@ void SelectScene::Init() {
 
 	tempGH = Novice::LoadTexture("./Resources/Images/tmpStageIcon.png");
 
+	stageIconGraphHandle[0] = Novice::LoadTexture("./Resources/Images/stageIcon1.png");
+	stageIconGraphHandle[1] = Novice::LoadTexture("./Resources/Images/stageIcon2.png");
+	stageIconGraphHandle[2] = Novice::LoadTexture("./Resources/Images/stageIcon3.png");
+
 	starGraphHandle = Novice::LoadTexture("./Resources/Images/missionStar.png");
 
 	arrowGraphHandle[0] = Novice::LoadTexture("./Resources/Images/stageSelectArrow1.png");
@@ -163,9 +167,7 @@ void SelectScene::Update() {
 							arrow[i].angle = 0.0f;
 						}
 
-						if (!Novice::IsPlayingAudio(playSEHandle[1]) || playSEHandle[1] == -1) {
-							playSEHandle[1] = Novice::PlayAudio(sEHandle[1], false, 0.8f);
-						}
+						playSEHandle[1] = Novice::PlayAudio(sEHandle[1], false, 0.8f);
 					}
 				}
 			}
@@ -196,9 +198,7 @@ void SelectScene::Update() {
 							arrow[i].angle = 0.0f;
 						}
 
-						if (!Novice::IsPlayingAudio(playSEHandle[1]) || playSEHandle[1] == -1) {
-							playSEHandle[1] = Novice::PlayAudio(sEHandle[1], false, 0.8f);
-						}
+						playSEHandle[1] = Novice::PlayAudio(sEHandle[1], false, 0.8f);
 					}
 				}
 			}
@@ -442,7 +442,7 @@ void SelectScene::Draw() {
 	particleManager.Draw();
 
 	for (int i = 0; i < stageTotalCount; ++i) {
-		Render::DrawSprite(stageIcon[i], mainCamera, 0xD65A31FF, tempGH);
+		Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, stageIconGraphHandle[i]);
 	}
 
 	for (int i = 0; i < starTotalCount; ++i) {

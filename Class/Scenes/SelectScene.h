@@ -68,6 +68,7 @@ private:
 	int spaceUIGraphHandle[2];
 	int aUIGraphHandle[2];
 	int bgGraphHandle[3];
+	int stageIconGraphHandle[3];
 
 	int tempGH;
 
