@@ -7,15 +7,20 @@
 #include "Class/Common/LightManager.h"
 #include "Class/Common/Mapchip.h"
 #include "Class/Balance/BalanceObject.h"
-#include "Class/UIobjects/BounceNumber.h"
 
+#include "Class/UIobjects/BounceNumber.h"
 #include "Class/UIobjects/ContorolTutorialUI.h"
 #include "Class/UIobjects/PlayerHpUI.h"
+#include "Class/UIobjects/ComboUI.h"
+#include "Class/UIobjects/PlayerStopClockUI.h"
+#include "Class/UIobjects/ScoreUIManager.h"
 
 namespace GMScene {
 	const int maxClearStageTimeBuffer = 120;
-	const int maxComboRemainFrame = 60;
+	const int maxComboRemainFrame = 150;
 	const float exprodeRange = 256.0f;
+
+	const int maxPlayerAttackStopFrame = 120;
 }
 
 class GameStageScene : public IScene {
@@ -130,5 +135,20 @@ private:
 	LightManager lightManager;
 
 	float cameraLocalScale;
+
+	ComboUI comboUI;
+
+	int playerAttackStopFrame;
+	int playerAttackHitCount;
+	PlayerStopClockUI playerStopClockUI;
+
+	ScoreUIManager scoreUIManager;
+
+	int score;
+	BounceNumber gameScore;
+	Transform scoreTitle;
+	int scoreTitleGH;
+
+	int isNotDeath;
 };
 

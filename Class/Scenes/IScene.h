@@ -2,6 +2,7 @@
 #include<Novice.h>
 #include "Class/Common/InputManager.h"
 #include "Class/Common/Render.h"
+#include "SceneObject.h"
 
 // 各ゲームシーンの基底クラス
 class IScene{
@@ -16,15 +17,15 @@ public:
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
 
-	// ゲームシーン取得用
 	virtual IScene* GetNextScene() = 0;
-
-	// シーン遷移しようとしてるか取得用
 	virtual int GetIsTransition() = 0;
-
 	virtual int GetGameStage() = 0;
 	virtual void SetGameStage(int setGameStage) = 0;
 	virtual int GetIsContinue() = 0;
+
+	void SetSceneObj(SceneObject* set) {
+		sceneObj = set;
+	}
 
 protected:
 
@@ -32,6 +33,8 @@ protected:
 	int isTransition;
 	int gameStage;
 	Camera mainCamera;
+
+	SceneObject* sceneObj;
 
 	// キー入力受付クラス呼び出し
 	InputManager* input = InputManager::GetInstance();

@@ -4,6 +4,8 @@
 
 #include "IScene.h"
 
+#include "SceneObject.h"
+
 class SceneManager {
 public:
 	// 初期化と更新と描画
@@ -24,6 +26,8 @@ private:
 	SceneTransition sceneTransition;
 
 	int backGroundGraphHandle;
+
+	SceneObject sceneObject;
 
 };
 

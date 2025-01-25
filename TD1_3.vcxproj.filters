@@ -131,6 +131,21 @@
     <ClCompile Include="Class\Common\LightManager.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="Class\Scenes\SceneObject.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Class\UIobjects\ComboUI.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Class\UIobjects\PlayerStopClockUI.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Class\UIobjects\GameScore.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Class\UIobjects\ScoreUIManager.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -241,5 +256,10 @@
     <ClInclude Include="Class\UIobjects\BounceNumber.h" />
     <ClInclude Include="Class\Common\Light.h" />
     <ClInclude Include="Class\Common\LightManager.h" />
+    <ClInclude Include="Class\Scenes\SceneObject.h" />
+    <ClInclude Include="Class\UIobjects\ComboUI.h" />
+    <ClInclude Include="Class\UIobjects\PlayerStopClockUI.h" />
+    <ClInclude Include="Class\UIobjects\GameScore.h" />
+    <ClInclude Include="Class\UIobjects\ScoreUIManager.h" />
   </ItemGroup>
 </Project>

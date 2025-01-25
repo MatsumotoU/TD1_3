@@ -20,6 +20,8 @@ public:
 	Transform GetTransform();
 	Vector2* GetPosPtr();
 	Vector2 GetScale();
+	int GetNumber();
+	int GetDigit();
 
 private:
 
