@@ -254,6 +254,12 @@ int Enemy::GetIsReqestExprosion() {
 	return isExprosion;
 }
 
+Vector2 Enemy::GetScreenPos() {
+	Vector2 result = { 0.0f };
+	result = result * camera->GetWvpVpMatrix(transform.pos, transform.scale, transform.angle);
+	return result;
+}
+
 void Enemy::Move() {
 
 
@@ -480,7 +486,7 @@ void Enemy::TypeInit() {
 	{
 	case ENM::Melee:
 		attackRange = 256.0f;
-		moveSpeed = 0.3f;
+		moveSpeed = 0.0f;
 		transform.size = { 64.0f,64.0f };
 		attackAnticipationFrame = 0;
 		maxAttackAnticipationFrame = 60;

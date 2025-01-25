@@ -4,6 +4,7 @@
 #include "Class/Common/InputManager.h"
 
 class Player;
+class EnemyManager;
 
 class ContorolTutorialUI :public GameObject
 {
@@ -16,12 +17,20 @@ public:
 	void SetCamera(Camera* set);
 	void SetPlayer(Player* set);
 	void SetIsInScreen(int set);
+	void SetEnemyManager(EnemyManager* set);
 
 private:
 
+	int frameCount;
+
+	Transform hintTransform;
+	float alpha;
+
+	int isHideUI;
 	int isInScreeenUI;
 	int tutorialCount;
 
+	int hintGH[2];
 	int windowGH;
 	int keyTutorialGH[4];
 	int keyTutorialPushGH[3];
@@ -31,6 +40,7 @@ private:
 
 	Camera* camera;
 	Player* player;
+	EnemyManager* enemyManager;
 
 	InputManager* input = InputManager::GetInstance();
 
