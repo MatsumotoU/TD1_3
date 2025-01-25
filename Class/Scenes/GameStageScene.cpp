@@ -333,6 +333,8 @@ void GameStageScene::WaveManager() {
 	if (enemyManager.GetRemainEnemies() <= 0 || !player.GetIsAlive()) {
 		if (!isChangeWave) {
 
+			player.SetDrawLockOn(false);
+
 			if (!player.GetIsAlive()) {
 				isNotDeath = false;
 			}

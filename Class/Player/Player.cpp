@@ -196,6 +196,8 @@ void Player::Init() {
 
 	LoadVariables();
 	oldTransform = transform;
+
+	isDrawLockOn = true;
 }
 
 void Player::Update() {
@@ -276,7 +278,7 @@ void Player::Draw() {
 		//Render::DrawLine(transform.pos, transform.pos + input->GetControlDir() * 100.0f, *camera, RED);
 		//Render::DrawLine(transform.pos, transform.pos + angleDir * 100.0f, *camera, GREEN);
 
-		if (isLockOn) {
+		if (isLockOn && isDrawLockOn) {
 			Render::DrawSprite(targetTransform, *camera, WHITE, lockOnGH);
 		}
 
@@ -545,7 +547,7 @@ void Player::DrawHpUi() {
 		}
 	}
 
-	for (int i = hp; i < maxHp; i++) {
+	for (int i = Clamp(hp,0,2); i < maxHp; i++) {
 		if (Length(hpTransform[i].scale) >= 0.1f) {
 			Render::DrawSprite(hpTransform[i], *camera, WHITE, lostHpGH);
 		}
@@ -655,6 +657,10 @@ void Player::SetIsDash(int set) {
 
 void Player::SetMapchip(Mapchip* set) {
 	map = set;
+}
+
+void Player::SetDrawLockOn(int set) {
+	isDrawLockOn = set;
 }
 
 int Player::GetIsAlive() {
