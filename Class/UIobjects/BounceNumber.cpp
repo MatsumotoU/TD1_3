@@ -37,7 +37,7 @@ void BounceNumber::Update() {
 			if (number - targetNumber < 0) {
 				number += ((targetNumber - number) / 2) +1;
 			} else {
-				number -= ((targetNumber - number) / 2) + 1;
+				number += ((targetNumber - number) / 2) + 1;
 			}
 		}
 	}
