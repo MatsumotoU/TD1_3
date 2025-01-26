@@ -191,12 +191,13 @@ void GameStageScene::Init() {
 
 	gameScore.Init();
 	gameScore.SetSize({ 128.0f,128.0f });
-	gameScore.SetPos({ 580.0f,280.0f });
+	gameScore.SetPos({ 580.0f,310.0f });
+	gameScore.SetLocalScale({ 0.5f,0.5f });
 
 	scoreTitle = {0.0f};
-	scoreTitle.pos = { 0.0f,285.0f };
+	scoreTitle.pos = { 128.0f,310.0f };
 	scoreTitle.size = { 512.0f,128.0f };
-	scoreTitle.scale = { 1.0f,1.0f };
+	scoreTitle.scale = { 0.5f,0.5f };
 	scoreTitleGH = Novice::LoadTexture("./Resources/Images/ScoreTitle.png");
 
 	isNotDeath = true;
@@ -388,6 +389,9 @@ void GameStageScene::WaveManager() {
 
 			enemyRemainNum.Init();
 			enemyRemainNum.SetTargetNum(map.GetEnemyNum());
+
+			comboRemainFrame = 0;
+			exprosionComboCount = 0;
 		}
 	}
 

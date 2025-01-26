@@ -133,7 +133,7 @@ void Render::DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Came
 	}
 
 	for (int i = 0; i < digit; i++) {
-		Vector2 digitPos = { ((size.x * 0.5f) * static_cast<float>(i)),0.0f };
+		Vector2 digitPos = { ((size.x  * scale.x * 0.5f) * static_cast<float>(i)),0.0f };
 		tempTransform.pos = pos;
 		tempTransform.pos -= digitPos;
 

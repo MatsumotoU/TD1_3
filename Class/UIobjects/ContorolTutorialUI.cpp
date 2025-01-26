@@ -8,12 +8,14 @@ void ContorolTutorialUI::Init() {
 	alpha = 1.0f;
 
 	transform = { 0 };
-	transform.pos = { -900.0f,150.0f };
-	transform.scale = { 1.0f,1.0f };
+	transform.pos = { -900.0f,-260.0f };
+	transform.scale = { 0.8f,0.8f };
 	transform.size = { 480.0f,192.0f };
 	tutorialCount = 0;
 
 	hintTransform = transform;
+	hintTransform.scale = { 0.5f,0.5f };
+	hintTransform.pos.y = -280.0f;
 
 	hintGH[0] = Novice::LoadTexture("./Resources/Images/hint1.png");
 	hintGH[1] = Novice::LoadTexture("./Resources/Images/hint2.png");
@@ -60,7 +62,7 @@ void ContorolTutorialUI::Update() {
 		}
 		
 		Vector2 zeroVec = { 0.0f,0.0f };
-		if (isHideUI || enemyManager->GetIsHitScreenEnemies({240.0f,120.0f}, transform.size)) {
+		if (isHideUI || enemyManager->GetIsHitScreenEnemies({240.0f,600.0f}, transform.size)) {
 			Eas::SimpleEaseIn(&alpha, 0.05f, 0.2f);
 		} else {
 			Eas::SimpleEaseIn(&alpha, 1.0f, 0.1f);
@@ -94,11 +96,13 @@ void ContorolTutorialUI::Update() {
 	}
 
 	if (isInScreeenUI) {
-		Eas::SimpleEaseIn(&transform.pos.x, -360.0f, 0.3f);
+		Eas::SimpleEaseIn(&transform.pos.x, -400.0f, 0.3f);
 		Eas::SimpleEaseIn(&hintTransform.pos.x, -900.0f, 0.3f);
+
 	} else {
 		Eas::SimpleEaseIn(&transform.pos.x, -900.0f, 0.2f);
-		Eas::SimpleEaseIn(&hintTransform.pos.x, -360.0f, 0.2f);
+		Eas::SimpleEaseIn(&hintTransform.pos.x, -480.0f, 0.2f);
+
 	}
 
 	transform.pos.y += sinf(static_cast<float>(frameCount) * 0.1f)*0.3f;
