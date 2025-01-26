@@ -48,7 +48,7 @@ void ResultScene::Init() {
 	for (int i = 0; i < 2; ++i) {
 		button[i] = {
 			{ 384.0f + i * 512.0f,-128.0f }, // 位置
-			{ 300.0f, 80.0f }, // 大きさ
+			{ 400.0f, 80.0f }, // 大きさ
 			{ 0.8f, 0.8f }, // 比率
 			0.0f // 角度
 		};
@@ -60,7 +60,7 @@ void ResultScene::Init() {
 	button[1].scale = { 1.0f,1.0f };
 
 	// ミッションをクリアしたか
-	
+
 	if (sceneObj->isNotDeathClear) {
 		shouldClearedMission[0] = true;
 		if (!sceneObj->shouldClearedMission[gameStage][0]) {
