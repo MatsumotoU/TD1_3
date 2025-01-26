@@ -115,7 +115,7 @@ void Render::DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Came
 	tempTransform.size = size;
 	tempTransform.angle = angle;
 	
-	int tempNum = num;
+	int tempNum = Clamp(num,0,999999999);
 	int digit = 1;
 	int numD[10] = { 0 };
 
