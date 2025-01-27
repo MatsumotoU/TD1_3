@@ -249,6 +249,10 @@ void TitleScene::Init() {
 	// 音の変数の初期化
 	dicisionSe = Novice::LoadAudio("./Resources/Sounds/dicision.mp3");
 	isDicision = false;
+	cutSe = Novice::LoadAudio("./Resources/Sounds/cut.mp3");
+	isCut = false;
+	swordSe = Novice::LoadAudio("./Resources/Sounds/sword.mp3");
+	isSword = false;
 
 }
 
@@ -386,6 +390,7 @@ void TitleScene::Update() {
 			if (efectCoolTime == 0)
 			{
 				isEfectMove = true;
+				isCut = true;
 				efectNum = 1;
 				mainCamera.shakeRange = { 50.0f,0.0f };
 			}
@@ -399,6 +404,7 @@ void TitleScene::Update() {
 			{
 				// エフェクトが右端に到達した時の処理
 				isEfectMove = false;
+				isCut = true;
 				isUnderEfectMove = true;
 				mainCamera.shakeRange = { 50.0f,0.0f };
 			}
@@ -466,6 +472,7 @@ void TitleScene::Update() {
 				{
 					efectT[2] = 1.0f;
 					mainCamera.shakeRange = { 0.0f,50.0f };
+					isSword = true;
 				}
 
 				logo[2].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.x, endLogo[2].pos.x);
@@ -507,8 +514,20 @@ void TitleScene::Draw() {
 	// 音の処理
 	if (isDicision)
 	{
-		Novice::PlayAudio(dicisionSe, false, 1.0f);
+		Novice::PlayAudio(dicisionSe, false, 0.5f);
 		isDicision = false;
+	}
+
+	if (isCut)
+	{
+		Novice::PlayAudio(cutSe, false, 0.5f);
+		isCut = false;
+	}
+
+	if (isSword)
+	{
+		Novice::PlayAudio(swordSe, false, 0.5f);
+		isSword = false;
 	}
 
 	// 背景の描画処理
