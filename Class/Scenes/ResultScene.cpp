@@ -36,7 +36,7 @@ void ResultScene::Init() {
 	for (int i = 0; i < starTotalCount; ++i) {
 		missionUI[i] = {
 			{ -640.0f,160.0f + i * 200.0f }, // 位置
-			{ 660.0f, 80.0f }, // 大きさ
+			{ 720.0f, 80.0f }, // 大きさ
 			{ 1.0f, 1.0f }, // 比率
 			0.0f // 角度
 		};
@@ -151,9 +151,9 @@ void ResultScene::Init() {
 
 	starGraphHandle = Novice::LoadTexture("./Resources/Images/missionStar.png");
 
-	missionUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/missionUI.png");
-	missionUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/missionUI.png");
-	missionUIGraphHandle[2] = Novice::LoadTexture("./Resources/Images/missionUI.png");
+	missionUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/mission1.png");
+	missionUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/mission2.png");
+	missionUIGraphHandle[2] = Novice::LoadTexture("./Resources/Images/mission3.png");
 
 	nextSceneUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/retry.png");
 	nextSceneUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/select.png");
