@@ -69,5 +69,9 @@ private:
 	// 音の変数
 	int dicisionSe;
 	int isDicision;
+	int cutSe;
+	int isCut;
+	int swordSe;
+	int isSword;
 };
 
