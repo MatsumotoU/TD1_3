@@ -20,7 +20,7 @@ namespace GMScene {
 	const int maxComboRemainFrame = 150;
 	const float exprodeRange = 256.0f;
 
-	const int maxPlayerAttackStopFrame = 1200;
+	const int maxPlayerAttackStopFrame = 120;
 	const int kSecondPerPlayerAttackStopFrame = 3;
 }
 
@@ -141,6 +141,7 @@ private:
 
 	int playerAttackStopFrame;
 	int playerAttackHitCount;
+	int playerAttackOP;
 	PlayerStopClockUI playerStopClockUI;
 
 	ScoreUIManager scoreUIManager;
@@ -155,5 +156,6 @@ private:
 	float slowFrameScoreRatio;
 
 	BounceNumber scoreRatio;
+	
 };
 
