@@ -113,7 +113,7 @@ void Player::Init() {
 		hpTransform[i] = {
 		{0.0f + 16.0f * static_cast<float>(i),64.0f},
 		{32.0f,32.0f},
-		{1.0f,1.0f},
+		{0.0f,0.0f},
 		0.0f };
 	}
 	hpGH = Novice::LoadTexture("./Resources/Images/hp.png");
