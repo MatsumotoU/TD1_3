@@ -118,6 +118,7 @@ void EnemyManager::SpawnEnemy(Vector2 pos, ENM::Type set) {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		if (!enemyes[i].GetIsActive() && !enemyes[i].GetIsAlive()) {
 
+			enemyes[i].Init();
 			enemyes[i].SetIsActive(true);
 			enemyes[i].SetDeathFrame(ENM::kMaxDeathFrame);
 			enemyes[i].SetPos(pos);
@@ -125,13 +126,14 @@ void EnemyManager::SpawnEnemy(Vector2 pos, ENM::Type set) {
 			enemyes[i].SetIsHitAttack(false);
 			enemyes[i].SetEnemyType(set);
 			enemyes[i].TypeInit();
+			enemyes[i].SetIsSpawning(true);
 			break;
 		}
 	}
 }
 
 Vector2 EnemyManager::NearEnemy(Vector2 targetPos) {
-	Vector2 result = { 999.0f,999.0f };
+	Vector2 result = { 9999999.0f,9999999.0f };
 	float length = 9999.0f;
 
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {

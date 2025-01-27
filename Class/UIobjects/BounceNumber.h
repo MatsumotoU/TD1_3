@@ -16,6 +16,7 @@ public:
 	void SetScale(Vector2 set);
 	void SetTargetNum(int set);
 	void SetLocalScale(Vector2 set);
+	void SetColor(unsigned int set);
 
 	Transform GetTransform();
 	Vector2* GetPosPtr();
