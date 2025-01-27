@@ -20,7 +20,8 @@ namespace GMScene {
 	const int maxComboRemainFrame = 150;
 	const float exprodeRange = 256.0f;
 
-	const int maxPlayerAttackStopFrame = 120;
+	const int maxPlayerAttackStopFrame = 1200;
+	const int kSecondPerPlayerAttackStopFrame = 3;
 }
 
 class GameStageScene : public IScene {
@@ -150,5 +151,9 @@ private:
 	int scoreTitleGH;
 
 	int isNotDeath;
+	int isSlowFrame;
+	float slowFrameScoreRatio;
+
+	BounceNumber scoreRatio;
 };
 
