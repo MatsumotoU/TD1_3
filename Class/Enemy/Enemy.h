@@ -45,6 +45,7 @@ public:
 	void SetGH(int* set);
 	void SetMapchip(Mapchip* set);
 	void SetStunFrame(int set);
+	void SetIsSpawning(int set);
 
 	int GetIsAlive();
 	int GetIsHitAttack();
@@ -57,6 +58,7 @@ public:
 	Vector2 GetAngleDir();
 	int GetIsReqestExprosion();
 	Vector2 GetScreenPos();
+	int GetIsSpawning();
 
 	void Move();
 	void LockOn();
@@ -116,4 +118,8 @@ private:
 	float exprosionRadius;
 	Vector2 exprosionRange[ENM::kCircleResolution];
 	Vector2 exprosionMaxRange[ENM::kCircleResolution];
+
+	int isSpawning;
+	int spawnFrame;
+	Vector2 spawnScale;
 };

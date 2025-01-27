@@ -52,6 +52,8 @@ Enemy::Enemy() {
 
 	isExprosion = false;
 	map = nullptr;
+
+	isSpawning = false;
 }
 
 void Enemy::Init() {
@@ -64,6 +66,7 @@ void Enemy::Init() {
 	isExprosion = false;
 	isActive = false;
 	isAlive = false;
+	isSpawning = false;
 	oldTransform = transform;
 
 	exprosionRadius = 0.0f;
@@ -74,9 +77,24 @@ void Enemy::Init() {
 		exprosionMaxRange[i] = exprosionRange[i];
 	}
 	rotateSpeed = 0.2f;
+	spawnFrame = 60;
+
+	spawnScale = { 0.0f,0.0f };
 }
 
 void Enemy::Update() {
+
+	if (isSpawning) {
+		if (spawnFrame > 0) {
+			spawnFrame--;
+			return;
+		} else {
+			isSpawning = false;
+		}
+	}
+	Eas::SimpleEaseIn(&spawnScale.x, 1.0f, 0.3f);
+	Eas::SimpleEaseIn(&spawnScale.y, 1.0f, 0.3f);
+
 	oldTransform = transform;
 
 	if (isAlive) {
@@ -85,8 +103,6 @@ void Enemy::Update() {
 			LockOn();
 			Attack();
 		}
-
-
 	}
 	//UpdateSword();
 	StateCheck();
@@ -122,29 +138,41 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw() {
-	if (stunFrame > 0) {
-		for (int i = 0; i < ENM::kCircleResolution; i++) {
+	if (isSpawning) {
 
-			Render::DrawLine(
-				exprosionMaxRange[i] + transform.pos,
-				exprosionMaxRange[(i + 1) % ENM::kCircleResolution] + transform.pos,
-				*camera, 0xD65A31FF);
+		Render::DrawEllipse(transform.pos,
+			{ 24.0f * (1.0f - (static_cast<float>(spawnFrame) / 60.0f)),24.0f * (1.0f - (static_cast<float>(spawnFrame) / 60.0f)) },
+			0.0f, *camera, 0xD65A31FF, kFillModeSolid);
+		Render::DrawEllipse(transform.pos,
+			{ 24.0f,24.0f},
+			0.0f, *camera, 0xD65A31FF, kFillModeWireFrame);
 
-			Render::DrawTriangle(
-				transform.pos,
-				exprosionRange[i] + transform.pos,
-				exprosionRange[(i + 1) % ENM::kCircleResolution] + transform.pos,
-				*camera, 0xD65A3180, kFillModeSolid);
+	} else {
+
+		if (stunFrame > 0) {
+			for (int i = 0; i < ENM::kCircleResolution; i++) {
+
+				Render::DrawLine(
+					exprosionMaxRange[i] + transform.pos,
+					exprosionMaxRange[(i + 1) % ENM::kCircleResolution] + transform.pos,
+					*camera, 0xD65A31FF);
+
+				Render::DrawTriangle(
+					transform.pos,
+					exprosionRange[i] + transform.pos,
+					exprosionRange[(i + 1) % ENM::kCircleResolution] + transform.pos,
+					*camera, 0xD65A3180, kFillModeSolid);
+			}
 		}
+
+
+		Render::DrawSprite(drawTransform, *camera, color, *enemyGH);
 	}
 
-
-	Render::DrawSprite(drawTransform, *camera, color, *enemyGH);
-
-	if (isHitAttack) {
+	/*if (isHitAttack) {
 		Render::DrawLine(transform.pos, transform.pos + hitDir * 100.0f, *camera, RED);
 		Render::DrawLine(transform.pos, transform.pos + -hitDir * 100.0f, *camera, RED);
-	}
+	}*/
 
 	//DrawSword();
 
@@ -218,6 +246,10 @@ void Enemy::SetStunFrame(int set) {
 	stunFrame = set;
 }
 
+void Enemy::SetIsSpawning(int set) {
+	isSpawning = set;
+}
+
 int Enemy::GetIsAlive() {
 	return isAlive;
 }
@@ -262,6 +294,10 @@ Vector2 Enemy::GetScreenPos() {
 	Vector2 result = { 0.0f };
 	result = result * camera->GetWvpVpMatrix(transform.pos, transform.scale, transform.angle);
 	return result;
+}
+
+int Enemy::GetIsSpawning() {
+	return isSpawning;
 }
 
 void Enemy::Move() {

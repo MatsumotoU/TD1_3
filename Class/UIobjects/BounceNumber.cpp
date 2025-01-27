@@ -71,6 +71,10 @@ void BounceNumber::SetLocalScale(Vector2 set) {
 	localScale = set;
 }
 
+void BounceNumber::SetColor(unsigned int set) {
+	color = set;
+}
+
 Transform BounceNumber::GetTransform() {
 	return transform;
 }
@@ -88,7 +92,7 @@ int BounceNumber::GetNumber() {
 }
 
 int BounceNumber::GetDigit() {
-	int tempNum = targetNumber;
+	int tempNum = number;
 	int digit = 1;
 
 	while (tempNum >= 10)

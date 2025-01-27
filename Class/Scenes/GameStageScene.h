@@ -123,7 +123,7 @@ private:
 	ContorolTutorialUI contorolTutorialUI;
 	PlayerHpUI playerHpUI;
 
-	BounceNumber enemyRemainNum;
+	BounceNumber targetScoreNum;
 	int enemyRemainNumGH[10];
 	BounceNumber waveNumber;
 	Transform clossTransform;
@@ -157,5 +157,9 @@ private:
 
 	BounceNumber scoreRatio;
 	
+	int stageStartGH;
+
+	int gameTime;
+	BounceNumber timeNum;
 };
 
