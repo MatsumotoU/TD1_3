@@ -201,6 +201,14 @@ void GameStageScene::Init() {
 	scoreTitleGH = Novice::LoadTexture("./Resources/Images/ScoreTitle.png");
 
 	isNotDeath = true;
+	isSlowFrame = false;
+	slowFrameScoreRatio = 1.0f;
+
+	scoreRatio.Init();
+	scoreRatio.SetSize({ 128.0f,128.0f });
+	scoreRatio.SetPos({ 580.0f,230.0f });
+	scoreRatio.SetLocalScale({ 0.7f,0.7f });
+
 }
 
 void GameStageScene::Update() {
@@ -220,6 +228,9 @@ void GameStageScene::Update() {
 	scoreUIManager.Update();
 	gameScore.Update();
 	gameScore.SetTargetNum(score);
+
+	scoreRatio.Update();
+	scoreRatio.SetTargetNum(static_cast<int>(slowFrameScoreRatio));
 
 	if (!isChangeWave) {
 		if (stopObjectUpdateFrame <= 0) {
@@ -244,6 +255,7 @@ void GameStageScene::Update() {
 
 	if (playerAttackStopFrame > 0) {
 		playerAttackStopFrame--;
+		slowFrameScoreRatio += 0.01f;
 	} else {
 		playerAttackHitCount = 0;
 	}
@@ -284,7 +296,14 @@ void GameStageScene::Draw() {
 	lightManager.Draw();
 
 	if (!isChangeWave) {
+
+		Novice::DrawBox(1100, 170, 
+			static_cast<int>(140.0f * (-1.0f + slowFrameScoreRatio)) - (140 * static_cast<int>(-1.0f + slowFrameScoreRatio)),
+			16, 0.0f, WHITE, kFillModeSolid);
+		Novice::DrawBox(1100, 170, 140, 16, 0.0f, WHITE, kFillModeWireFrame);
+		Novice::DrawSprite(1132 - 32 * scoreRatio.GetDigit(), 100, clossGH, 0.5f, 0.5f, 0.0f, WHITE);
 		gameScore.Draw(&uiCamera, enemyRemainNumGH);
+		scoreRatio.Draw(&uiCamera, enemyRemainNumGH);
 		Render::DrawSprite(scoreTitle, uiCamera, WHITE, scoreTitleGH);
 	}
 
@@ -293,6 +312,8 @@ void GameStageScene::Draw() {
 			Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xFFFFFF23, kFillModeSolid);
 		}
 	}
+
+	Novice::ScreenPrintf(0, 80, "%f", slowFrameScoreRatio);
 }
 
 void GameStageScene::ImGuiUpdate() {
@@ -487,7 +508,7 @@ void GameStageScene::ObjectUpdate() {
 	player.Update();
 	PlayerLockOn();
 
-	if (playerAttackStopFrame <= 0) {
+	if (playerAttackStopFrame % GMScene::kSecondPerPlayerAttackStopFrame <= 0) {
 		bulletManager.Update();
 
 		enemyManager.Update();
@@ -633,6 +654,10 @@ void GameStageScene::EnemyCollision() {
 
 						if (enemyManager.GetRemainEnemies() > 1) {
 							playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount + 1);
+
+							if (!isSlowFrame) {
+								isSlowFrame = true;
+							}
 						}
 
 						if (exprosionComboCount > 0) {
@@ -734,6 +759,9 @@ void GameStageScene::EnemyCollision() {
 								}
 							}
 
+							if (playerAttackStopFrame > 0) {
+								playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount + 1);
+							}
 
 							return;
 						}
@@ -764,7 +792,25 @@ void GameStageScene::PlayerLockOn() {
 
 void GameStageScene::ExprodeEnemy() {
 
+	if (isSlowFrame) {
+		if (playerAttackStopFrame <= 0) {
+
+			for (int e = 0; e < EMG::kMaxEnemy; e++) {
+				if (enemyManager.GetEnemyes()[e].GetIsAlive() && enemyManager.GetEnemyes()[e].GetIsHitAttack()) {
+					enemyManager.GetEnemyes()[e].SetStunFrame(1);
+					enemyManager.GetEnemyes()[e].UpdateExprodeCircle(60);
+				}
+			}
+			isSlowFrame = false;
+			stopObjectUpdateFrame = 15;
+			score *= static_cast<int>(slowFrameScoreRatio);
+			slowFrameScoreRatio = 1.0f;
+			return;
+		}
+	}
+
 	for (int e = 0; e < EMG::kMaxEnemy; e++) {
+
 		if (enemyManager.GetEnemyes()[e].GetIsReqestExprosion()) {
 			if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
 

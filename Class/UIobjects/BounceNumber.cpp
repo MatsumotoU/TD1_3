@@ -35,9 +35,9 @@ void BounceNumber::Update() {
 			transform.scale.x = 0.3f;
 
 			if (number - targetNumber < 0) {
-				number += ((targetNumber - number) / 2) +1;
-			} else {
 				number += ((targetNumber - number) / 2) + 1;
+			} else {
+				number += ((targetNumber - number) / 2) - 1;
 			}
 		}
 	}

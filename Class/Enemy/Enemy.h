@@ -6,7 +6,7 @@
 class Mapchip;
 
 namespace ENM {
-	const int kMaxStunFrame = 90;
+	const int kMaxStunFrame = 30;
 	const int kMaxDeathFrame = 60;
 
 	const int kCircleResolution = 64;
@@ -44,6 +44,7 @@ public:
 	void SetIsExprosion(int set);
 	void SetGH(int* set);
 	void SetMapchip(Mapchip* set);
+	void SetStunFrame(int set);
 
 	int GetIsAlive();
 	int GetIsHitAttack();
@@ -61,6 +62,7 @@ public:
 	void LockOn();
 	void Attack();
 	void StateCheck();
+	void UpdateExprodeCircle(int count);
 
 	void UpdateSword();
 	void DrawSword();

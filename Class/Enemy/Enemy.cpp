@@ -214,6 +214,10 @@ void Enemy::SetMapchip(Mapchip* set) {
 	map = set;
 }
 
+void Enemy::SetStunFrame(int set) {
+	stunFrame = set;
+}
+
 int Enemy::GetIsAlive() {
 	return isAlive;
 }
@@ -452,6 +456,34 @@ void Enemy::StateCheck() {
 		drawTransform.scale += {
 			(1.0f - static_cast<float>(attackAnticipationFrame) / static_cast<float>(maxAttackAnticipationFrame)) * 0.5f,
 			(1.0f - static_cast<float>(attackAnticipationFrame) / static_cast<float>(maxAttackAnticipationFrame)) * 0.5f};
+	}
+}
+
+void Enemy::UpdateExprodeCircle(int count) {
+
+	for (int p = 0; p < count; p++) {
+		for (int i = 0; i < ENM::kCircleResolution; i++) {
+			if (map->GetIsFromToVisionClear(transform.pos, exprosionRange[i] + transform.pos)) {
+				/*exprosionRange[i] = {
+					cosf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius,
+					sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius };*/
+				if (Length(exprosionRange[i]) <= exprosionRadius) {
+					exprosionRange[i] += {
+						cosf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f),
+							sinf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f)};
+				}
+			} else {
+				exprosionRange[i].x -= (exprosionRange[i].x) * 0.1f;
+				exprosionRange[i].y -= (exprosionRange[i].y) * 0.1f;
+
+				exprosionMaxRange[i].x -= (exprosionMaxRange[i].x) * 0.1f;
+				exprosionMaxRange[i].y -= (exprosionMaxRange[i].y) * 0.1f;
+			}
+
+			exprosionMaxRange[i] = {
+				cosf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * 170.0f,
+				sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * 170.0f };
+		}
 	}
 }
 
