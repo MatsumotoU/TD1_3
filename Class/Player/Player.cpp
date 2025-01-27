@@ -103,6 +103,27 @@ Player::Player() {
 
 	seVolume = 0.5f;
 
+	rightSowrdLocalTransform = {
+		{24.0f,32.0f},
+		{128.0f,32.0f},
+		{0.5f,0.5f},
+		1.0f };
+	leftSowrdLocalTransform = {
+		{24.0f,-32.0f},
+		{128.0f,32.0f},
+		{0.5f,0.5f},
+		-1.0f };
+
+	rightArm = {
+		{24.0f,32.0f},
+		{128.0f,32.0f},
+		{0.5f,0.5f},
+		1.0f };
+	leftArm = {
+		{24.0f,-32.0f},
+		{128.0f,32.0f},
+		{0.5f,0.5f},
+		1.0f };
 }
 
 void Player::Init() {
@@ -170,6 +191,7 @@ void Player::Init() {
 
 	isAttack = false;
 	attackCoolDown = 0;
+	attackRadius = 0.0f;
 
 	isSheathe = false;
 	sheatheCoolDown = 0;
@@ -198,6 +220,17 @@ void Player::Init() {
 	oldTransform = transform;
 
 	isDrawLockOn = true;
+
+	rightSowrdLocalTransform = {
+		{0.0f,40.0f},
+		{128.0f,32.0f},
+		{0.5f,0.5f},
+		1.2f };
+	leftSowrdLocalTransform = {
+		{0.0f,-40.0f},
+		{128.0f,32.0f},
+		{0.5f,0.5f},
+		-1.2f };
 }
 
 void Player::Update() {
@@ -227,6 +260,7 @@ void Player::Update() {
 		StateCheck();
 	}
 
+	UpdateSword();
 	HaloMove();
 	WingMove();
 
@@ -248,9 +282,15 @@ void Player::Draw() {
 	if (isActive) {
 
 		// ダッシュ可能円
-		Render::DrawEllipse(transform.pos,
+		/*Render::DrawEllipse(transform.pos,
 			{ 64.0f * Eas::EaseInOutQuart(flapping,0.0f,1.0f),64.0f * Eas::EaseInOutQuart(flapping,0.0f,1.0f) },
-			0.0f, *camera, 0xEEEEEEFF, kFillModeWireFrame);
+			0.0f, *camera, 0xEEEEEEFF, kFillModeWireFrame);*/
+
+		// 攻撃範囲
+		if (GetAttackRadius() > transform.size.x * 0.6f) {
+			Render::DrawEllipse(transform.pos, { GetAttackRadius(),GetAttackRadius() }, 0.0f, *camera, 0xD65A3123, kFillModeSolid);
+			Render::DrawEllipse(transform.pos, { GetAttackRadius(),GetAttackRadius() }, 0.0f, *camera, 0xD65A31FF, kFillModeWireFrame);
+		}
 
 		// 本体
 		if (damageCoolDown % 6) {
@@ -282,7 +322,7 @@ void Player::Draw() {
 			Render::DrawSprite(targetTransform, *camera, WHITE, lockOnGH);
 		}
 
-		
+
 	}
 }
 
@@ -403,6 +443,13 @@ void Player::Dash() {
 	Eas::SimpleEaseIn(&leftWingTransform.scale.y, 1.0f, 0.1f);
 	Eas::SimpleEaseIn(&rightWingTransform.scale.x, 1.0f, 0.1f);
 	Eas::SimpleEaseIn(&rightWingTransform.scale.y, -1.0f, 0.1f);
+
+	// ダッシュしてるなら攻撃範囲増加
+	if (isAttack) {
+		Eas::SimpleEaseIn(&attackRadius, PLR::kMaxAttackRadius, 0.5f);
+	} else {
+		Eas::SimpleEaseIn(&attackRadius, 0.0f, 0.3f);
+	}
 }
 
 void Player::Attack() {
@@ -547,35 +594,31 @@ void Player::DrawHpUi() {
 		}
 	}
 
-	for (int i = Clamp(hp,0,2); i < maxHp; i++) {
+	for (int i = Clamp(hp, 0, 2); i < maxHp; i++) {
 		if (Length(hpTransform[i].scale) >= 0.1f) {
 			Render::DrawSprite(hpTransform[i], *camera, WHITE, lostHpGH);
 		}
 	}
 }
 
-void Player::DrawSword() {
-	rightArm = {
-		{24.0f,32.0f},
-		{128.0f,32.0f},
-		{0.5f,0.5f},
-		1.0f };
-	leftArm = {
-		{24.0f,-32.0f},
-		{128.0f,32.0f},
-		{0.5f,0.5f},
-		1.0f };
+void Player::UpdateSword() {
+
+	float attackT = attackRadius / PLR::kMaxAttackRadius;
+	float armRotateVal = 3.0f;
+	rightArm.pos = rightSowrdLocalTransform.pos * MakeAffineMatrix({ 1.0f,1.0f }, -attackT * armRotateVal, { 0.0f,0.0f });
+	leftArm.pos = leftSowrdLocalTransform.pos * MakeAffineMatrix({ 1.0f,1.0f }, attackT * armRotateVal, { 0.0f,0.0f });
+
 	rightArm.pos = rightArm.pos * MakeAffineMatrix(transform.scale, transform.angle, transform.pos);
 	leftArm.pos = leftArm.pos * MakeAffineMatrix(transform.scale, transform.angle, transform.pos);
-	rightArm.angle = transform.angle + 0.6f;
-	leftArm.angle = transform.angle - 0.6f;
+	rightArm.angle = transform.angle + rightSowrdLocalTransform.angle - (armRotateVal * attackT);
+	leftArm.angle = transform.angle + leftSowrdLocalTransform.angle + (armRotateVal * attackT);
+	
+}
 
-	if (remainAttackChance >= 2) {
-		Render::DrawSprite(rightArm, *camera, WHITE, swordGH);
-	}
-	if (remainAttackChance >= 1) {
-		Render::DrawSprite(leftArm, *camera, WHITE, swordGH);
-	}
+void Player::DrawSword() {
+
+	Render::DrawSprite(rightArm, *camera, WHITE, swordGH);
+	Render::DrawSprite(leftArm, *camera, WHITE, swordGH);
 
 }
 
@@ -716,6 +759,10 @@ int Player::GetMaxHp() {
 
 Vector2 Player::GetAngleDir() {
 	return angleDir;
+}
+
+float Player::GetAttackRadius() {
+	return attackRadius + (transform.size.x * 0.5f);
 }
 
 void Player::CountDownRemainAttackChance() {

@@ -15,6 +15,7 @@ namespace PLR {
 	const float kAttackReach = 32.0f;
 	const int kMaxAttackChance = 2;
 	const int kMaxDamageCoolDown = 120;
+	const float kMaxAttackRadius = 32.0f;
 }
 
 class Player : public GameObject
@@ -40,6 +41,8 @@ public:
 
 	void UpdateHpUi();
 	void DrawHpUi();
+
+	void UpdateSword();
 	void DrawSword();
 
 	void LoadVariables();
@@ -69,6 +72,7 @@ public:
 	int GetHp();
 	int GetMaxHp();
 	Vector2 GetAngleDir();
+	float GetAttackRadius();
 
 	void CountDownRemainAttackChance();
 	void Damage();
@@ -81,6 +85,9 @@ private:
 
 	Transform rightArm;
 	Transform leftArm;
+	Transform rightSowrdLocalTransform;
+	Transform leftSowrdLocalTransform;
+
 	int swordGH;
 
 	int hpUiDrawFrame;
@@ -120,6 +127,7 @@ private:
 	int isAttack;
 	int attackCoolDown;
 	int remainAttackChance;
+	float attackRadius;
 
 	int isSheathe;
 	int sheatheCoolDown;

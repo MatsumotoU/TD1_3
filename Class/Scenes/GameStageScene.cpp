@@ -175,7 +175,7 @@ void GameStageScene::Init() {
 
 	comboUI.Init();
 	comboUI.SetCamera(&uiCamera);
-	comboUI.SetCombo(&exprosionComboCount,&comboRemainFrame);
+	comboUI.SetCombo(&exprosionComboCount, &comboRemainFrame);
 	playerAttackStopFrame = 0;
 
 	playerAttackHitCount = 0;
@@ -194,7 +194,7 @@ void GameStageScene::Init() {
 	gameScore.SetPos({ 580.0f,310.0f });
 	gameScore.SetLocalScale({ 0.5f,0.5f });
 
-	scoreTitle = {0.0f};
+	scoreTitle = { 0.0f };
 	scoreTitle.pos = { 128.0f,310.0f };
 	scoreTitle.size = { 512.0f,128.0f };
 	scoreTitle.scale = { 0.5f,0.5f };
@@ -270,7 +270,7 @@ void GameStageScene::Draw() {
 		enemyManager.Draw();
 		map.Draw();
 		Novice::SetBlendMode(kBlendModeNormal);
-		
+
 		player.Draw();
 	}
 
@@ -300,7 +300,7 @@ void GameStageScene::ImGuiUpdate() {
 
 	ImGui::Begin("GameScene");
 	ImGui::InputFloat("cameraScale", &cameraLocalScale);
-	
+
 	ImGui::Text("GameStage = %d Wave = %d", gameStage, wave);
 	ImGui::Text("combo = %d :%d", exprosionComboCount, comboRemainFrame);
 	ImGui::InputFloat("x", &testPopEnemyPos.x);
@@ -609,64 +609,36 @@ void GameStageScene::EnemyCollision() {
 			if (player.GetIsAttack()) {
 				if (IsHitCollisionEllipse(
 					player.GetPos(), enemyManager.GetEnemyes()[e].GetPos(),
-					player.GetSize().x * 0.5f, enemyManager.GetEnemyes()[e].GetSize().x * 0.5f)) {
+					player.GetAttackRadius(), enemyManager.GetEnemyes()[e].GetSize().x * 0.5f)) {
 
 					if (!enemyManager.GetEnemyes()[e].GetIsHitAttack() && player.GetCanAttack()) {
 
-						if (enemyManager.GetEnemyes()[e].GetType() == ENM::Shield) {
+						enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
+						enemyManager.GetEnemyes()[e].SetHitAttackDir(
+							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
+						player.CountDownRemainAttackChance();
 
-							if (Dot(enemyManager.GetEnemyes()[e].GetAngleDir(), player.GetAngleDir()) > 0.0f) {
-								
-								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
-								enemyManager.GetEnemyes()[e].SetHitAttackDir(
-									Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
-								player.CountDownRemainAttackChance();
+						particleManager.SlashEffect(
+							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
+							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 10.0f, 5, 30, 5, 0);
 
-								particleManager.SlashEffect(
-									enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
-									Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 10.0f, 5, 30, 5, 0);
+						// カメラを揺らす
+						mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 100.0f;
 
-								// カメラを揺らす
-								mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 100.0f;
+						enemyManager.GetEnemyes()[e].Stun();
 
-								enemyManager.GetEnemyes()[e].Stun();
-
-							} else {
-
-								player.GetPhysics()->InversVelocity();
-
-								// カメラを揺らす
-								mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 30.0f;
-							}
-
-						} else {
-							enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
-							enemyManager.GetEnemyes()[e].SetHitAttackDir(
-								Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
-							player.CountDownRemainAttackChance();
-
-							particleManager.SlashEffect(
-								enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
-								Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 10.0f, 5, 30, 5, 0);
-
-							// カメラを揺らす
-							mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 100.0f;
-
-							enemyManager.GetEnemyes()[e].Stun();
-
-							if (playerAttackStopFrame > 0) {
-								playerAttackHitCount++;
-							}
-
-							if (enemyManager.GetRemainEnemies() > 1) {
-								playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount +1);
-							}
-							
-							if (exprosionComboCount > 0) {
-								comboRemainFrame = GMScene::maxComboRemainFrame;
-							}
+						if (playerAttackStopFrame > 0) {
+							playerAttackHitCount++;
 						}
-						
+
+						if (enemyManager.GetRemainEnemies() > 1) {
+							playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount + 1);
+						}
+
+						if (exprosionComboCount > 0) {
+							comboRemainFrame = GMScene::maxComboRemainFrame;
+						}
+
 					} else {
 
 						enemyManager.GetEnemyes()[e].GetPhysics()->AddForce(player.GetPhysics()->GetVelocity() * 20.0f, IMPACT);
@@ -762,7 +734,7 @@ void GameStageScene::EnemyCollision() {
 								}
 							}
 
-							
+
 							return;
 						}
 					}
@@ -827,7 +799,7 @@ void GameStageScene::ExprodeEnemy() {
 					}
 				}
 
-				
+
 			}
 		}
 	}
@@ -1127,7 +1099,7 @@ void GameStageScene::ControlInfoDraw() {
 		} else {
 			Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, contorolInfoGH[3]);
 		}
-	} 
+	}
 	//else {
 
 	//	if (Novice::GetNumberOfJoysticks() > 0) {
