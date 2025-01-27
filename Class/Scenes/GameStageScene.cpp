@@ -30,6 +30,8 @@ void GameStageScene::Init() {
 	comboOP[3] = Novice::LoadAudio("./Resources/Sounds/combo4.mp3");
 	comboOP[4] = Novice::LoadAudio("./Resources/Sounds/combo5.mp3");
 
+	playerAttackOP = Novice::LoadAudio("./Resources/Sounds/playerAttack.mp3");
+
 	flashScreenFrame = 0;
 
 	stopObjectUpdateFrame = 0;
@@ -652,6 +654,9 @@ void GameStageScene::EnemyCollision() {
 							playerAttackHitCount++;
 						}
 
+						// SE
+						Novice::PlayAudio(playerAttackOP, false, seVolume);
+
 						if (enemyManager.GetRemainEnemies() > 1) {
 							playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount + 1);
 
@@ -663,6 +668,8 @@ void GameStageScene::EnemyCollision() {
 						if (exprosionComboCount > 0) {
 							comboRemainFrame = GMScene::maxComboRemainFrame;
 						}
+
+						
 
 					} else {
 
@@ -798,7 +805,7 @@ void GameStageScene::ExprodeEnemy() {
 			for (int e = 0; e < EMG::kMaxEnemy; e++) {
 				if (enemyManager.GetEnemyes()[e].GetIsAlive() && enemyManager.GetEnemyes()[e].GetIsHitAttack()) {
 					enemyManager.GetEnemyes()[e].SetStunFrame(1);
-					enemyManager.GetEnemyes()[e].UpdateExprodeCircle(60);
+					enemyManager.GetEnemyes()[e].UpdateExprodeCircle(200);
 				}
 			}
 			isSlowFrame = false;
@@ -834,6 +841,9 @@ void GameStageScene::ExprodeEnemy() {
 				int tempScore = 100 * (exprosionComboCount + 1);
 				score += tempScore;
 				scoreUIManager.SpawnScore(enemyManager.GetEnemyes()[e].GetPos(), tempScore);
+
+				// SE
+				Novice::PlayAudio(comboOP[Clamp(exprosionComboCount, 0, 4)], false, seVolume);
 
 				// ラストヒット
 				if (enemyManager.GetRemainEnemies() <= 0) {
