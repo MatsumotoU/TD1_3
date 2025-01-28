@@ -245,6 +245,11 @@ void GameStageScene::Update() {
 	scoreRatio.SetTargetNum(static_cast<int>(slowFrameScoreRatio));
 
 	gameTime--;
+	if (gameTime <= 0) {
+		isTransition = true;
+		nextScene = new ResultScene();
+		return;
+	}
 	timeNum.Update();
 	timeNum.SetTargetNum(gameTime / 60);
 
@@ -389,8 +394,6 @@ void GameStageScene::WaveManager() {
 		if (!isChangeWave) {
 
 			player.SetDrawLockOn(false);
-
-			
 
 			frameCount = 0;
 
