@@ -3,6 +3,7 @@
 
 EnemyManager::EnemyManager() {
 	enemyGH = Novice::LoadTexture("./Resources/Images/enemy.png");
+	shotEnemyGH = Novice::LoadTexture("./Resources/Images/shotEnemy.png");
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		enemyes[i].Init();
 		enemyes[i].SetGH(&enemyGH);
@@ -127,6 +128,25 @@ void EnemyManager::SpawnEnemy(Vector2 pos, ENM::Type set) {
 			enemyes[i].SetEnemyType(set);
 			enemyes[i].TypeInit();
 			enemyes[i].SetIsSpawning(true);
+
+			switch (set)
+			{
+			case ENM::None:
+				enemyes[i].SetGH(&enemyGH);
+				break;
+			case ENM::Melee:
+				enemyes[i].SetGH(&enemyGH);
+				break;
+			case ENM::Shot:
+				enemyes[i].SetGH(&shotEnemyGH);
+				break;
+			case ENM::Shield:
+				enemyes[i].SetGH(&enemyGH);
+				break;
+			default:
+				break;
+			}
+
 			break;
 		}
 	}

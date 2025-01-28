@@ -33,5 +33,6 @@ private:
 
 	Enemy enemyes[EMG::kMaxEnemy];
 	int enemyGH;
+	int shotEnemyGH;
 
 };
