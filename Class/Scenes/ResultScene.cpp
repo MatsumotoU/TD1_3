@@ -57,17 +57,22 @@ void ResultScene::Init() {
 		buttonT[i] = 0.0f;
 	}
 
-	button[1].scale = { 1.0f,1.0f };
-
 	// ミッションをクリアしたか
-
 	if (sceneObj->isNotDeathClear) {
 		shouldClearedMission[0] = true;
+		button[0].scale = { 0.8f,0.8f };
+		button[1].scale = { 1.0f,1.0f };
+		shouldPressedRight =true;
+		shouldPressedLeft = false;
 		if (!sceneObj->shouldClearedMission[gameStage][0]) {
 			sceneObj->shouldClearedMission[gameStage][0] = true;
 		}
 	} else {
+		button[1].scale = { 0.8f,0.8f };
+		button[0].scale = { 1.0f,1.0f };
 		shouldClearedMission[0] = false;
+		shouldPressedRight = false;
+		shouldPressedLeft = true;
 	}
 
 	if (sceneObj->score >= 10000) {
@@ -133,9 +138,6 @@ void ResultScene::Init() {
 
 	// 動く時間
 	movingFrameCount = 15.0f;
-
-	shouldPressedRight = true;
-	shouldPressedLeft = false;
 
 	//isDuringAnimation = true;
 
@@ -564,7 +566,7 @@ void ResultScene::Draw() {
 			//====================================================================================//
 			Render::DrawSprite(star[i], mainCamera, 0xEEEEEEFF, starGraphHandle);
 		} else {
-			Render::DrawSprite(star[i], mainCamera, 0x393E46FF, starGraphHandle);
+			Render::DrawSprite(star[i], mainCamera, 0xeeeeee22, starGraphHandle);
 		}
 	}
 
