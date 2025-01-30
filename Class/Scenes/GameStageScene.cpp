@@ -173,6 +173,7 @@ void GameStageScene::Init() {
 	lightManager.SetCamera(&mainCamera);
 
 	cameraLocalScale = 1.45f;
+	//cameraLocalScale = 1.0f;
 	mainCamera.SetLocalScale({ cameraLocalScale,cameraLocalScale });
 
 	comboUI.Init();
@@ -225,7 +226,7 @@ void GameStageScene::Update() {
 
 	timeNum.SetPos({ 48.0f * static_cast<float>(timeNum.GetDigit()),0.0f });
 
-	mainCamera.SetLocalScale({ cameraLocalScale,cameraLocalScale });
+	//mainCamera.SetLocalScale({ cameraLocalScale,cameraLocalScale });
 
 	mainCamera.Update();
 	frameCount++;
@@ -243,8 +244,7 @@ void GameStageScene::Update() {
 
 	scoreRatio.Update();
 	scoreRatio.SetTargetNum(static_cast<int>(slowFrameScoreRatio));
-
-	gameTime--;
+	
 	if (gameTime <= 0) {
 		isTransition = true;
 		nextScene = new ResultScene();
@@ -323,19 +323,19 @@ void GameStageScene::Draw() {
 
 	if (!isChangeWave) {
 
-		Novice::DrawBox(1100, 170, 
+		/*Novice::DrawBox(1100, 170, 
 			static_cast<int>(140.0f * (-1.0f + slowFrameScoreRatio)) - (140 * static_cast<int>(-1.0f + slowFrameScoreRatio)),
 			16, 0.0f, WHITE, kFillModeSolid);
 		Novice::DrawBox(1100, 170, 140, 16, 0.0f, WHITE, kFillModeWireFrame);
-		Novice::DrawSprite(1132 - 32 * scoreRatio.GetDigit(), 100, clossGH, 0.5f, 0.5f, 0.0f, WHITE);
+		Novice::DrawSprite(1132 - 32 * scoreRatio.GetDigit(), 100, clossGH, 0.5f, 0.5f, 0.0f, WHITE);*/
 		gameScore.Draw(&uiCamera, enemyRemainNumGH);
-		scoreRatio.Draw(&uiCamera, enemyRemainNumGH);
+		//scoreRatio.Draw(&uiCamera, enemyRemainNumGH);
 		
 		Render::DrawSprite(scoreTitle, uiCamera, WHITE, scoreTitleGH);
 	}
 
 	if (flashScreenFrame > 0) {
-		if (flashScreenFrame % 12 <= 6) {
+		if (flashScreenFrame % 6 <= 3) {
 			Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xFFFFFF23, kFillModeSolid);
 		}
 	}
@@ -392,9 +392,7 @@ void GameStageScene::WaveManager() {
 
 	if (isClearStage || !player.GetIsAlive()) {
 		if (!isChangeWave) {
-
 			player.SetDrawLockOn(false);
-
 			frameCount = 0;
 
 			// ステージクリア後の演出時間
@@ -407,6 +405,7 @@ void GameStageScene::WaveManager() {
 
 				if (!player.GetIsAlive()) {
 					isNotDeath = false;
+					sceneObj->isNotDeathClear = isNotDeath;
 					isTransition = true;
 					nextScene = new ResultScene();
 				}
@@ -555,6 +554,10 @@ void GameStageScene::ObjectUpdate() {
 		ExprodeEnemy();
 		EnemyMoveToPlayer();
 		EnemyAttack();
+
+		if (!isChangeWave) {
+			gameTime--;
+		}
 	}
 }
 
@@ -586,11 +589,7 @@ void GameStageScene::ObjectCollision() {
 
 								playerAttackStopFrame = 0;
 
-								if (player.GetHp() <= 0) {
-									stopObjectUpdateFrame = 90;
-									player.GetPhysics()->SetResistance(1.0f);
-									player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
-								}
+								PlayerDeath();
 							}
 						}
 
@@ -609,11 +608,7 @@ void GameStageScene::ObjectCollision() {
 
 								playerAttackStopFrame = 0;
 
-								if (player.GetHp() <= 0) {
-									stopObjectUpdateFrame = 90;
-									player.GetPhysics()->SetResistance(1.0f);
-									player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
-								}
+								PlayerDeath();
 							}
 						}
 					}
@@ -638,11 +633,7 @@ void GameStageScene::ObjectCollision() {
 
 								playerAttackStopFrame = 0;
 
-								if (player.GetHp() <= 0) {
-									stopObjectUpdateFrame = 90;
-									player.GetPhysics()->SetResistance(1.0f);
-									player.GetPhysics()->AddForce(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos(), IMPACT);
-								}
+								PlayerDeath();
 							}
 						}
 					}
@@ -772,7 +763,7 @@ void GameStageScene::EnemyCollision() {
 								enemyManager.GetEnemyes()[e].SetIsHitAttack(true);
 							}
 
-							mainCamera.shakeRange = { 10.0f, 10.0f };
+							mainCamera.shakeRange += { 10.0f, 10.0f };
 							stopObjectUpdateFrame = exprosionHitStopFrame;
 							//mainCamera.SetPos(enemyManager.GetEnemyes()[e].GetPos());
 							mainCamera.panRange = -0.13f;
@@ -848,8 +839,8 @@ void GameStageScene::ExprodeEnemy() {
 			}
 			isSlowFrame = false;
 			stopObjectUpdateFrame = 15;
-			score *= static_cast<int>(slowFrameScoreRatio);
-			slowFrameScoreRatio = 1.0f;
+			/*score *= static_cast<int>(slowFrameScoreRatio);
+			slowFrameScoreRatio = 1.0f;*/
 			return;
 		}
 	}
@@ -1138,6 +1129,20 @@ void GameStageScene::BalanceUpdate() {
 #pragma endregion
 }
 
+void GameStageScene::PlayerDeath() {
+	if (player.GetHp() <= 0) {
+		stopObjectUpdateFrame = 60;
+		player.GetPhysics()->SetResistance(1.0f);
+		player.GetPhysics()->AddForce({Random(10.0f,-10.0f),Random(10.0f,-10.0f) }, IMPACT);
+
+		flashScreenFrame = 30;
+		mainCamera.angleShakeRange = 10.0f;
+		mainCamera.panRange -= 0.5f;
+
+		mainCamera.shakeRange += {100.0f, 100.0f};
+	}
+}
+
 void GameStageScene::ControlInfoUpdate() {
 	if (shakeContorolInfoExprosion > 0.0f) {
 		shakeContorolInfoExprosion--;
@@ -1247,12 +1252,12 @@ void GameStageScene::CameraUpdate() {
 
 		}
 
-		mainCamera.shakeRange = { static_cast<float>(clearStageTimeBuffer) * 0.1f,static_cast<float>(clearStageTimeBuffer) * 0.1f };
+		mainCamera.shakeRange = {10.0f,10.0f };
 		//mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer), 0.1f, 1.0f);
 
 	} else {
 		*cameraPos = player.GetPos();
 	}
 
-	mainCamera.CameraMoveLimit({ 640.0f,370.0f }, { 1408.0f,1678.0f });
+	//mainCamera.CameraMoveLimit({ 640.0f,370.0f }, { 1408.0f,1678.0f });
 }

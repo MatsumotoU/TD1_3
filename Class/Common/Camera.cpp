@@ -148,12 +148,12 @@ void Camera::Update() {
 	// 画面揺れ
 	shakeRange.x *= 0.9f;
 	shakeRange.y *= 0.9f;
-	if (shakeRange.x >= 15.0f) {
-		shakeRange.x = 15.0f;
+	/*if (shakeRange.x >= 50.0f) {
+		shakeRange.x = 50.0f;
 	}
-	if (shakeRange.y >= 15.0f) {
-		shakeRange.y = 15.0f;
-	}
+	if (shakeRange.y >= 50.0f) {
+		shakeRange.y = 50.0f;
+	}*/
 
 	if (shakeRange.x > 1.0f) {
 		shake.x = static_cast<float>(rand() % static_cast<int>(shakeRange.x * 2.0f) - static_cast<int>(shakeRange.x));

@@ -12,9 +12,9 @@
 void SceneManager::Init() {
 
 	// シーン読み込み
-	scene = new TitleScene();
+	//scene = new TitleScene();
 	//scene = new SelectScene();
-	//scene = new GameStageScene();
+	scene = new GameStageScene();
 	//scene = new ResultScene();
 
 	scene->Init();
@@ -23,8 +23,6 @@ void SceneManager::Init() {
 
 	frameCount = 0;
 	gameStage = 0;
-
-
 }
 
 //==============================

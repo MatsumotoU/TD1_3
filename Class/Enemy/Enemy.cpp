@@ -120,8 +120,8 @@ void Enemy::Update() {
 				sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius };*/
 			if (Length(exprosionRange[i]) <= exprosionRadius) {
 				exprosionRange[i] += {
-					cosf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f),
-						sinf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f)};
+					cosf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / static_cast<float>(ENM::kMaxStunFrame)) * 2.0f),
+						sinf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / static_cast<float>(ENM::kMaxStunFrame)) * 2.0f)};
 			}
 		} else {
 			exprosionRange[i].x -= (exprosionRange[i].x) * 0.1f;
@@ -505,8 +505,8 @@ void Enemy::UpdateExprodeCircle(int count) {
 					sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * exprosionRadius };*/
 				if (Length(exprosionRange[i]) <= exprosionRadius) {
 					exprosionRange[i] += {
-						cosf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f),
-							sinf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / 90.0f) * 2.0f)};
+						cosf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / static_cast<float>(ENM::kMaxStunFrame)) * 2.0f),
+							sinf((6.28f / static_cast<float>(ENM::kCircleResolution))* static_cast<float>(i))* ((170.0f / static_cast<float>(ENM::kMaxStunFrame)) * 2.0f)};
 				}
 			} else {
 				exprosionRange[i].x -= (exprosionRange[i].x) * 0.1f;

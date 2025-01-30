@@ -16,7 +16,7 @@
 #include "Class/UIobjects/ScoreUIManager.h"
 
 namespace GMScene {
-	const int maxClearStageTimeBuffer = 120;
+	const int maxClearStageTimeBuffer = 60;
 	const int maxComboRemainFrame = 150;
 	const float exprodeRange = 256.0f;
 
@@ -60,6 +60,7 @@ public:
 	void EnemyAttack();
 	void WaveUiDraw();
 	void BalanceUpdate();
+	void PlayerDeath();
 
 	void ControlInfoUpdate();
 	void ControlInfoDraw();
