@@ -162,5 +162,8 @@ private:
 
 	int gameTime;
 	BounceNumber timeNum;
+
+	int enemyBloodGH;
+	int exprosionGH[7];
 };
 
