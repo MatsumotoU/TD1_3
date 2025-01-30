@@ -45,6 +45,7 @@ void ContorolTutorialUI::Init() {
 	enemyManager = nullptr;
 	tutorialStep = 0;
 	frameCount = 0;
+	isActive = true;
 }
 
 void ContorolTutorialUI::Update() {
@@ -62,14 +63,11 @@ void ContorolTutorialUI::Update() {
 		}
 		
 		Vector2 zeroVec = { 0.0f,0.0f };
-		if (isHideUI || enemyManager->GetIsHitScreenEnemies({240.0f,600.0f}, transform.size)) {
-			Eas::SimpleEaseIn(&alpha, 0.05f, 0.2f);
+		if ((isHideUI || enemyManager->GetIsHitScreenEnemies({ 240.0f,600.0f }, transform.size)) && !isInScreeenUI) {
+			Eas::SimpleEaseIn(&alpha, 0.3f, 0.2f);
 		} else {
 			Eas::SimpleEaseIn(&alpha, 1.0f, 0.1f);
 		}
-
-	} else {
-		isInScreeenUI = false;
 	}
 
 	if (tutorialCount == 0) {
@@ -109,6 +107,10 @@ void ContorolTutorialUI::Update() {
 }
 
 void ContorolTutorialUI::Draw() {
+
+	if (!isActive) {
+		return;
+	}
 
 	Render::DrawSprite(transform, *camera, ColorFade(WHITE,alpha), windowGH);
 	if (isActive) {

@@ -6,7 +6,7 @@
 class Mapchip;
 
 namespace ENM {
-	const int kMaxStunFrame = 30;
+	const int kMaxStunFrame = 45;
 	const int kMaxDeathFrame = 60;
 
 	const int kCircleResolution = 64;
