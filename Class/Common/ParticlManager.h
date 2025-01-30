@@ -3,7 +3,7 @@
 #include "Class/Common/Camera.h"
 
 // パーティクル最大数
-const int kPlarticlMax = 128;
+const int kPlarticlMax = 256;
 
 class ParticlManager
 {

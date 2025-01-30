@@ -41,7 +41,9 @@ void Bullet::Update() {
 }
 
 void Bullet::Draw() {
-	Render::DrawSprite(transform, *camera, color, bulletGH);
+	if (bulletGH != 0) {
+		Render::DrawSprite(transform, *camera, color, bulletGH);
+	}
 }
 
 void Bullet::Move() {

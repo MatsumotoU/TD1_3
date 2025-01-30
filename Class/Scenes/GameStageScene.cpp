@@ -127,9 +127,9 @@ void GameStageScene::Init() {
 	rcContorolInfoGH[2] = Novice::LoadTexture("./Resources/Images/RCtutorial3.png");
 	rcContorolInfoGH[3] = Novice::LoadTexture("./Resources/Images/RCtutorial4.png");
 
-	hitEffectGH[0] = Novice::LoadTexture("./Resources/Images/hitEffect1.png");
-	hitEffectGH[1] = Novice::LoadTexture("./Resources/Images/hitEffect2.png");
-	hitEffectGH[2] = Novice::LoadTexture("./Resources/Images/hitEffect3.png");
+	hitEffectGH[0] = Novice::LoadTexture("./Resources/Images/hiteffect256_1.png");
+	hitEffectGH[1] = Novice::LoadTexture("./Resources/Images/hiteffect256_2.png");
+	hitEffectGH[2] = Novice::LoadTexture("./Resources/Images/hiteffect256_3.png");
 
 	contorolTutorialUI.Init();
 	contorolTutorialUI.SetCamera(&uiCamera);
@@ -220,6 +220,16 @@ void GameStageScene::Init() {
 	timeNum.SetPos({ 0.0f,0.0f });
 	timeNum.SetLocalScale({ 3.0f,3.0f });
 	timeNum.SetColor(0xEEEEEE13);
+
+	enemyBloodGH = Novice::LoadTexture("./Resources/Images/ScoreTitle.png");
+
+	exprosionGH[0] = Novice::LoadTexture("./Resources/Images/Explosion1.png");
+	exprosionGH[1] = Novice::LoadTexture("./Resources/Images/Explosion2.png");
+	exprosionGH[2] = Novice::LoadTexture("./Resources/Images/Explosion3.png");
+	exprosionGH[3] = Novice::LoadTexture("./Resources/Images/Explosion4.png");
+	exprosionGH[4] = Novice::LoadTexture("./Resources/Images/Explosion5.png");
+	exprosionGH[5] = Novice::LoadTexture("./Resources/Images/Explosion6.png");
+	exprosionGH[6] = Novice::LoadTexture("./Resources/Images/Explosion7.png");
 }
 
 void GameStageScene::Update() {
@@ -549,6 +559,8 @@ void GameStageScene::ObjectUpdate() {
 	}
 
 	player.Update();
+	
+
 	PlayerLockOn();
 
 	if (playerAttackStopFrame % GMScene::kSecondPerPlayerAttackStopFrame <= 0) {
@@ -674,12 +686,12 @@ void GameStageScene::EnemyCollision() {
 							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
 						player.CountDownRemainAttackChance();
 
-						particleManager.SlashEffect(
+						/*particleManager.SlashEffect(
 							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
-							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 10.0f, 5, 30, 5, 0);
+							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 0.00f, 5, 120, 10, enemyBloodGH);*/
 
 						// カメラを揺らす
-						mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 100.0f;
+						mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 20.0f;
 
 						enemyManager.GetEnemyes()[e].Stun();
 
@@ -690,19 +702,20 @@ void GameStageScene::EnemyCollision() {
 						// SE
 						Novice::PlayAudio(playerAttackOP, false, seVolume);
 
-						if (enemyManager.GetRemainEnemies() > 1) {
-							playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount + 1);
+						//if (enemyManager.GetRemainEnemies() > 1) {
+						//	playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount + 1);
 
-							if (!isSlowFrame) {
-								isSlowFrame = true;
-							}
-						}
+						//	if (!isSlowFrame) {
+						//		isSlowFrame = true;
+						//	}
+						//}
 
 						if (exprosionComboCount > 0) {
 							comboRemainFrame = GMScene::maxComboRemainFrame;
 						}
 
-						
+						// 爆発
+						particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
 
 					} else {
 
@@ -712,11 +725,10 @@ void GameStageScene::EnemyCollision() {
 						particleManager.SlashEffect(
 							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
 							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()), 10.0f, 5, 30, 5, 0);
-
-						// カメラを揺らす
-						mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 30.0f;
 					}
 					player.SetIsAttack(false);
+					// カメラを揺らす
+					mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 20.0f;
 
 				}
 			}
@@ -738,7 +750,7 @@ void GameStageScene::EnemyCollision() {
 								Normalize(bulletManager.GetBullets()[b].GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
 
 							// 爆発
-							particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
+							particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
 						}
 					}
 
@@ -773,7 +785,7 @@ void GameStageScene::EnemyCollision() {
 							mainCamera.panRange = -0.13f;
 
 							// 爆発
-							particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
+							particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 340.0f,340.0f }, Random(6.24f, 0.0f), 7, 3, false, exprosionGH);
 
 							// コンボ加算
 							if (enemyManager.GetEnemyes()[e].GetIsAlive()) {
@@ -845,6 +857,7 @@ void GameStageScene::ExprodeEnemy() {
 			stopObjectUpdateFrame = 15;
 			/*score *= static_cast<int>(slowFrameScoreRatio);
 			slowFrameScoreRatio = 1.0f;*/
+			
 			return;
 		}
 	}
@@ -869,7 +882,7 @@ void GameStageScene::ExprodeEnemy() {
 					-enemyManager.GetEnemyes()[e].GetHitDir(), 30.0f, 180, "exprosion", slashGH);*/
 
 					// 爆発
-				particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 128.0f,128.0f }, Random(6.24f, 0.0f), 3, 3, false, hitEffectGH);
+				particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 340.0f,340.0f }, Random(6.24f, 0.0f), 7, 3, false, exprosionGH);
 
 				int tempScore = 100 * (exprosionComboCount + 1);
 				score += tempScore;
@@ -888,7 +901,7 @@ void GameStageScene::ExprodeEnemy() {
 					}
 				}*/
 
-
+				mainCamera.shakeRange += {10.0f, 10.0f};
 			}
 		}
 	}
