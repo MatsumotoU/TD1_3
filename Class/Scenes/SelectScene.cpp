@@ -451,7 +451,7 @@ void SelectScene::Draw() {
 			//====================================================================================//
 			Render::DrawSprite(star[i], mainCamera, starColor[i], starGraphHandle);
 		} else {
-			Render::DrawSprite(star[i], mainCamera, 0x393E46FF, starGraphHandle);
+			Render::DrawSprite(star[i], mainCamera, 0xeeeeee22, starGraphHandle);
 		}
 	}
 

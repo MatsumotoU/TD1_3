@@ -246,6 +246,9 @@ void GameStageScene::Update() {
 	scoreRatio.SetTargetNum(static_cast<int>(slowFrameScoreRatio));
 	
 	if (gameTime <= 0) {
+
+		sceneObj->isNotDeathClear = player.GetIsAlive();
+
 		isTransition = true;
 		nextScene = new ResultScene();
 		return;
@@ -287,11 +290,10 @@ void GameStageScene::Update() {
 void GameStageScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
 
-	if (!isChangeWave) {
+	if (!isChangeWave && player.GetIsAlive()) {
 		timeNum.Draw(&uiCamera, enemyRemainNumGH);
+		playerStopClockUI.Draw();
 	}
-
-	playerStopClockUI.Draw();
 
 	if (playerAttackStopFrame <= 0) {
 
@@ -311,17 +313,19 @@ void GameStageScene::Draw() {
 		player.Draw();
 	}
 
-	
-	scoreUIManager.Draw();
-	playerHpUI.Draw();
+	if (player.GetIsAlive()) {
+		scoreUIManager.Draw();
+		playerHpUI.Draw();
+		WaveUiDraw();
+		ControlInfoDraw();
+		contorolTutorialUI.Draw();
+		comboUI.Draw();
+	}
+
 	particleManager.Draw();
-	WaveUiDraw();
-	ControlInfoDraw();
-	contorolTutorialUI.Draw();
-	comboUI.Draw();
 	lightManager.Draw();
 
-	if (!isChangeWave) {
+	if (!isChangeWave && player.GetIsAlive()) {
 
 		/*Novice::DrawBox(1100, 170, 
 			static_cast<int>(140.0f * (-1.0f + slowFrameScoreRatio)) - (140 * static_cast<int>(-1.0f + slowFrameScoreRatio)),
