@@ -200,8 +200,8 @@ void TitleScene::Init() {
 	isIncreaseAlpha = true;
 	efectNum = 0;
 	changeSceneCount = 0;
-	sword[0] = { 10.0f,10.0f };
-	sword[1] = { 10.0f,10.0f };
+	sword[0] = { 32.0f,32.0f };
+	sword[1] = { 32.0f,32.0f };
 	efectDir[0] = { 10.0f,10.0f };
 	efectDir[1] = { -10.0f,10.0f };
 	flashAlpha = 0;
@@ -463,10 +463,12 @@ void TitleScene::Update() {
 		}
 		else if (isSwordMove)
 		{
+			particleManager.SlashEffect(logo[2].pos, sword[0], efectDir[0], 20.0f, 5, 20, 10, 0);
+			particleManager.SlashEffect(logo[3].pos, sword[1], efectDir[1], 20.0f, 5, 20, 10, 0);
 			if (efectT[2] < 1.0f)
 			{
 				// メをイージングさせる処理
-				efectT[2] += 0.01f;
+				efectT[2] += 0.04f;
 
 				if (efectT[2] >= 1.0f)
 				{
@@ -477,10 +479,9 @@ void TitleScene::Update() {
 
 				logo[2].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.x, endLogo[2].pos.x);
 				logo[2].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[2].pos.y, endLogo[2].pos.y);
-				particleManager.SlashEffect(logo[2].pos, sword[0], efectDir[0], 10.0f, 5, 10, 10, 0);
+
 				logo[3].pos.x = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.x, endLogo[3].pos.x);
 				logo[3].pos.y = Eas::EaseIn(efectT[2], 4.0f, startLogo[3].pos.y, endLogo[3].pos.y);
-				particleManager.SlashEffect(logo[3].pos, sword[0], efectDir[1], 10.0f, 5, 10, 10, 0);
 			}
 			else
 			{
@@ -505,6 +506,7 @@ void TitleScene::Update() {
 
 
 	}
+
 	particleManager.Update();
 	mainCamera.Update();
 }
@@ -614,7 +616,7 @@ void TitleScene::Draw() {
 		}
 		else if (isSwordMove)
 		{
-			particleManager.Draw();
+
 
 			// ロゴの描画処理
 			Render::DrawSprite(logo[0], mainCamera, 0xFFFFFFFF, titleLogoGh[0]);
@@ -642,6 +644,8 @@ void TitleScene::Draw() {
 		Render::DrawSprite(efect[0], mainCamera, 0xFFFFFFFF, bigEfectGh[efectNum / 2]);
 		Render::DrawSprite(efect[1], mainCamera, 0xFFFFFFFF, smallEfectGh[efectNum / 2]);
 	}
+
+	particleManager.Draw();
 
 	// フラッシュの描画処理
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xFFFFFF00 + flashAlpha, kFillModeSolid);
