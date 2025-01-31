@@ -17,10 +17,18 @@ public:
 
 private:
 	
+	int frameCount;
+
 	int drawHpCount;
 	Camera* camera;
 	Player* player;
 
-	int hpGH;
+	Transform drawTransform[3];
+
+	float shakeRange;
+
+	int oldHp;
+	int isChangeHp;
+	int hpGH[3];
 };
 

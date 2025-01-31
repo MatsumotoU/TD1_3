@@ -131,5 +131,5 @@ void SceneManager::Draw() {
 
 	// * Debug * //
 	// シーン番号
-	Novice::ScreenPrintf(0, 0, "Scene");
+	//Novice::ScreenPrintf(0, 0, "Scene");
 }

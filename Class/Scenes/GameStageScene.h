@@ -22,6 +22,7 @@ namespace GMScene {
 
 	const int maxPlayerAttackStopFrame = 120;
 	const int kSecondPerPlayerAttackStopFrame = 3;
+	const int kMaxComboTrigerCooldown = 5;
 }
 
 class GameStageScene : public IScene {
@@ -165,5 +166,7 @@ private:
 
 	int enemyBloodGH;
 	int exprosionGH[7];
+
+	int comboTrigerCooldown;
 };
 

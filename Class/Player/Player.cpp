@@ -293,7 +293,7 @@ void Player::Draw() {
 		}
 
 		// 本体
-		if (damageCoolDown % 6) {
+		if (damageCoolDown % 6 || (frameCount % 20 < 10 && hp <= 1 && damageCoolDown <= 0)) {
 			Render::DrawSprite(transform, *camera, 0xFF0000AF, playerGH);
 
 		} else {
@@ -307,7 +307,7 @@ void Player::Draw() {
 		WingDraw();
 
 		// ヘイロー
-		if (damageCoolDown % 6) {
+		if (damageCoolDown % 6 || (frameCount % 20 < 10 && hp <= 1 && damageCoolDown <= 0)) {
 			Render::DrawSprite(haloTransform, *camera, 0xFF0000AF, haloGH);
 		} else {
 			Render::DrawSprite(haloTransform, *camera, WHITE, haloGH);
@@ -541,7 +541,7 @@ void Player::WingMove() {
 }
 
 void Player::WingDraw() {
-	if (damageCoolDown % 6) {
+	if (damageCoolDown % 6 || (frameCount % 20 < 10 && hp <= 1 && damageCoolDown <= 0)) {
 		Render::DrawSprite(leftWingTransform, *camera, 0xFF0000AF, wingGH);
 		Render::DrawSprite(rightWingTransform, *camera, 0xFF0000AF, wingGH);
 	} else {
