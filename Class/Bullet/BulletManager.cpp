@@ -34,7 +34,7 @@ void BulletManager::Draw() {
 
 		}
 	}
-	Novice::ScreenPrintf(500, 0, "%d", count);
+	//Novice::ScreenPrintf(500, 0, "%d", count);
 }
 
 void BulletManager::ShotBullet(Vector2 pos, Vector2 size, Vector2 shotDir, float power,int aliveFrame, const std::string& tag, int bulletGH) {

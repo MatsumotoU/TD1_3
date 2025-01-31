@@ -230,6 +230,8 @@ void GameStageScene::Init() {
 	exprosionGH[4] = Novice::LoadTexture("./Resources/Images/Explosion5.png");
 	exprosionGH[5] = Novice::LoadTexture("./Resources/Images/Explosion6.png");
 	exprosionGH[6] = Novice::LoadTexture("./Resources/Images/Explosion7.png");
+
+	comboTrigerCooldown = 0;
 }
 
 void GameStageScene::Update() {
@@ -354,7 +356,7 @@ void GameStageScene::Draw() {
 		}
 	}
 
-	Novice::ScreenPrintf(0, 80, "%f", slowFrameScoreRatio);
+	//Novice::ScreenPrintf(0, 80, "%f", slowFrameScoreRatio);
 }
 
 void GameStageScene::ImGuiUpdate() {
@@ -395,9 +397,14 @@ void GameStageScene::WaveManager() {
 
 	if (enemyManager.GetRemainEnemies() <= 0 || gameTime % 1000 == 999) {
 		wave++;
-		if (wave <= 3) {
+		if (wave <= 6) {
 			LoadWave();
 		} else {
+
+			sceneObj->isNotDeathClear = player.GetIsAlive();
+			isTransition = true;
+			nextScene = new ResultScene();
+
 			for (int i = 0; i < wave; i++) {
 				enemyManager.SpawnEnemy({ Random(64.0f,900.0f),Random(64.0f,900.0f) }, ENM::Melee);
 			}
@@ -435,7 +442,7 @@ void GameStageScene::WaveManager() {
 			// ステージ切り替え用オブジェクト初期化
 			isChangeWave = true;
 			if (player.GetIsAlive()) {
-				wave++;
+				//wave++;
 			}
 			waveStringTransform.pos.y = 400.0f;
 			/*waveNumber.SetPos({ 256.0f + 32.0f,400.0f });
@@ -509,7 +516,7 @@ void GameStageScene::WaveManager() {
 
 		// ウェーブ管理処理演出終了
 		if (wave >= 4 || (input->GetControl(ENTER, Triger) && frameCount >= 60)) {
-			LoadWave();
+			//LoadWave();
 			isChangeWave = false;
 			isClearStage = false;
 			lastHitEnemyNum = -1;
@@ -539,9 +546,9 @@ void GameStageScene::LoadWave() {
 		map.LoadMap("Resources/Maps/stage1w3.txt");
 	} else {
 		// stageClear
-		sceneObj->isNotDeathClear = isNotDeath;
+		/*sceneObj->isNotDeathClear = isNotDeath;
 		nextScene = new ResultScene();
-		isTransition = true;
+		isTransition = true;*/
 	}
 	map.SpawnEnemy();
 }
@@ -573,6 +580,10 @@ void GameStageScene::ObjectUpdate() {
 
 		if (!isChangeWave) {
 			gameTime--;
+		}
+
+		if (comboTrigerCooldown > 0) {
+			comboTrigerCooldown--;
 		}
 	}
 }
@@ -792,8 +803,11 @@ void GameStageScene::EnemyCollision() {
 								// SE
 								Novice::PlayAudio(comboOP[Clamp(exprosionComboCount, 0, 4)], false, seVolume);
 
-								exprosionComboCount++;
-								comboRemainFrame = GMScene::maxComboRemainFrame;
+								if (comboTrigerCooldown <= 0) {
+									exprosionComboCount++;
+									comboRemainFrame = GMScene::maxComboRemainFrame;
+									comboTrigerCooldown = GMScene::kMaxComboTrigerCooldown;
+								}
 							}
 							enemyManager.GetEnemyes()[e].SetIsAlive(false);
 
@@ -834,7 +848,9 @@ void GameStageScene::Attack() {
 }
 
 void GameStageScene::PlayerLockOn() {
-	if (Length(enemyManager.NearEnemy(player.GetPos()) - player.GetPos()) <= 256.0f) {
+	if (Length(enemyManager.NearEnemy(player.GetPos()) - player.GetPos()) <= 256.0f &&
+		map.GetIsFromToVisionClear(player.GetPos(), enemyManager.NearEnemy(player.GetPos()))) {
+
 		player.SetIsLockOn(true);
 		player.SetTargetPos(enemyManager.NearEnemy(player.GetPos()));
 	} else {
