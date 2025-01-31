@@ -17,6 +17,8 @@ void InputManager::Update() {
 			keysPushTime[i] = 0;
 		}
 	}
+
+	controllerManager.Update();
 }
 
 //==============================
@@ -471,4 +473,8 @@ int InputManager::GetNotPressAnyKeys() {
 		}
 	}
 	return true;
+}
+
+ControllerManager* InputManager::GetControllerManager() {
+	return &controllerManager;
 }

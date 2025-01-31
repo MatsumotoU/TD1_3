@@ -146,6 +146,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Class\UIobjects\ContorolTutorialUI.cpp" />
     <ClCompile Include="Class\UIobjects\ComboUI.cpp" />
     <ClCompile Include="Class\UIobjects\GameScore.cpp" />
+    <ClCompile Include="Class\Common\ControllerManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Class\UIobjects\PlayerHpUI.cpp" />
     <ClCompile Include="Class\UIobjects\RemainEnemyUI.cpp" />
@@ -214,6 +215,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="Class\Scenes\TitleScene.h" />
     <ClInclude Include="Class\UIobjects\ContorolTutorialUI.h" />
     <ClInclude Include="Class\UIobjects\ComboUI.h" />
+    <ClInclude Include="Class\Common\ControllerManager.h" />
     <ClInclude Include="External\nlohmann\json.hpp" />
     <ClInclude Include="External\nlohmann\json_fwd.hpp" />
     <ClInclude Include="Class\UIobjects\PlayerHpUI.h" />
