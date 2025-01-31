@@ -140,3 +140,40 @@ void Render::DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Came
 		DrawSprite(tempTransform,camera, color, gh[numD[i] % 10]);
 	}
 }
+
+void Render::DrawScore(Vector2 pos, Vector2 size, Vector2 scale, float angle, Camera camera, int num, int digit, int* gh, unsigned int color) {
+	Transform tempTransform = { 0 };
+	tempTransform.pos = pos;
+	tempTransform.scale = scale;
+	tempTransform.size = size;
+	tempTransform.angle = angle;
+
+	int tempNum = Clamp(num, 0, 999999999);
+	int tempDigit = 1;
+	int numD[10] = { 0 };
+
+	while (tempNum >= 10)
+	{
+		tempNum /= 10;
+		tempDigit++;
+	}
+
+	tempNum = num;
+	for (int i = 0; i < tempDigit; i++) {
+
+		numD[i] = tempNum % 10;
+		tempNum /= 10;
+	}
+
+	for (int i = 0; i < digit; i++) {
+		Vector2 digitPos = { ((size.x * scale.x * 0.5f) * static_cast<float>(i)),0.0f };
+		tempTransform.pos = pos;
+		tempTransform.pos -= digitPos;
+
+		if (i < tempDigit) {
+			DrawSprite(tempTransform, camera, color, gh[numD[i] % 10]);
+		} else {
+			DrawSprite(tempTransform, camera, color, gh[0]);
+		}
+	}
+}

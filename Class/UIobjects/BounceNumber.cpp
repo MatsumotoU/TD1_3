@@ -2,6 +2,7 @@
 #include "Class/Common/MyEasing.h"
 
 BounceNumber::BounceNumber() {
+	isFillZero = false;
 	oldNumber = 0;
 	number = 0;
 	targetNumber = 0;
@@ -48,7 +49,11 @@ void BounceNumber::Update() {
 
 void BounceNumber::Draw(Camera* drawCamera,int* numberGH) {
 
-	Render::DrawNum(transform.pos, transform.size, transform.scale * localScale.y, transform.angle, *drawCamera, number, numberGH, color);
+	if (isFillZero) {
+		Render::DrawScore(transform.pos, transform.size, transform.scale * localScale.y, transform.angle, *drawCamera, number,8, numberGH, color);
+	} else {
+		Render::DrawNum(transform.pos, transform.size, transform.scale * localScale.y, transform.angle, *drawCamera, number, numberGH, color);
+	}
 }
 
 void BounceNumber::SetPos(Vector2 set) {
@@ -75,6 +80,10 @@ void BounceNumber::SetColor(unsigned int set) {
 	color = set;
 }
 
+void BounceNumber::SetIsFillZero(int set) {
+	isFillZero = set;
+}
+
 Transform BounceNumber::GetTransform() {
 	return transform;
 }
@@ -92,6 +101,11 @@ int BounceNumber::GetNumber() {
 }
 
 int BounceNumber::GetDigit() {
+
+	if (isFillZero) {
+		return 8;
+	}
+
 	int tempNum = number;
 	int digit = 1;
 

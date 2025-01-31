@@ -193,12 +193,13 @@ void GameStageScene::Init() {
 	score = 0;
 
 	gameScore.Init();
+	gameScore.SetIsFillZero(true);
 	gameScore.SetSize({ 128.0f,128.0f });
 	gameScore.SetPos({ 580.0f,310.0f });
 	gameScore.SetLocalScale({ 0.5f,0.5f });
 
 	scoreTitle = { 0.0f };
-	scoreTitle.pos = { 128.0f,310.0f };
+	scoreTitle.pos = { 240.0f,310.0f };
 	scoreTitle.size = { 512.0f,128.0f };
 	scoreTitle.scale = { 0.5f,0.5f };
 	scoreTitleGH = Novice::LoadTexture("./Resources/Images/ScoreTitle.png");
