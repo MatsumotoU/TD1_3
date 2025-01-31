@@ -1,6 +1,7 @@
 #pragma once
 #include <Novice.h>
 #include "Class/Common/MyMath.h"
+#include "ControllerManager.h"
 
 enum ControlKey {
 	RIGHT,
@@ -66,6 +67,8 @@ public:
 	/// <returns>押されていないならtrueを返す</returns>
 	int GetNotPressAnyKeys();
 
+	ControllerManager* GetControllerManager();
+
 private:
 	// キー入力の長さを取得する
 	int keysPushTime[256] = { 0 };
@@ -73,6 +76,8 @@ private:
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
+
+	ControllerManager controllerManager;
 
 	// コンストラクタをプライベートに
 	InputManager() = default;

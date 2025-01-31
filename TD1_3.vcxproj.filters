@@ -146,6 +146,9 @@
     <ClCompile Include="Class\UIobjects\ScoreUIManager.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="Class\Common\ControllerManager.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -261,5 +264,6 @@
     <ClInclude Include="Class\UIobjects\PlayerStopClockUI.h" />
     <ClInclude Include="Class\UIobjects\GameScore.h" />
     <ClInclude Include="Class\UIobjects\ScoreUIManager.h" />
+    <ClInclude Include="Class\Common\ControllerManager.h" />
   </ItemGroup>
 </Project>

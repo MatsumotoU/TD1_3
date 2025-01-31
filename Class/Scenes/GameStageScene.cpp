@@ -616,7 +616,7 @@ void GameStageScene::ObjectCollision() {
 								mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
 
 								playerAttackStopFrame = 0;
-
+								input->GetControllerManager()->VibrationController(60000, 60000, 15);
 								PlayerDeath();
 							}
 						}
@@ -636,6 +636,7 @@ void GameStageScene::ObjectCollision() {
 
 								playerAttackStopFrame = 0;
 
+								input->GetControllerManager()->VibrationController(60000, 60000, 15);
 								PlayerDeath();
 							}
 						}
@@ -661,6 +662,7 @@ void GameStageScene::ObjectCollision() {
 
 								playerAttackStopFrame = 0;
 
+								input->GetControllerManager()->VibrationController(60000, 60000, 15);
 								PlayerDeath();
 							}
 						}
@@ -741,6 +743,8 @@ void GameStageScene::EnemyCollision() {
 					player.SetIsAttack(false);
 					// カメラを揺らす
 					mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 20.0f;
+
+					input->GetControllerManager()->VibrationController(65000, 65000, 5);
 
 				}
 			}
@@ -830,6 +834,7 @@ void GameStageScene::EnemyCollision() {
 								playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount + 1);
 							}
 
+							input->GetControllerManager()->VibrationController(65000, 65000, 10);
 							return;
 						}
 					}
@@ -917,7 +922,7 @@ void GameStageScene::ExprodeEnemy() {
 						return;
 					}
 				}*/
-
+				input->GetControllerManager()->VibrationController(60000, 60000, 5);
 				mainCamera.shakeRange += {10.0f, 10.0f};
 			}
 		}

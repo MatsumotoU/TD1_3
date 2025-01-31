@@ -399,6 +399,7 @@ void Player::Dash() {
 			camera->panRange -= 0.2f;
 
 			Novice::PlayAudio(dashOP, false, seVolume);
+			input->GetControllerManager()->VibrationController(31000, 31000, 10);
 		}
 	}
 
