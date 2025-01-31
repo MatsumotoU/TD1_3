@@ -318,7 +318,7 @@ void Player::Draw() {
 		//Render::DrawLine(transform.pos, transform.pos + input->GetControlDir() * 100.0f, *camera, RED);
 		//Render::DrawLine(transform.pos, transform.pos + angleDir * 100.0f, *camera, GREEN);
 
-		if (isLockOn) {
+		if (isLockOn && isAlive) {
 			Render::DrawSprite(targetTransform, *camera, WHITE, lockOnGH);
 		}
 	}

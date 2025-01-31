@@ -55,6 +55,8 @@ namespace Render {
 	/// <param name="gh">数字のグラフィック</param>
 	/// <param name="color">数字の色</param>
 	void DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Camera camera, int num, int* gh, unsigned int color);
+
+	void DrawScore(Vector2 pos, Vector2 size, Vector2 scale, float angle, Camera camera, int num,int digit, int* gh, unsigned int color);
 }
 
 

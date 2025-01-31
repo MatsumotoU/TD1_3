@@ -17,6 +17,7 @@ public:
 	void SetTargetNum(int set);
 	void SetLocalScale(Vector2 set);
 	void SetColor(unsigned int set);
+	void SetIsFillZero(int set);
 
 	Transform GetTransform();
 	Vector2* GetPosPtr();
@@ -25,6 +26,7 @@ public:
 	int GetDigit();
 
 private:
+	int isFillZero;
 
 	int frameCount;
 	int oldNumber;
