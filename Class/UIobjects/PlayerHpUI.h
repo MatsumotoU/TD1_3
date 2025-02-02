@@ -2,6 +2,7 @@
 #include "Class/Common/GameObject.h"
 #include "Class/Common/Render.h"
 #include "Class/Common/InputManager.h"
+#include "Class/Common/ParticlManager.h"
 
 class Player;
 
@@ -30,5 +31,8 @@ private:
 	int oldHp;
 	int isChangeHp;
 	int hpGH[3];
+
+	int hpBreakEffectGH[3];
+	ParticlManager particleManager;
 };
 

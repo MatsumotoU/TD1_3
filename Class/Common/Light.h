@@ -20,6 +20,7 @@ public:
 
 private:
 
+	Vector2 spawnScale;
 	int frameCount;
 	int* gh;
 	unsigned int color;

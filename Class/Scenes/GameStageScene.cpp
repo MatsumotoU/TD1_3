@@ -41,6 +41,7 @@ void GameStageScene::Init() {
 	player.SetCamera(&mainCamera);
 	bulletManager.Init();
 	bulletManager.SetCamera(&mainCamera);
+	bulletManager.SetLightManager(&lightManager);
 	enemyManager.Init();
 	enemyManager.SetCamera(&mainCamera);
 	enemyManager.SetPlayerPos(player.GetPosPtr());
@@ -222,7 +223,7 @@ void GameStageScene::Init() {
 	timeNum.SetLocalScale({ 3.0f,3.0f });
 	timeNum.SetColor(0xEEEEEE13);
 
-	enemyBloodGH = Novice::LoadTexture("./Resources/Images/ScoreTitle.png");
+	enemyBloodGH = Novice::LoadTexture("./Resources/Images/blood.png");
 
 	exprosionGH[0] = Novice::LoadTexture("./Resources/Images/Explosion1.png");
 	exprosionGH[1] = Novice::LoadTexture("./Resources/Images/Explosion2.png");
@@ -231,6 +232,14 @@ void GameStageScene::Init() {
 	exprosionGH[4] = Novice::LoadTexture("./Resources/Images/Explosion5.png");
 	exprosionGH[5] = Novice::LoadTexture("./Resources/Images/Explosion6.png");
 	exprosionGH[6] = Novice::LoadTexture("./Resources/Images/Explosion7.png");
+
+	enemyBulletGH = Novice::LoadTexture("./Resources/Images/enemyBullet.png");
+
+	playerHitGH[0] = Novice::LoadTexture("./Resources/Images/Hitmark1.png");
+	playerHitGH[1] = Novice::LoadTexture("./Resources/Images/Hitmark2.png");
+	playerHitGH[2] = Novice::LoadTexture("./Resources/Images/Hitmark3.png");
+	playerHitGH[3] = Novice::LoadTexture("./Resources/Images/Hitmark4.png");
+	playerHitGH[4] = Novice::LoadTexture("./Resources/Images/Hitmark5.png");
 
 	comboTrigerCooldown = 0;
 }
@@ -613,10 +622,12 @@ void GameStageScene::ObjectCollision() {
 								player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
 
 								// カメラを揺らす
-								mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+								mainCamera.shakeRange += {100.0f,100.0f};
 
+								particleManager.AnimEffect(player.GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 5, 2, false, playerHitGH);
+								stopObjectUpdateFrame = 10;
 								playerAttackStopFrame = 0;
-								input->GetControllerManager()->VibrationController(60000, 60000, 15);
+								input->GetControllerManager()->VibrationController(60000, 60000, 10);
 								PlayerDeath();
 							}
 						}
@@ -628,15 +639,20 @@ void GameStageScene::ObjectCollision() {
 								bulletManager.GetBullets()[b].GetPos(), player.GetPos(),
 								bulletManager.GetBullets()[b].GetSize().x * 0.5f, player.GetSize().x * 0.5f)) {
 
+								bulletManager.GetBullets()[b].SetIsShot(false);
+								bulletManager.GetBullets()[b].SetIsActive(false);
+
 								player.Damage();
 								player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
 
 								// カメラを揺らす
-								mainCamera.shakeRange += Normalize(player.GetPos() - bulletManager.GetBullets()[b].GetPos()) * 100.0f;
+								mainCamera.shakeRange += {100.0f, 100.0f};
 
+								stopObjectUpdateFrame = 10;
 								playerAttackStopFrame = 0;
 
-								input->GetControllerManager()->VibrationController(60000, 60000, 15);
+								particleManager.AnimEffect(bulletManager.GetBullets()[b].GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 5, 3, false, playerHitGH);
+								input->GetControllerManager()->VibrationController(60000, 60000, 10);
 								PlayerDeath();
 							}
 						}
@@ -658,11 +674,12 @@ void GameStageScene::ObjectCollision() {
 								player.GetPhysics()->AddForce(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos(), IMPACT);
 
 								// カメラを揺らす
-								mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * 100.0f;
+								mainCamera.shakeRange += {100.0f, 100.0f};
 
+								stopObjectUpdateFrame = 10;
 								playerAttackStopFrame = 0;
-
-								input->GetControllerManager()->VibrationController(60000, 60000, 15);
+								particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 5, 3, false, playerHitGH);
+								input->GetControllerManager()->VibrationController(60000, 60000, 10);
 								PlayerDeath();
 							}
 						}
@@ -700,9 +717,9 @@ void GameStageScene::EnemyCollision() {
 							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f));
 						player.CountDownRemainAttackChance();
 
-						/*particleManager.SlashEffect(
+						particleManager.SlashEffect(
 							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
-							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 0.00f, 5, 120, 10, enemyBloodGH);*/
+							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f), 20.00f, 5, 120, 10, enemyBloodGH);
 
 						// カメラを揺らす
 						mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 20.0f;
@@ -736,15 +753,20 @@ void GameStageScene::EnemyCollision() {
 						enemyManager.GetEnemyes()[e].GetPhysics()->AddForce(player.GetPhysics()->GetVelocity() * 20.0f, IMPACT);
 						player.GetPhysics()->InversVelocity();
 
-						particleManager.SlashEffect(
-							enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
-							Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()), 10.0f, 5, 30, 5, 0);
 					}
 					player.SetIsAttack(false);
 					// カメラを揺らす
 					mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 20.0f;
 
 					input->GetControllerManager()->VibrationController(65000, 65000, 5);
+
+					particleManager.SlashEffect(
+						enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
+						Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()), 10.0f, 5, 30, 5, 0);
+
+					/*particleManager.SlashEffect(
+						player.GetPos(), { 32.0f,32.0f },
+						{ 1.0f,1.0f }, 10.0f, 5, 120, 5, enemyBloodGH);*/
 
 				}
 			}
@@ -970,7 +992,7 @@ void GameStageScene::EnemyAttack() {
 
 					bulletManager.ShotBullet(
 						enemyManager.GetEnemyes()[e].GetPos(), enemyManager.GetEnemyes()[e].GetSize(),
-						enemyManager.GetEnemyes()[e].GetAngleDir(), 10.0f, 180, "enemy", 0);
+						enemyManager.GetEnemyes()[e].GetAngleDir(), 10.0f, 180, "enemy", enemyBulletGH);
 					enemyManager.GetEnemyes()[e].SetIsShot(false);
 				}
 			}
