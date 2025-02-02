@@ -64,3 +64,7 @@ void BulletManager::SetCamera(Camera* camera) {
 		bullets[i].SetCamera(camera);
 	}
 }
+
+void BulletManager::SetLightManager(LightManager* set) {
+	lightManager = set;
+}

@@ -32,7 +32,7 @@ void Bullet::Init() {
 	isShot = false;
 	tag = "none";
 	bulletGH = 0;
-	color = RED;
+	color = WHITE;
 }
 
 void Bullet::Update() {
@@ -47,6 +47,8 @@ void Bullet::Draw() {
 }
 
 void Bullet::Move() {
+
+	transform.scale = { 1.0f - sinf(static_cast<float>(aliveFrame) * 0.5f) * 0.3f,1.0f - sinf(static_cast<float>(aliveFrame) * 0.5f) * 0.3f };
 	physics.Update(&transform.pos);
 }
 

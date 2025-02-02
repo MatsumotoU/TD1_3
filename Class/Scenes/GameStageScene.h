@@ -166,6 +166,9 @@ private:
 
 	int enemyBloodGH;
 	int exprosionGH[7];
+	int enemyBulletGH;
+
+	int playerHitGH[5];
 
 	int comboTrigerCooldown;
 };

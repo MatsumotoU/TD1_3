@@ -1,4 +1,5 @@
 #include "Light.h"
+#include "MyEasing.h"
 
 Light::Light() {
 	transform = { 0.0f };
@@ -14,6 +15,7 @@ void Light::Init() {
 	targetPos = nullptr;
 	isActive = false;
 	frameCount = 0;
+	spawnScale = { 0.0f,0.0f };
 }
 
 void Light::Update() {
@@ -21,6 +23,9 @@ void Light::Update() {
 
 	if (targetPos != nullptr) {
 		transform.pos = *targetPos;
+	} else {
+		
+		isActive = false;
 	}
 
 	transform.scale.x += sinf(static_cast<float>(frameCount) * 0.1f) * 0.001f;
