@@ -91,3 +91,7 @@ std::string Bullet::GetTag() {
 Vector2* Bullet::GetPosPtr() {
 	return &transform.pos;
 }
+
+int Bullet::GetGH() {
+	return bulletGH;
+}
