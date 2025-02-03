@@ -16,13 +16,15 @@
 #include "Class/UIobjects/ScoreUIManager.h"
 
 namespace GMScene {
-	const int maxClearStageTimeBuffer = 60;
+	const int maxClearStageTimeBuffer = 150;
 	const int maxComboRemainFrame = 150;
 	const float exprodeRange = 256.0f;
 
 	const int maxPlayerAttackStopFrame = 120;
 	const int kSecondPerPlayerAttackStopFrame = 3;
 	const int kMaxComboTrigerCooldown = 5;
+
+	const int startEventMaxFrame = 60;
 }
 
 class GameStageScene : public IScene {
@@ -171,5 +173,13 @@ private:
 	int playerHitGH[5];
 
 	int comboTrigerCooldown;
+
+	int isStartingGame;
+	int startGameBufferFrame;
+	int startGH;
+
+	int enemySpawnFrame;
+
+	int isEndGame;
 };
 

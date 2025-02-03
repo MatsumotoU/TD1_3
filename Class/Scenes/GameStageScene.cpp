@@ -217,6 +217,7 @@ void GameStageScene::Init() {
 	//stageStartGH = Novice::LoadTexture("./Resources/Images/StageStart.png");
 
 	gameTime = 3600;
+	//gameTime = 1200;
 	timeNum.Init();
 	timeNum.SetSize({ 128.0f,128.0f });
 	timeNum.SetPos({ 0.0f,0.0f });
@@ -242,6 +243,13 @@ void GameStageScene::Init() {
 	playerHitGH[4] = Novice::LoadTexture("./Resources/Images/Hitmark5.png");
 
 	comboTrigerCooldown = 0;
+
+	 isStartingGame = false;
+	 startGameBufferFrame = 0;
+	 startGH = Novice::LoadTexture("./Resources/Images/start.png");
+
+	 enemySpawnFrame = 0;
+	 isEndGame = false;
 }
 
 void GameStageScene::Update() {
@@ -278,6 +286,14 @@ void GameStageScene::Update() {
 	}
 	timeNum.Update();
 	timeNum.SetTargetNum(gameTime / 60);
+
+	if (gameTime <= 600) {
+		if (gameTime % 30 > 15) {
+			timeNum.SetColor(0xEEEEEEAF);
+		} else {
+			timeNum.SetColor(0xEEEEEE23);
+		}
+	}
 
 	if (!isChangeWave) {
 		if (stopObjectUpdateFrame <= 0) {
@@ -337,9 +353,16 @@ void GameStageScene::Draw() {
 	}
 
 	if (player.GetIsAlive()) {
-		scoreUIManager.Draw();
-		playerHpUI.Draw();
-		WaveUiDraw();
+
+		if (!isChangeWave) {
+			scoreUIManager.Draw();
+			playerHpUI.Draw();
+		}
+		
+		if (!isStartingGame) {
+			WaveUiDraw();
+		}
+		
 		ControlInfoDraw();
 		contorolTutorialUI.Draw();
 		comboUI.Draw();
@@ -359,6 +382,31 @@ void GameStageScene::Draw() {
 		//scoreRatio.Draw(&uiCamera, enemyRemainNumGH);
 
 		Render::DrawSprite(scoreTitle, uiCamera, WHITE, scoreTitleGH);
+	}
+
+	if (isStartingGame) {
+		float eventT = 1.0f - static_cast<float>(startGameBufferFrame) / static_cast<float>(GMScene::startEventMaxFrame);
+		//for (int i = 0; i < 18; i++) {
+
+		//	/*if (i % 2) {
+		//		Novice::DrawBox(0 - static_cast<int>(640.0f * powf(eventT, 3.0f * static_cast<float>(i + 1))), 40 * i, 640, 40, 0.0f, 0x393E46FF, kFillModeSolid);
+		//		Novice::DrawBox(640 + static_cast<int>(640.0f * powf(eventT, 3.0f * static_cast<float>(i + 1))), 40 * i, 640, 40, 0.0f, 0x393E46FF, kFillModeSolid);
+		//	} else {
+		//		Novice::DrawBox(0 - static_cast<int>(640.0f * powf(eventT, 3.0f * static_cast<float>(i + 1))), 40 * i, 640, 40, 0.0f, 0x222831FF, kFillModeSolid);
+		//		Novice::DrawBox(640 + static_cast<int>(640.0f * powf(eventT, 3.0f * static_cast<float>(i + 1))), 40 * i, 640, 40, 0.0f, 0x222831FF, kFillModeSolid);
+		//	}*/
+
+		//	
+		//	
+		//}
+
+		if (startGameBufferFrame >= GMScene::startEventMaxFrame / 2) {
+			Novice::DrawSprite(0, static_cast<int>(Eas::EaseIn(eventT * 2.0f, 2.0f, -480.0f, 0.0f)), startGH, 1.0f, 1.0f, 0.0f, WHITE);
+		} else {
+			Novice::DrawSprite(0, static_cast<int>(Eas::EaseOut(eventT * 2.0f, 2.0f, 480.0f,0.0f )), startGH, 1.0f, 1.0f, 0.0f, WHITE);
+		}
+		
+		
 	}
 
 	if (flashScreenFrame > 0) {
@@ -405,19 +453,29 @@ IScene* GameStageScene::GetNextScene() {
 }
 
 void GameStageScene::WaveManager() {
+	
+	if (!isChangeWave) {
+		enemySpawnFrame++;
+	}
 
-	if (enemyManager.GetRemainEnemies() <= 0 || gameTime % 1000 == 999) {
+	if (enemyManager.GetRemainEnemies() <= 0 || enemySpawnFrame >= 1200) {
 		wave++;
-		if (wave <= 6) {
+		if (wave <= 3) {
 			LoadWave();
+			enemySpawnFrame = 0;
 		} else {
-
-			sceneObj->isNotDeathClear = player.GetIsAlive();
-			isTransition = true;
-			nextScene = new ResultScene();
-
-			for (int i = 0; i < wave; i++) {
-				enemyManager.SpawnEnemy({ Random(64.0f,900.0f),Random(64.0f,900.0f) }, ENM::Melee);
+			// test
+			if (enemyManager.GetRemainEnemies() <= 0 ) {
+				sceneObj->isNotDeathClear = player.GetIsAlive();
+				/*isTransition = true;
+				nextScene = new ResultScene();*/
+				
+				if (!isEndGame) {
+					clearStageTimeBuffer = GMScene::maxClearStageTimeBuffer;
+					isClearStage = true;
+					isEndGame = true;
+				}
+				
 			}
 		}
 	}
@@ -433,6 +491,14 @@ void GameStageScene::WaveManager() {
 				if (clearStageTimeBuffer > 0) {
 					clearStageTimeBuffer--;
 					return;
+				} else {
+
+					if (wave >= 3) {
+						sceneObj->isNotDeathClear = player.GetIsAlive();
+						isTransition = true;
+						nextScene = new ResultScene();
+					}
+					
 				}
 
 				if (!player.GetIsAlive()) {
@@ -545,12 +611,38 @@ void GameStageScene::WaveManager() {
 
 		// ウェーブ管理処理演出終了
 		if (wave >= 4 || (input->GetControl(ENTER, Triger) && frameCount >= 60)) {
-			//LoadWave();
-			isChangeWave = false;
-			isClearStage = false;
-			lastHitEnemyNum = -1;
+			
+			if (!isStartingGame) {
+				isStartingGame = true;
+				startGameBufferFrame = GMScene::startEventMaxFrame;
+				flashScreenFrame = 10;
+			}
+			
+		}
 
-			contorolTutorialUI.SetIsActive(true);
+		// スタート演出用
+		if (isStartingGame) {
+			if (startGameBufferFrame >= 0) {
+				startGameBufferFrame--;
+			} else {
+				
+				isStartingGame = false;
+				isChangeWave = false;
+				isClearStage = false;
+				lastHitEnemyNum = -1;
+
+				contorolTutorialUI.SetIsActive(true);
+			}
+		}
+	}
+
+	if (clearStageTimeBuffer <= 0) {
+		if (wave > 3) {
+			sceneObj->isNotDeathClear = player.GetIsAlive();
+			isTransition = true;
+			nextScene = new ResultScene();
+
+			score += 200 * gameTime;
 		}
 	}
 }
@@ -620,7 +712,7 @@ void GameStageScene::ObjectUpdate() {
 		EnemyMoveToPlayer();
 		EnemyAttack();
 
-		if (!isChangeWave) {
+		if (!isChangeWave && !isClearStage) {
 			gameTime--;
 		}
 
@@ -878,14 +970,14 @@ void GameStageScene::EnemyCollision() {
 							scoreUIManager.SpawnScore(enemyManager.GetEnemyes()[e].GetPos(), tempScore);
 
 							// ラストヒット
-							/*if (enemyManager.GetRemainEnemies() <= 0) {
+							if (wave >= 3 && enemyManager.GetRemainEnemies() <= 0) {
 								if (lastHitEnemyNum == -1) {
 									lastHitEnemyNum = e;
 									stopObjectUpdateFrame = 30;
 									flashScreenFrame = 30;
 									return;
 								}
-							}*/
+							}
 
 							if (playerAttackStopFrame > 0) {
 								playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount + 1);
@@ -971,14 +1063,14 @@ void GameStageScene::ExprodeEnemy() {
 				Novice::PlayAudio(comboOP[Clamp(exprosionComboCount, 0, 4)], false, seVolume);
 
 				// ラストヒット
-				/*if (enemyManager.GetRemainEnemies() <= 0) {
+				if (wave >= 3 && enemyManager.GetRemainEnemies() <= 0) {
 					if (lastHitEnemyNum == -1) {
 						lastHitEnemyNum = e;
 						stopObjectUpdateFrame = 30;
 						flashScreenFrame = 30;
 						return;
 					}
-				}*/
+				}
 				input->GetControllerManager()->VibrationController(60000, 60000, 5);
 				mainCamera.shakeRange += {10.0f, 10.0f};
 			}
@@ -1246,8 +1338,14 @@ void GameStageScene::ControlInfoUpdate() {
 
 	if (isChangeWave) {
 
-		contorolInfoTransform[2].scale.x = 1.0f + sinf(static_cast<float>(frameCount) * 0.1f) * 0.1f;
-		contorolInfoTransform[2].scale.y = 1.0f + sinf(static_cast<float>(frameCount) * 0.1f) * 0.1f;
+		if (isStartingGame) {
+
+			contorolInfoTransform[2].scale.x = 1.0f + sinf(static_cast<float>(frameCount) * 1.0f) * 0.1f;
+			contorolInfoTransform[2].scale.y = 1.0f + sinf(static_cast<float>(frameCount) * 1.0f) * 0.1f;
+		} else {
+			contorolInfoTransform[2].scale.x = 1.0f + sinf(static_cast<float>(frameCount) * 0.1f) * 0.1f;
+			contorolInfoTransform[2].scale.y = 1.0f + sinf(static_cast<float>(frameCount) * 0.1f) * 0.1f;
+		}
 
 	} else {
 
@@ -1289,11 +1387,25 @@ void GameStageScene::ControlInfoDraw() {
 
 	if (isChangeWave) {
 
-		if (Novice::GetNumberOfJoysticks() > 0) {
-			Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, rcContorolInfoGH[3]);
+		if (isStartingGame) {
+			
+			if (startGameBufferFrame > 30) {
+				if (frameCount % 2) {
+					Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, rcContorolInfoGH[3]);
+				} else {
+					Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xFFFFFF23, rcContorolInfoGH[3]);
+				}
+			}
+			
 		} else {
-			Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, contorolInfoGH[3]);
+			if (Novice::GetNumberOfJoysticks() > 0) {
+				Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, rcContorolInfoGH[3]);
+			} else {
+				Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, contorolInfoGH[3]);
+			}
 		}
+
+		
 	}
 	//else {
 
