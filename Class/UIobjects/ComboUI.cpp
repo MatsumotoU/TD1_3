@@ -50,12 +50,11 @@ void ComboUI::Update() {
 	comboCount.Update();
 
 	comboRamainFrameTransform = transform;
-	comboRamainFrameTransform.pos.x += 64.0f + 32.0f * static_cast<float>(1 - comboCount.GetDigit());
 	comboRamainFrameTransform.size = { 800.0f * (static_cast<float>(*remainFrame) / maxRemainFrame),64.0f };
 
 	crossTransform = transform;
 	crossTransform.size = { 64.0f,64.0f };
-	crossTransform.pos.x -= 64.0f + 32.0f * static_cast<float>(1 - comboCount.GetDigit());
+	crossTransform.pos.x -= (64.0f * static_cast<float>(comboCount.GetDigit()));
 
 	if (isActive) {
 		Eas::SimpleEaseIn(&transform.pos.y, -280.0f, 0.1f);

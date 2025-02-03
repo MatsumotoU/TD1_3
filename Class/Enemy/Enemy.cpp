@@ -165,8 +165,9 @@ void Enemy::Draw() {
 			}
 		}
 
-
-		Render::DrawSprite(drawTransform, *camera, color, *enemyGH);
+		if (isAlive) {
+			Render::DrawSprite(drawTransform, *camera, color, *enemyGH);
+		}
 	}
 
 	/*if (isHitAttack) {
@@ -478,9 +479,10 @@ void Enemy::StateCheck() {
 	if (!isAlive) {
 		if (deathFrame > 0) {
 			deathFrame--;
-			drawTransform.scale = {
+			drawTransform.scale = { 0.0f,0.0f };
+			/*drawTransform.scale = {
 				powf(static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame),3.0f) ,
-				powf(static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame),3.0f) };
+				powf(static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame),3.0f) };*/
 			drawTransform.angle += (static_cast<float>(deathFrame) / static_cast<float>(ENM::kMaxDeathFrame));
 		} else {
 			isActive = false;

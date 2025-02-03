@@ -3,6 +3,7 @@
 
 #include "Class/Common/MyFileIO.h"
 #include "Class/Common/Camera.h"
+#include "Class/Common/ParticlManager.h"
 
 const int kMapSizeX = 32;
 const int kMapSizeY = 32;
@@ -63,5 +64,11 @@ private:
 	EnemyManager* enemyManager;
 	BulletManager* bulletManager;
 	Camera* camera;
+	ParticlManager particleManager;
+
+	Vector2 drawPos[kMapSizeX * kMapSizeY];
+
+	int smokeGH;
+	int smallHitEffectGH[3];
 };
 
