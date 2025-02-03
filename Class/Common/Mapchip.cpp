@@ -33,6 +33,8 @@ Mapchip::Mapchip() {
 	smallHitEffectGH[1] = Novice::LoadTexture("./Resources/Images/smallHitEffect2.png");
 	smallHitEffectGH[2] = Novice::LoadTexture("./Resources/Images/smallHitEffect3.png");
 
+	enemyBulletEffectGH = Novice::LoadTexture("./Resources/Images/blockFragment.png");
+
 	camera = nullptr;
 
 	for (int i = 0; i < kMapSizeX * kMapSizeY; i++) {
@@ -218,9 +220,10 @@ void Mapchip::BulletMapCollision() {
 	for (int b = 0; b < BMG::kBulletMax; b++) {
 		if (bulletManager->GetBullets()[b].GetIsShot()) {
 
+			int count = 0;
 			for (int y = 0; y < kMapSizeY; y++) {
 				for (int x = 0; x < kMapSizeX; x++) {
-
+					count++;
 					Vector2 blockPos = {
 						(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x),
 						(kMapChipSize.y * 0.5f) + kMapChipSize.y * static_cast<float>(y) };
@@ -231,10 +234,25 @@ void Mapchip::BulletMapCollision() {
 						if (map[y][x] == 1) {
 							if (IsHitRectangle(bulletManager->GetBullets()[b].GetPos(), bulletManager->GetBullets()[b].GetSize(), blockPos, kMapChipSize)) {
 
-								bulletManager->GetBullets()[b].SetIsShot(false);
+								//bulletManager->GetBullets()[b].SetIsShot(false);
+								if (bulletManager->GetBullets()[b].GetTag() == "enemy") {
+									if (frameCount % 2) {
+										particleManager.SlashEffect(bulletManager->GetBullets()[b].GetPos(), { 32.0f,32.0f }, { 1.0f,1.0f }, 5.0f, 50, 30, 1, enemyBulletEffectGH);
+									}
+									
+									drawPos[count].x = Random(16.0f, -16.0f);
+									drawPos[count].y = Random(16.0f, -16.0f);
+								}
+
+								if (bulletManager->GetBullets()[b].GetTag() == "exprosion") {
+									drawPos[count] = -Normalize(bulletManager->GetBullets()[b].GetPos() - blockPos) * 96.0f;
+									particleManager.SlashEffect(drawPos[count], { 32.0f,32.0f }, { 1.0f,1.0f }, 5.0f, 50, 30, 10, enemyBulletEffectGH);
+								}
 							}
 						}
 					}
+
+					
 				}
 			}
 		}
