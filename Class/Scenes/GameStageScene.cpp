@@ -585,7 +585,7 @@ void GameStageScene::WaveManager() {
 		}
 		if (frameCount >= 120) {
 			targetScoreNum.Update();
-			targetScoreNum.SetPos({ 24.0f * static_cast<float>(targetScoreNum.GetDigit()),targetScoreNum.GetPosPtr()->y });
+			targetScoreNum.SetPos({ 27.0f * static_cast<float>(targetScoreNum.GetDigit()),targetScoreNum.GetPosPtr()->y });
 		}
 
 		// 継続イベント
