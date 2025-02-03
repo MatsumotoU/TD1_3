@@ -266,7 +266,7 @@ void GameStageScene::Update() {
 
 	scoreRatio.Update();
 	scoreRatio.SetTargetNum(static_cast<int>(slowFrameScoreRatio));
-	
+
 	if (gameTime <= 0) {
 
 		sceneObj->isNotDeathClear = player.GetIsAlive();
@@ -349,14 +349,14 @@ void GameStageScene::Draw() {
 
 	if (!isChangeWave && player.GetIsAlive()) {
 
-		/*Novice::DrawBox(1100, 170, 
+		/*Novice::DrawBox(1100, 170,
 			static_cast<int>(140.0f * (-1.0f + slowFrameScoreRatio)) - (140 * static_cast<int>(-1.0f + slowFrameScoreRatio)),
 			16, 0.0f, WHITE, kFillModeSolid);
 		Novice::DrawBox(1100, 170, 140, 16, 0.0f, WHITE, kFillModeWireFrame);
 		Novice::DrawSprite(1132 - 32 * scoreRatio.GetDigit(), 100, clossGH, 0.5f, 0.5f, 0.0f, WHITE);*/
 		gameScore.Draw(&uiCamera, enemyRemainNumGH);
 		//scoreRatio.Draw(&uiCamera, enemyRemainNumGH);
-		
+
 		Render::DrawSprite(scoreTitle, uiCamera, WHITE, scoreTitleGH);
 	}
 
@@ -469,12 +469,30 @@ void GameStageScene::WaveManager() {
 			missionTransform.pos.y = -600.0f;
 
 			// ステージ切り替え
-			if (wave == 1) {
-				map.LoadMap("Resources/Maps/stage1w1.txt");
-			} else if (wave == 2) {
-				map.LoadMap("Resources/Maps/stage1w2.txt");
-			} else if (wave == 3) {
-				map.LoadMap("Resources/Maps/stage1w3.txt");
+			if (gameStage == 0) {
+				if (wave == 1) {
+					map.LoadMap("Resources/Maps/stage1w1.txt");
+				} else if (wave == 2) {
+					map.LoadMap("Resources/Maps/stage1w2.txt");
+				} else if (wave == 3) {
+					map.LoadMap("Resources/Maps/stage1w3.txt");
+				}
+			} else if (gameStage == 1) {
+				if (wave == 1) {
+					map.LoadMap("Resources/Maps/stage2w1.txt");
+				} else if (wave == 2) {
+					map.LoadMap("Resources/Maps/stage2w2.txt");
+				} else if (wave == 3) {
+					map.LoadMap("Resources/Maps/stage2w3.txt");
+				}
+			} else if (gameStage == 2) {
+				if (wave == 1) {
+					map.LoadMap("Resources/Maps/stage3w1.txt");
+				} else if (wave == 2) {
+					map.LoadMap("Resources/Maps/stage3w2.txt");
+				} else if (wave == 3) {
+					map.LoadMap("Resources/Maps/stage3w3.txt");
+				}
 			}
 
 			targetScoreNum.Init();
@@ -548,17 +566,30 @@ void GameStageScene::LoadWave() {
 	particleManager.SetCamera(&mainCamera);*/
 
 	// ステージ切り替え
-	if (wave == 1) {
-		map.LoadMap("Resources/Maps/stage1w1.txt");
-	} else if (wave == 2) {
-		map.LoadMap("Resources/Maps/stage1w2.txt");
-	} else if (wave == 3) {
-		map.LoadMap("Resources/Maps/stage1w3.txt");
-	} else {
-		// stageClear
-		/*sceneObj->isNotDeathClear = isNotDeath;
-		nextScene = new ResultScene();
-		isTransition = true;*/
+	if (gameStage == 0) {
+		if (wave == 1) {
+			map.LoadMap("Resources/Maps/stage1w1.txt");
+		} else if (wave == 2) {
+			map.LoadMap("Resources/Maps/stage1w2.txt");
+		} else if (wave == 3) {
+			map.LoadMap("Resources/Maps/stage1w3.txt");
+		}
+	} else if (gameStage == 1) {
+		if (wave == 1) {
+			map.LoadMap("Resources/Maps/stage2w1.txt");
+		} else if (wave == 2) {
+			map.LoadMap("Resources/Maps/stage2w2.txt");
+		} else if (wave == 3) {
+			map.LoadMap("Resources/Maps/stage2w3.txt");
+		}
+	} else if (gameStage == 2) {
+		if (wave == 1) {
+			map.LoadMap("Resources/Maps/stage3w1.txt");
+		} else if (wave == 2) {
+			map.LoadMap("Resources/Maps/stage3w2.txt");
+		} else if (wave == 3) {
+			map.LoadMap("Resources/Maps/stage3w3.txt");
+		}
 	}
 	map.SpawnEnemy();
 }
@@ -576,7 +607,7 @@ void GameStageScene::ObjectUpdate() {
 	}
 
 	player.Update();
-	
+
 
 	PlayerLockOn();
 
@@ -622,9 +653,10 @@ void GameStageScene::ObjectCollision() {
 								player.GetPhysics()->AddForce(player.GetPos() - bulletManager.GetBullets()[b].GetPos(), IMPACT);
 
 								// カメラを揺らす
-								mainCamera.shakeRange += {100.0f,100.0f};
+								mainCamera.shakeRange += {100.0f, 100.0f};
 
 								particleManager.AnimEffect(player.GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 5, 2, false, playerHitGH);
+								particleManager.Update();
 								stopObjectUpdateFrame = 10;
 								playerAttackStopFrame = 0;
 								input->GetControllerManager()->VibrationController(60000, 60000, 10);
@@ -652,6 +684,7 @@ void GameStageScene::ObjectCollision() {
 								playerAttackStopFrame = 0;
 
 								particleManager.AnimEffect(bulletManager.GetBullets()[b].GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 5, 3, false, playerHitGH);
+								particleManager.Update();
 								input->GetControllerManager()->VibrationController(60000, 60000, 10);
 								PlayerDeath();
 							}
@@ -679,6 +712,7 @@ void GameStageScene::ObjectCollision() {
 								stopObjectUpdateFrame = 10;
 								playerAttackStopFrame = 0;
 								particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 5, 3, false, playerHitGH);
+								particleManager.Update();
 								input->GetControllerManager()->VibrationController(60000, 60000, 10);
 								PlayerDeath();
 							}
@@ -901,7 +935,7 @@ void GameStageScene::ExprodeEnemy() {
 			stopObjectUpdateFrame = 15;
 			/*score *= static_cast<int>(slowFrameScoreRatio);
 			slowFrameScoreRatio = 1.0f;*/
-			
+
 			return;
 		}
 	}
@@ -1194,7 +1228,7 @@ void GameStageScene::PlayerDeath() {
 	if (player.GetHp() <= 0) {
 		stopObjectUpdateFrame = 60;
 		player.GetPhysics()->SetResistance(1.0f);
-		player.GetPhysics()->AddForce({Random(10.0f,-10.0f),Random(10.0f,-10.0f) }, IMPACT);
+		player.GetPhysics()->AddForce({ Random(10.0f,-10.0f),Random(10.0f,-10.0f) }, IMPACT);
 
 		flashScreenFrame = 30;
 		mainCamera.angleShakeRange = 10.0f;
@@ -1313,7 +1347,7 @@ void GameStageScene::CameraUpdate() {
 
 		}
 
-		mainCamera.shakeRange = {10.0f,10.0f };
+		mainCamera.shakeRange = { 10.0f,10.0f };
 		//mainCamera.panRange = -Eas::EaseInOutQuart(static_cast<float>(clearStageTimeBuffer) / static_cast<float>(GMScene::maxClearStageTimeBuffer), 0.1f, 1.0f);
 
 	} else {

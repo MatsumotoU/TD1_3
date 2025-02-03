@@ -11,7 +11,7 @@ ComboUI::ComboUI() {
 
 void ComboUI::Init() {
 	isActive = false;
-	transform = { 0.0f,-280.0f };
+	transform = { 0.0f,-480.0f };
 	transform.scale = { 1.0f,1.0f };
 	transform.size = { 800.0f,64.0f };
 	transform.angle = 0.0f;
@@ -20,6 +20,7 @@ void ComboUI::Init() {
 	comboCount.SetSize({ 128.0f,128.0f });
 
 	comboRamainFrameTransform = transform;
+	crossTransform = transform;
 
 	comboNumGH[0] = Novice::LoadTexture("./Resources/Images/Number1.png");
 	comboNumGH[1] = Novice::LoadTexture("./Resources/Images/Number2.png");
@@ -31,6 +32,8 @@ void ComboUI::Init() {
 	comboNumGH[7] = Novice::LoadTexture("./Resources/Images/Number8.png");
 	comboNumGH[8] = Novice::LoadTexture("./Resources/Images/Number9.png");
 	comboNumGH[9] = Novice::LoadTexture("./Resources/Images/Number10.png");
+
+	crossGH = Novice::LoadTexture("./Resources/Images/X64x64.png");
 }
 
 void ComboUI::Update() {
@@ -46,7 +49,13 @@ void ComboUI::Update() {
 	comboCount.SetTargetNum(*combo);
 	comboCount.Update();
 
+	comboRamainFrameTransform = transform;
+	comboRamainFrameTransform.pos.x += 64.0f + 32.0f * static_cast<float>(1 - comboCount.GetDigit());
 	comboRamainFrameTransform.size = { 800.0f * (static_cast<float>(*remainFrame) / maxRemainFrame),64.0f };
+
+	crossTransform = transform;
+	crossTransform.size = { 64.0f,64.0f };
+	crossTransform.pos.x -= 64.0f + 32.0f * static_cast<float>(1 - comboCount.GetDigit());
 
 	if (isActive) {
 		Eas::SimpleEaseIn(&transform.pos.y, -280.0f, 0.1f);
@@ -58,6 +67,7 @@ void ComboUI::Update() {
 void ComboUI::Draw() {
 	Render::DrawBox(comboRamainFrameTransform, *camera, 0xFFFFFF23, kFillModeSolid);
 	Render::DrawBox(transform, *camera, 0xFFFFFF23, kFillModeWireFrame);
+	Render::DrawSprite(crossTransform, *camera, WHITE, crossGH);
 	comboCount.Draw(camera, comboNumGH);
 }
 

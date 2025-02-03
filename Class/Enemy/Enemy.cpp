@@ -393,7 +393,7 @@ void Enemy::Attack() {
 					if (!isAttack) {
 						isAttacking = false;
 						isAttack = true;
-						physics.AddForce(angleDir * 20.0f, IMPACT);
+						physics.AddForce(angleDir * 60.0f, IMPACT);
 					}
 				}
 			}
