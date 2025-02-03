@@ -824,7 +824,7 @@ void GameStageScene::ObjectCollision() {
 	map.PlayerMapCollision();
 
 	// 弾の当たり判定
-	//map.BulletMapCollision();
+	map.BulletMapCollision();
 }
 
 void GameStageScene::EnemyCollision() {

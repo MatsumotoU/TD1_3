@@ -70,5 +70,6 @@ private:
 
 	int smokeGH;
 	int smallHitEffectGH[3];
+	int enemyBulletEffectGH;
 };
 
