@@ -473,7 +473,7 @@ void TitleScene::Update() {
 				if (efectT[2] >= 1.0f)
 				{
 					efectT[2] = 1.0f;
-					mainCamera.shakeRange = { 0.0f,50.0f };
+					mainCamera.shakeRange = { 0.0f,26.0f };
 					isSword = true;
 				}
 
