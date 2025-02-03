@@ -22,10 +22,12 @@ private:
 	int* combo;
 	int* remainFrame;
 
+	Transform crossTransform;
 	Transform comboRamainFrameTransform;
 	float maxRemainFrame;
 
 	BounceNumber comboCount;
 	int comboNumGH[10];
+	int crossGH;
 };
 

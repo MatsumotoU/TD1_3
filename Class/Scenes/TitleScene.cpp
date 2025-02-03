@@ -468,7 +468,7 @@ void TitleScene::Update() {
 			if (efectT[2] < 1.0f)
 			{
 				// メをイージングさせる処理
-				efectT[2] += 0.04f;
+				efectT[2] += 0.1f;
 
 				if (efectT[2] >= 1.0f)
 				{
