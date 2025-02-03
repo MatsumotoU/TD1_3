@@ -1,6 +1,7 @@
 #pragma once
 #include "Bullet.h"
 #include "Class/Common/LightManager.h"
+#include "Class/Common/ParticlManager.h"
 
 namespace BMG {
 	const int kBulletMax = 128;
@@ -19,13 +20,16 @@ public:
 
 	Bullet* GetBullets();
 
-	void SetCamera(Camera* camera);
+	void SetCamera(Camera* set);
 	void SetLightManager(LightManager* set);
 
 private:
 
+	int framecount;
+	Camera* camera;
 	Bullet bullets[BMG::kBulletMax];
 	LightManager* lightManager;
+	ParticlManager particleManager;
 
 };
 

@@ -50,11 +50,8 @@ void SceneManager::Update() {
 		// シーンが完全に閉じているか
 		if (sceneTransition.GetIsTransitionClosed()) {
 
-			// ゲームステージを引き継ぐか？
-			if (!scene->GetIsContinue()) {
-				// ゲームシーン共有
-				gameStage = scene->GetGameStage();
-			}
+			// ゲームシーン共有
+			gameStage = scene->GetGameStage();
 
 			// シーン遷移処理
 			IScene* temp = scene->GetNextScene();

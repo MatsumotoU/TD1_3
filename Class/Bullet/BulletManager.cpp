@@ -4,27 +4,44 @@ BulletManager::BulletManager() {
 	for (int i = 0; i < BMG::kBulletMax;i++) {
 		bullets[i].Init();
 	}
+	camera = nullptr;
+	framecount = 0;
 }
 
 void BulletManager::Init() {
 	for (int i = 0; i < BMG::kBulletMax; i++) {
 		bullets[i].Init();
 	}
+
+	particleManager.Init();
+	particleManager.SetCamera(camera);
+
+	framecount = 0;
 }
 
 void BulletManager::Update() {
+
+	framecount++;
+
 	// 各弾更新処理
 	for (int i = 0; i < BMG::kBulletMax; i++) {
 		if (bullets[i].GetIsActive() && bullets[i].GetIsShot()) {
 
+			if (framecount % 3 == 0) {
+				if (bullets[i].GetTag() == "enemy") {
+					particleManager.SpriteEffect(bullets[i].GetPos(), bullets[i].GetSize(), 0.0f, 10, bullets[i].GetGH());
+				}
+			}
+
 			bullets[i].Update();
 		}
 	}
-
+	particleManager.Update();
 	// 画面外の弾を消す
 }
 
 void BulletManager::Draw() {
+	particleManager.Draw();
 	int count = 0;
 	for (int i = 0; i < BMG::kBulletMax; i++) {
 		if (bullets[i].GetIsActive() && bullets[i].GetIsShot()) {
@@ -59,10 +76,12 @@ Bullet* BulletManager::GetBullets() {
 	return bullets;
 }
 
-void BulletManager::SetCamera(Camera* camera) {
+void BulletManager::SetCamera(Camera* set) {
 	for (int i = 0; i < BMG::kBulletMax; i++) {
-		bullets[i].SetCamera(camera);
+		bullets[i].SetCamera(set);
 	}
+	camera = set;
+	particleManager.SetCamera(set);
 }
 
 void BulletManager::SetLightManager(LightManager* set) {
