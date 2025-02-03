@@ -1,6 +1,7 @@
 #include "Mapchip.h"
 #include "Class/Common/Render.h"
 #include "Class/Common/Collision2D.h"
+#include "Class/Common/MyEasing.h"
 
 #include "Class/Player/Player.h"
 #include "Class/Enemy/EnemyManager.h"
@@ -26,7 +27,19 @@ Mapchip::Mapchip() {
 	mapchipGH[8] = 0;
 	mapchipGH[9] = 0;
 
+	smokeGH = Novice::LoadTexture("./Resources/Images/smoke64x64.png");
+
+	smallHitEffectGH[0] = Novice::LoadTexture("./Resources/Images/smallHitEffect1.png");
+	smallHitEffectGH[1] = Novice::LoadTexture("./Resources/Images/smallHitEffect2.png");
+	smallHitEffectGH[2] = Novice::LoadTexture("./Resources/Images/smallHitEffect3.png");
+
 	camera = nullptr;
+
+	for (int i = 0; i < kMapSizeX * kMapSizeY; i++) {
+		drawPos[i] = {0.0f,0.0f};
+	}
+
+	particleManager.Init();
 }
 
 void Mapchip::SetIsTransition(int* set) {
@@ -96,6 +109,7 @@ int Mapchip::GetIsFromToVisionClear(Vector2 from, Vector2 to) {
 
 void Mapchip::SetCamera(Camera* set) {
 	camera = set;
+	particleManager.SetCamera(set);
 }
 
 void Mapchip::SetPlayer(Player* set) {
@@ -115,9 +129,12 @@ void Mapchip::PlayerMapCollision() {
 		return;
 	}
 
+	int count = 0;
 	for (int y = 0; y < kMapSizeY; y++) {
 
 		for (int x = 0; x < kMapSizeX; x++) {
+
+			count++;
 
 			Vector2 blockPos = {
 				(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x),
@@ -132,11 +149,16 @@ void Mapchip::PlayerMapCollision() {
 						if (player->GetIsAlive()) {
 							CollisionRectangle(player->GetPosPtr(), player->GetSize(), blockPos, kMapChipSize, true, true);
 
+							Vector2 hitPos = blockPos + (player->GetPos() - blockPos);
+
 							if (player->GetIsDash()) {
 								camera->shakeRange += player->GetPhysics()->GetVelocity();
 								player->SetIsDash(false);
-
+								particleManager.SlashEffect(blockPos, { 64.0f,64.0f }, Normalize(player->GetPos() - blockPos), 3.0f, 50, 60, 3, smokeGH);
+								particleManager.AnimEffect(hitPos, { 96.0f,96.0f }, Random(6.28f, 0.0f), 3, 3, false, smallHitEffectGH);
 							}
+
+
 						} else {
 
 							if (fabsf(player->GetPos().x - blockPos.x) <= fabsf(player->GetPos().y - blockPos.y)) {
@@ -150,6 +172,8 @@ void Mapchip::PlayerMapCollision() {
 							}
 							
 						}
+
+						drawPos[count] = player->GetPhysics()->GetVelocity();
 					}
 				}
 			}
@@ -180,6 +204,7 @@ void Mapchip::EnemyMapCollision() {
 							if (IsHitRectangle(enemyManager->GetEnemyes()[e].GetPos(), enemyManager->GetEnemyes()[e].GetSize(), blockPos, kMapChipSize)) {
 
 								CollisionRectangle(enemyManager->GetEnemyes()[e].GetPosPtr(), enemyManager->GetEnemyes()[e].GetSize(), blockPos, kMapChipSize, true, true);
+								
 							}
 						}
 					}
@@ -256,9 +281,12 @@ void Mapchip::SetMap(int setMap[kMapSizeY][kMapSizeX]) {
 }
 
 void Mapchip::Draw() {
+	int count = 0;
 	for (int y = 0; y < kMapSizeY; y++) {
 
 		for (int x = 0; x < kMapSizeX; x++) {
+
+			count++;
 
 			// 画面外の処理を飛ばす
 			if (camera->IsInScreen({
@@ -274,18 +302,24 @@ void Mapchip::Draw() {
 						blockTransform.size = kMapChipSize;
 						blockTransform.scale = { 1.0f,1.0f };
 						blockTransform.pos = {
-							(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x),
-							(kMapChipSize.y * 0.5f) + kMapChipSize.y * static_cast<float>(y) };
+							(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x) + drawPos[count].x,
+							(kMapChipSize.y * 0.5f) + kMapChipSize.y * static_cast<float>(y) + drawPos[count].y };
 						Render::DrawSprite(blockTransform, *camera, WHITE, mapchipGH[map[y][x] % kMapChipGraphHandleNumMax]);
 					}
 				}
 			}
 		}
 	}
+	particleManager.Draw();
 }
 
 void Mapchip::Update() {
 	frameCount++;
+	for (int i = 0; i < kMapSizeX * kMapSizeY; i++) {
+		Eas::SimpleEaseIn(&drawPos[i].x, 0.0f, 0.3f);
+		Eas::SimpleEaseIn(&drawPos[i].y, 0.0f, 0.3f);
+	}
+	particleManager.Update();
 }
 
 void Mapchip::ImGuiUpdate() {

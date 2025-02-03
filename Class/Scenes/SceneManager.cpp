@@ -39,7 +39,6 @@ void SceneManager::Update() {
 		scene->Update();
 	}
 
-
 	if (scene->GetIsTransition()) {
 
 		// シーン遷移演出スタート

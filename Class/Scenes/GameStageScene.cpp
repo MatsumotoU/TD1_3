@@ -246,6 +246,7 @@ void GameStageScene::Init() {
 
 void GameStageScene::Update() {
 
+	map.Update();
 	timeNum.SetPos({ 48.0f * static_cast<float>(timeNum.GetDigit()),0.0f });
 
 	//mainCamera.SetLocalScale({ cameraLocalScale,cameraLocalScale });
@@ -867,7 +868,7 @@ void GameStageScene::EnemyCollision() {
 								if (comboTrigerCooldown <= 0) {
 									exprosionComboCount++;
 									comboRemainFrame = GMScene::maxComboRemainFrame;
-									comboTrigerCooldown = GMScene::kMaxComboTrigerCooldown;
+									//comboTrigerCooldown = GMScene::kMaxComboTrigerCooldown;
 								}
 							}
 							enemyManager.GetEnemyes()[e].SetIsAlive(false);
