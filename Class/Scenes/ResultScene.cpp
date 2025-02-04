@@ -62,7 +62,7 @@ void ResultScene::Init() {
 		shouldClearedMission[0] = true;
 		button[0].scale = { 0.8f,0.8f };
 		button[1].scale = { 1.0f,1.0f };
-		shouldPressedRight =true;
+		shouldPressedRight = true;
 		shouldPressedLeft = false;
 		if (!sceneObj->shouldClearedMission[sceneObj->gameStage][0]) {
 			sceneObj->shouldClearedMission[sceneObj->gameStage][0] = true;
@@ -131,6 +131,8 @@ void ResultScene::Init() {
 		playSEHandle[i] = -1;
 	}
 
+	playBGMHandle = -1;
+
 	cracker[0].angle = 1.0f / 10.0f * static_cast<float>(M_PI);
 	cracker[1].angle = 19.0f / 10.0f * static_cast<float>(M_PI);
 
@@ -177,9 +179,15 @@ void ResultScene::Init() {
 	sEHandle[1] = Novice::LoadAudio("./Resources/Sounds/cracker.mp3");
 	sEHandle[2] = Novice::LoadAudio("./Resources/Sounds/select.mp3");
 	sEHandle[3] = Novice::LoadAudio("./Resources/Sounds/slide.mp3");
+
+	bGMHandle = Novice::LoadAudio("./Resources/Sounds/sceneBGM.mp3");
 }
 
 void ResultScene::Update() {
+	if (!Novice::IsPlayingAudio(playBGMHandle) || playBGMHandle == -1) {
+		playBGMHandle = Novice::PlayAudio(bGMHandle, true, 0.1f);
+	}
+
 	frameCount++;
 	if (frameCount >= 30) {
 		if (movingOrder == 0) {
@@ -196,7 +204,9 @@ void ResultScene::Update() {
 			shouldPressedRight = true;
 			shouldPressedLeft = false;
 
-			playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.8f);
+			if (!input->GetControl(LEFT, Press)) {
+				playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.8f);
+			}
 		}
 	}
 
@@ -205,7 +215,9 @@ void ResultScene::Update() {
 			shouldPressedRight = false;
 			shouldPressedLeft = true;
 
-			playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.8f);
+			if (!input->GetControl(RIGHT, Press)) {
+				playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.8f);
+			}
 		}
 	}
 
@@ -227,6 +239,8 @@ void ResultScene::Update() {
 			}
 
 			isTransition = true;
+
+			Novice::StopAudio(playBGMHandle);
 
 			if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
 				playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.8f);
