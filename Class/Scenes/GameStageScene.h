@@ -181,5 +181,9 @@ private:
 	int enemySpawnFrame;
 
 	int isEndGame;
+
+	int isTimeUp;
+	int timeUpTransitionFrame;
+	int timeUpGH;
 };
 

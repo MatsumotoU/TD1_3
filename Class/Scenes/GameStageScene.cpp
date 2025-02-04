@@ -240,8 +240,8 @@ void GameStageScene::Init() {
 
 	//stageStartGH = Novice::LoadTexture("./Resources/Images/StageStart.png");
 
-	gameTime = 3600;
-	//gameTime = 1200;
+	//gameTime = 3600;
+	gameTime = 1200;
 	timeNum.Init();
 	timeNum.SetSize({ 128.0f,128.0f });
 	timeNum.SetPos({ 0.0f,0.0f });
@@ -274,9 +274,25 @@ void GameStageScene::Init() {
 
 	 enemySpawnFrame = 0;
 	 isEndGame = false;
+
+	 isTimeUp = false;
+	 timeUpTransitionFrame = 0;
+	 timeUpGH = Novice::LoadTexture("./Resources/Images/timeUp.png");
 }
 
 void GameStageScene::Update() {
+
+	if (isTimeUp) {
+
+		if (timeUpTransitionFrame > 0) {
+			timeUpTransitionFrame--;
+		} else {
+			sceneObj->isNotDeathClear = player.GetIsAlive();
+			isTransition = true;
+			nextScene = new ResultScene();
+		}
+		return;
+	}
 
 	map.Update();
 	timeNum.SetPos({ 48.0f * static_cast<float>(timeNum.GetDigit()),0.0f });
@@ -303,11 +319,9 @@ void GameStageScene::Update() {
 	// 時間制限遷移
 	if (gameTime <= 0) {
 
-		sceneObj->isNotDeathClear = player.GetIsAlive();
-		isTransition = true;
-		nextScene = new ResultScene();
-
 		Novice::ConsolePrintf("----------TimeTransition!----------\n");
+		isTimeUp = true;
+		timeUpTransitionFrame = 120;
 		return;
 	}
 
@@ -428,9 +442,9 @@ void GameStageScene::Draw() {
 		//}
 
 		if (startGameBufferFrame >= GMScene::startEventMaxFrame / 2) {
-			Novice::DrawSprite(0, static_cast<int>(Eas::EaseIn(eventT * 2.0f, 2.0f, -480.0f, 0.0f)), startGH, 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(0, static_cast<int>(Eas::EaseOut(eventT * 2.0f, 6.0f, -480.0f, 0.0f)), startGH, 1.0f, 1.0f, 0.0f, WHITE);
 		} else {
-			Novice::DrawSprite(0, static_cast<int>(Eas::EaseOut(eventT * 2.0f, 2.0f, 480.0f,0.0f )), startGH, 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(0, static_cast<int>(Eas::EaseIn(eventT * 2.0f, 4.0f, -480.0f,0.0f )), startGH, 1.0f, 1.0f, 0.0f, WHITE);
 		}
 		
 		
@@ -439,6 +453,16 @@ void GameStageScene::Draw() {
 	if (flashScreenFrame > 0) {
 		if (flashScreenFrame % 6 <= 3) {
 			Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xFFFFFF23, kFillModeSolid);
+		}
+	}
+
+	if (isTimeUp) {
+		float eventT = 1.0f - static_cast<float>(timeUpTransitionFrame) / static_cast<float>(120);
+
+		if (timeUpTransitionFrame >= 120 / 2) {
+			Novice::DrawSprite(0, static_cast<int>(Eas::EaseOut(eventT * 2.0f, 6.0f, -480.0f, 0.0f)), timeUpGH, 1.0f, 1.0f, 0.0f, WHITE);
+		} else {
+			Novice::DrawSprite(0, static_cast<int>(Eas::EaseIn(eventT * 2.0f, 4.0f, -480.0f, 0.0f)), timeUpGH, 1.0f, 1.0f, 0.0f, WHITE);
 		}
 	}
 
