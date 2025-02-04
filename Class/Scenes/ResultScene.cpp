@@ -64,8 +64,8 @@ void ResultScene::Init() {
 		button[1].scale = { 1.0f,1.0f };
 		shouldPressedRight =true;
 		shouldPressedLeft = false;
-		if (!sceneObj->shouldClearedMission[gameStage][0]) {
-			sceneObj->shouldClearedMission[gameStage][0] = true;
+		if (!sceneObj->shouldClearedMission[sceneObj->gameStage][0]) {
+			sceneObj->shouldClearedMission[sceneObj->gameStage][0] = true;
 		}
 	} else {
 		button[1].scale = { 0.8f,0.8f };
@@ -78,8 +78,8 @@ void ResultScene::Init() {
 	if (sceneObj->score >= 10000) {
 		shouldClearedMission[1] = true;
 
-		if (!sceneObj->shouldClearedMission[gameStage][1]) {
-			sceneObj->shouldClearedMission[gameStage][1] = true;
+		if (!sceneObj->shouldClearedMission[sceneObj->gameStage][1]) {
+			sceneObj->shouldClearedMission[sceneObj->gameStage][1] = true;
 		}
 
 	} else {
@@ -87,8 +87,8 @@ void ResultScene::Init() {
 	}
 	if (shouldClearedMission[0] && shouldClearedMission[1]) {
 		shouldClearedMission[2] = true;
-		if (!sceneObj->shouldClearedMission[gameStage][2]) {
-			sceneObj->shouldClearedMission[gameStage][2] = true;
+		if (!sceneObj->shouldClearedMission[sceneObj->gameStage][2]) {
+			sceneObj->shouldClearedMission[sceneObj->gameStage][2] = true;
 		}
 	} else {
 		shouldClearedMission[2] = false;
