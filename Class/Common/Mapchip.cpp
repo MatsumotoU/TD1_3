@@ -24,8 +24,8 @@ Mapchip::Mapchip() {
 	mapchipGH[5] = 0;
 	mapchipGH[6] = 0;
 	mapchipGH[7] = 0;
-	mapchipGH[8] = 0;
-	mapchipGH[9] = 0;
+	mapchipGH[8] = Novice::LoadTexture("./Resources/Images/tile1.png");
+	mapchipGH[9] = Novice::LoadTexture("./Resources/Images/tile2.png");
 
 	smokeGH = Novice::LoadTexture("./Resources/Images/smoke64x64.png");
 
@@ -38,7 +38,7 @@ Mapchip::Mapchip() {
 	camera = nullptr;
 
 	for (int i = 0; i < kMapSizeX * kMapSizeY; i++) {
-		drawPos[i] = {0.0f,0.0f};
+		drawPos[i] = { 0.0f,0.0f };
 	}
 
 	particleManager.Init();
@@ -109,6 +109,41 @@ int Mapchip::GetIsFromToVisionClear(Vector2 from, Vector2 to) {
 	return true;
 }
 
+int Mapchip::GetIsInBlocks(Vector2 pos) {
+
+	std::vector<Vector2> blockPos;
+	for (int y = 0; y < kMapSizeY; y++) {
+		for (int x = 0; x < kMapSizeX; x++) {
+			if (map[y][x] == 1) {
+
+				Vector2 pushPos = {
+				(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x),
+				(kMapChipSize.y * 0.5f) + kMapChipSize.y * static_cast<float>(y) };
+
+				blockPos.push_back(pushPos);
+			}
+		}
+	}
+
+	if (blockPos.size() <= 1) {
+		return false;
+	}
+
+	float oldResult = Cross(pos - blockPos[0], blockPos[0]- blockPos[1]);
+	for (int i = 1; i < blockPos.size() - 1; i++) {
+
+		if (oldResult * Cross(pos - blockPos[i], blockPos[i] - blockPos[i + 1]) <= 0.0f) {
+
+			oldResult = Cross(pos - blockPos[i], blockPos[i] - blockPos[i + 1]);
+
+		} else {
+			return false;
+		}
+
+	}
+	return true;
+}
+
 void Mapchip::SetCamera(Camera* set) {
 	camera = set;
 	particleManager.SetCamera(set);
@@ -172,7 +207,7 @@ void Mapchip::PlayerMapCollision() {
 									{ -player->GetPhysics()->GetVelocity().x,
 									player->GetPhysics()->GetVelocity().y });
 							}
-							
+
 						}
 
 						drawPos[count] = player->GetPhysics()->GetVelocity();
@@ -206,7 +241,7 @@ void Mapchip::EnemyMapCollision() {
 							if (IsHitRectangle(enemyManager->GetEnemyes()[e].GetPos(), enemyManager->GetEnemyes()[e].GetSize(), blockPos, kMapChipSize)) {
 
 								CollisionRectangle(enemyManager->GetEnemyes()[e].GetPosPtr(), enemyManager->GetEnemyes()[e].GetSize(), blockPos, kMapChipSize, true, true);
-								
+
 							}
 						}
 					}
@@ -239,7 +274,7 @@ void Mapchip::BulletMapCollision() {
 									if (frameCount % 2) {
 										particleManager.SlashEffect(bulletManager->GetBullets()[b].GetPos(), { 32.0f,32.0f }, { 1.0f,1.0f }, 5.0f, 50, 30, 1, enemyBulletEffectGH);
 									}
-									
+
 									drawPos[count].x = Random(16.0f, -16.0f);
 									drawPos[count].y = Random(16.0f, -16.0f);
 								}
@@ -252,7 +287,7 @@ void Mapchip::BulletMapCollision() {
 						}
 					}
 
-					
+
 				}
 			}
 		}
@@ -263,7 +298,7 @@ void Mapchip::SpawnEnemy() {
 	for (int y = 0; y < kMapSizeY; y++) {
 		for (int x = 0; x < kMapSizeX; x++) {
 			if (map[y][x] == 2) {
-				enemyManager->SpawnEnemy({ 32.0f + 64.0f * static_cast<float>(x),32.0f + 64.0f * static_cast<float>(y) },ENM::Melee);
+				enemyManager->SpawnEnemy({ 32.0f + 64.0f * static_cast<float>(x),32.0f + 64.0f * static_cast<float>(y) }, ENM::Melee);
 			}
 			if (map[y][x] == 3) {
 				enemyManager->SpawnEnemy({ 32.0f + 64.0f * static_cast<float>(x),32.0f + 64.0f * static_cast<float>(y) }, ENM::Shot);
@@ -338,6 +373,36 @@ void Mapchip::Update() {
 		Eas::SimpleEaseIn(&drawPos[i].y, 0.0f, 0.3f);
 	}
 	particleManager.Update();
+}
+
+void Mapchip::DrawTile() {
+
+	for (int y = 0; y < kMapSizeY; y++) {
+
+		for (int x = 0; x < kMapSizeX; x++) {
+
+			// 画面外の処理を飛ばす
+			if (camera->IsInScreen({
+				(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x),
+				(kMapChipSize.y * 0.5f) + kMapChipSize.y * static_cast<float>(y) }, kMapChipSize)) {
+
+				// 何かしらと当たった時
+				Transform blockTransform = { 0 };
+				blockTransform.size = kMapChipSize;
+				blockTransform.scale = { 1.0f,1.0f };
+				blockTransform.pos = {
+					(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x),
+					(kMapChipSize.y * 0.5f) + kMapChipSize.y * static_cast<float>(y) };
+
+				if (GetIsInBlocks(blockTransform.pos)) {
+					Render::DrawSprite(blockTransform, *camera, WHITE, mapchipGH[8]);
+				} else {
+					Render::DrawSprite(blockTransform, *camera, WHITE, mapchipGH[9]);
+				}
+			}
+		}
+	}
+
 }
 
 void Mapchip::ImGuiUpdate() {

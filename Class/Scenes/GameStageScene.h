@@ -191,5 +191,7 @@ private:
 
 	int selectSE;
 	int playerHitSE;
+
+	int bgGraphHandle[3];
 };
 

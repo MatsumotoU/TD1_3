@@ -287,6 +287,10 @@ void GameStageScene::Init() {
 	 }
 	 selectSE = Novice::LoadAudio("./Resources/Sounds/dicision.mp3");
 	 playerHitSE = Novice::LoadAudio("./Resources/Sounds/playerHit.mp3");
+
+	 bgGraphHandle[0] = Novice::LoadTexture("./Resources/Images/bg1.png");
+	 bgGraphHandle[1] = Novice::LoadTexture("./Resources/Images/bg2.png");
+	 bgGraphHandle[2] = Novice::LoadTexture("./Resources/Images/bg3.png");
 }
 
 void GameStageScene::Update() {
@@ -379,6 +383,18 @@ void GameStageScene::Update() {
 
 void GameStageScene::Draw() {
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x222831FF, kFillModeSolid);
+
+	Transform bg = {
+		{640.0f,360.0f},
+		{1280.0f,720.0f},
+		{1.0f,1.0f},
+		0.0f
+	};
+	for (int i = 0; i < 3; ++i) {
+		//Novice::DrawSprite(0, 0, bgGraphHandle[i], 1.0f, 1.0f, 0.0f, ColorFade(0xeeeeee23, fabsf(sinf(static_cast<float>(frameCount + i * 30) * 0.1f)) * (0.15f - i * 0.06f)));
+	}
+
+	//map.DrawTile();
 
 	if (!isChangeWave && player.GetIsAlive()) {
 		timeNum.Draw(&uiCamera, enemyRemainNumGH);
