@@ -55,7 +55,31 @@ void GameStageScene::Init() {
 	map.SetPlayer(&player);
 	map.SetEnemyManager(&enemyManager);
 	map.SetBulletManager(&bulletManager);
-	map.LoadMap("Resources/Maps/stage1w1.txt");
+	if (sceneObj->gameStage == 0) {
+		if (wave == 1) {
+			map.LoadMap("Resources/Maps/stage1w1.txt");
+		} else if (wave == 2) {
+			map.LoadMap("Resources/Maps/stage1w2.txt");
+		} else if (wave == 3) {
+			map.LoadMap("Resources/Maps/stage1w3.txt");
+		}
+	} else if (sceneObj->gameStage == 1) {
+		if (wave == 1) {
+			map.LoadMap("Resources/Maps/stage2w1.txt");
+		} else if (wave == 2) {
+			map.LoadMap("Resources/Maps/stage2w2.txt");
+		} else if (wave == 3) {
+			map.LoadMap("Resources/Maps/stage2w3.txt");
+		}
+	} else if (sceneObj->gameStage == 2) {
+		if (wave == 1) {
+			map.LoadMap("Resources/Maps/stage3w1.txt");
+		} else if (wave == 2) {
+			map.LoadMap("Resources/Maps/stage3w2.txt");
+		} else if (wave == 3) {
+			map.LoadMap("Resources/Maps/stage3w3.txt");
+		}
+	}
 
 	testPopEnemyPos = { 1024.0f,1024.0f };
 	isChangeWave = false;
@@ -276,14 +300,17 @@ void GameStageScene::Update() {
 	scoreRatio.Update();
 	scoreRatio.SetTargetNum(static_cast<int>(slowFrameScoreRatio));
 
+	// 時間制限遷移
 	if (gameTime <= 0) {
 
 		sceneObj->isNotDeathClear = player.GetIsAlive();
-
 		isTransition = true;
 		nextScene = new ResultScene();
+
+		Novice::ConsolePrintf("----------TimeTransition!----------\n");
 		return;
 	}
+
 	timeNum.Update();
 	timeNum.SetTargetNum(gameTime / 60);
 
@@ -493,19 +520,25 @@ void GameStageScene::WaveManager() {
 					return;
 				} else {
 
+					// ステージ上のすべての敵殲滅遷移
 					if (wave >= 3) {
 						sceneObj->isNotDeathClear = player.GetIsAlive();
 						isTransition = true;
 						nextScene = new ResultScene();
+
+						Novice::ConsolePrintf("----------StageClearTransition!----------\n");
+						return;
 					}
-					
 				}
 
+				// プレイヤーが死んだときの遷移
 				if (!player.GetIsAlive()) {
 					isNotDeath = false;
 					sceneObj->isNotDeathClear = isNotDeath;
 					isTransition = true;
 					nextScene = new ResultScene();
+					Novice::ConsolePrintf("----------PlayerDeathTransition!----------\n");
+					return;
 				}
 
 			} else {
@@ -536,7 +569,7 @@ void GameStageScene::WaveManager() {
 			missionTransform.pos.y = -600.0f;
 
 			// ステージ切り替え
-			if (gameStage == 0) {
+			if (sceneObj->gameStage == 0) {
 				if (wave == 1) {
 					map.LoadMap("Resources/Maps/stage1w1.txt");
 				} else if (wave == 2) {
@@ -544,7 +577,7 @@ void GameStageScene::WaveManager() {
 				} else if (wave == 3) {
 					map.LoadMap("Resources/Maps/stage1w3.txt");
 				}
-			} else if (gameStage == 1) {
+			} else if (sceneObj->gameStage == 1) {
 				if (wave == 1) {
 					map.LoadMap("Resources/Maps/stage2w1.txt");
 				} else if (wave == 2) {
@@ -552,7 +585,7 @@ void GameStageScene::WaveManager() {
 				} else if (wave == 3) {
 					map.LoadMap("Resources/Maps/stage2w3.txt");
 				}
-			} else if (gameStage == 2) {
+			} else if (sceneObj->gameStage == 2) {
 				if (wave == 1) {
 					map.LoadMap("Resources/Maps/stage3w1.txt");
 				} else if (wave == 2) {
@@ -636,13 +669,18 @@ void GameStageScene::WaveManager() {
 		}
 	}
 
-	if (clearStageTimeBuffer <= 0) {
-		if (wave > 3) {
-			sceneObj->isNotDeathClear = player.GetIsAlive();
-			isTransition = true;
-			nextScene = new ResultScene();
+	// 敵を殲滅したときのやつ(2)
+	if (enemyManager.GetRemainEnemies() <= 0) {
+		if (clearStageTimeBuffer <= 0) {
+			if (wave > 3) {
+				sceneObj->isNotDeathClear = player.GetIsAlive();
+				isTransition = true;
+				nextScene = new ResultScene();
 
-			score += 200 * gameTime;
+				score += 200 * gameTime;
+				Novice::ConsolePrintf("----------EnemyDeathTransition!----------\n");
+				return;
+			}
 		}
 	}
 }
@@ -659,7 +697,7 @@ void GameStageScene::LoadWave() {
 	particleManager.SetCamera(&mainCamera);*/
 
 	// ステージ切り替え
-	if (gameStage == 0) {
+	if (sceneObj->gameStage == 0) {
 		if (wave == 1) {
 			map.LoadMap("Resources/Maps/stage1w1.txt");
 		} else if (wave == 2) {
@@ -667,7 +705,7 @@ void GameStageScene::LoadWave() {
 		} else if (wave == 3) {
 			map.LoadMap("Resources/Maps/stage1w3.txt");
 		}
-	} else if (gameStage == 1) {
+	} else if (sceneObj->gameStage == 1) {
 		if (wave == 1) {
 			map.LoadMap("Resources/Maps/stage2w1.txt");
 		} else if (wave == 2) {
@@ -675,7 +713,7 @@ void GameStageScene::LoadWave() {
 		} else if (wave == 3) {
 			map.LoadMap("Resources/Maps/stage2w3.txt");
 		}
-	} else if (gameStage == 2) {
+	} else if (sceneObj->gameStage == 2) {
 		if (wave == 1) {
 			map.LoadMap("Resources/Maps/stage3w1.txt");
 		} else if (wave == 2) {
@@ -714,6 +752,9 @@ void GameStageScene::ObjectUpdate() {
 
 		if (!isChangeWave && !isClearStage) {
 			gameTime--;
+			if (gameTime <= 0) {
+				gameTime = 0;
+			}
 		}
 
 		if (comboTrigerCooldown > 0) {
@@ -924,7 +965,7 @@ void GameStageScene::EnemyCollision() {
 
 						if (IsHitCollisionEllipse(
 							bulletManager.GetBullets()[b].GetPos(), enemyManager.GetEnemyes()[e].GetPos(),
-							bulletManager.GetBullets()[b].GetSize().x * 0.5f, enemyManager.GetEnemyes()[e].GetSize().x * 0.5f)) {
+							bulletManager.GetBullets()[b].GetSize().x * 0.5f, enemyManager.GetEnemyes()[e].GetSize().x)) {
 
 							enemyManager.GetEnemyes()[e].SetHitAttackDir(
 								Normalize(bulletManager.GetBullets()[b].GetPos() - enemyManager.GetEnemyes()[e].GetPos()));
