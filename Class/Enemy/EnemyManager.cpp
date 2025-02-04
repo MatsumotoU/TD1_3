@@ -18,6 +18,7 @@ void EnemyManager::Init() {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		enemyes[i].Init();
 	}
+	particleManager.Init();
 }
 
 void EnemyManager::Update() {
@@ -28,6 +29,7 @@ void EnemyManager::Update() {
 		}
 	}
 	EnemyCollision();
+	particleManager.Update();
 }
 
 void EnemyManager::Draw() {
@@ -42,6 +44,7 @@ void EnemyManager::Draw() {
 			}
 		}
 	}
+	particleManager.Draw();
 }
 
 void EnemyManager::SetCamera(Camera* set) {
@@ -49,6 +52,7 @@ void EnemyManager::SetCamera(Camera* set) {
 		enemyes[i].SetCamera(set);
 	}
 	camera = set;
+	particleManager.SetCamera(set);
 }
 
 void EnemyManager::SetMapchip(Mapchip* set) {
