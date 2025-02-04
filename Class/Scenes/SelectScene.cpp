@@ -419,6 +419,7 @@ void SelectScene::Update() {
 			zoomT = 1.0f;
 			nextScene = new GameStageScene();
 			isTransition = true;
+			sceneObj->gameStage = gameStage;
 		}
 
 		cameraZoom.x = Eas::EaseInOutQuart(zoomT, 1.0f, 0.55f);

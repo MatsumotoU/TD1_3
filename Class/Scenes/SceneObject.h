@@ -8,6 +8,7 @@ public:
 	int score;
 	int isNotDeathClear;
 	int shouldClearedMission[3][3];
+	int gameStage;
 
 private:
 
