@@ -253,6 +253,8 @@ void TitleScene::Init() {
 	isCut = false;
 	swordSe = Novice::LoadAudio("./Resources/Sounds/sword.mp3");
 	isSword = false;
+	TitleBgm = Novice::LoadAudio("./Resources/Sounds/titleBGM.mp3");
+	playHandle = -1;
 
 }
 
@@ -308,6 +310,12 @@ void TitleScene::Update() {
 
 	if (isMoveEnd)
 	{
+
+		// 鳴っていない時に音を鳴らす
+		if (!Novice::IsPlayingAudio(playHandle) || playHandle == -1)
+		{
+			playHandle = Novice::PlayAudio(TitleBgm, true, 1);
+		}
 
 		if (isIncreaseAlpha)
 		{
@@ -366,7 +374,8 @@ void TitleScene::Update() {
 
 			if (changeSceneCount > 30)
 			{
-				isTransition = true;// こいつをtrueにすると即座にシーン遷移する(シーンのUpdateは止まる)p
+				isTransition = true;// こいつをtrueにすると即座にシーン遷移する(シーンのUpdateは止まる)
+				Novice::StopAudio(playHandle);
 			}
 		}
 		else
@@ -528,7 +537,7 @@ void TitleScene::Draw() {
 
 	if (isSword)
 	{
-		Novice::PlayAudio(swordSe, false, 0.5f);
+		Novice::PlayAudio(swordSe, false, 0.3f);
 		isSword = false;
 	}
 

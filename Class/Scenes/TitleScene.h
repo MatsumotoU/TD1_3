@@ -73,5 +73,7 @@ private:
 	int isCut;
 	int swordSe;
 	int isSword;
+	int TitleBgm;
+	int playHandle;
 };
 
