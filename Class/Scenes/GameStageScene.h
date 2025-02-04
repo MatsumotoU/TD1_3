@@ -185,5 +185,11 @@ private:
 	int isTimeUp;
 	int timeUpTransitionFrame;
 	int timeUpGH;
+
+	int playHandleBgm;
+	int opBgHandleBgm;
+
+	int selectSE;
+	int playerHitSE;
 };
 

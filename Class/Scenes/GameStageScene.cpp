@@ -278,6 +278,15 @@ void GameStageScene::Init() {
 	 isTimeUp = false;
 	 timeUpTransitionFrame = 0;
 	 timeUpGH = Novice::LoadTexture("./Resources/Images/timeUp.png");
+
+	 playHandleBgm = -1;
+	 opBgHandleBgm = Novice::LoadAudio("./Resources/Sounds/sceneBGM.mp3");
+
+	 if (Novice::IsPlayingAudio(playHandleBgm) == 0 || playHandleBgm == -1) {
+		 playHandleBgm = Novice::PlayAudio(opBgHandleBgm, true, 0.2f);
+	 }
+	 selectSE = Novice::LoadAudio("./Resources/Sounds/dicision.mp3");
+	 playerHitSE = Novice::LoadAudio("./Resources/Sounds/playerHit.mp3");
 }
 
 void GameStageScene::Update() {
@@ -290,6 +299,7 @@ void GameStageScene::Update() {
 			sceneObj->isNotDeathClear = player.GetIsAlive();
 			isTransition = true;
 			nextScene = new ResultScene();
+			Novice::StopAudio(playHandleBgm);
 		}
 		return;
 	}
@@ -549,7 +559,7 @@ void GameStageScene::WaveManager() {
 						sceneObj->isNotDeathClear = player.GetIsAlive();
 						isTransition = true;
 						nextScene = new ResultScene();
-
+						Novice::StopAudio(playHandleBgm);
 						Novice::ConsolePrintf("----------StageClearTransition!----------\n");
 						return;
 					}
@@ -561,6 +571,7 @@ void GameStageScene::WaveManager() {
 					sceneObj->isNotDeathClear = isNotDeath;
 					isTransition = true;
 					nextScene = new ResultScene();
+					Novice::StopAudio(playHandleBgm);
 					Novice::ConsolePrintf("----------PlayerDeathTransition!----------\n");
 					return;
 				}
@@ -673,6 +684,7 @@ void GameStageScene::WaveManager() {
 				isStartingGame = true;
 				startGameBufferFrame = GMScene::startEventMaxFrame;
 				flashScreenFrame = 10;
+				Novice::PlayAudio(selectSE, false, seVolume);
 			}
 			
 		}
@@ -700,7 +712,7 @@ void GameStageScene::WaveManager() {
 				sceneObj->isNotDeathClear = player.GetIsAlive();
 				isTransition = true;
 				nextScene = new ResultScene();
-
+				Novice::StopAudio(playHandleBgm);
 				score += 200 * gameTime;
 				Novice::ConsolePrintf("----------EnemyDeathTransition!----------\n");
 				return;
@@ -818,6 +830,7 @@ void GameStageScene::ObjectCollision() {
 								stopObjectUpdateFrame = 10;
 								playerAttackStopFrame = 0;
 								input->GetControllerManager()->VibrationController(60000, 60000, 10);
+								Novice::PlayAudio(playerHitSE, false, seVolume);
 								PlayerDeath();
 							}
 						}
@@ -844,6 +857,7 @@ void GameStageScene::ObjectCollision() {
 								particleManager.AnimEffect(bulletManager.GetBullets()[b].GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 5, 3, false, playerHitGH);
 								particleManager.Update();
 								input->GetControllerManager()->VibrationController(60000, 60000, 10);
+								Novice::PlayAudio(playerHitSE, false, seVolume);
 								PlayerDeath();
 							}
 						}
@@ -872,6 +886,7 @@ void GameStageScene::ObjectCollision() {
 								particleManager.AnimEffect(enemyManager.GetEnemyes()[e].GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 5, 3, false, playerHitGH);
 								particleManager.Update();
 								input->GetControllerManager()->VibrationController(60000, 60000, 10);
+								Novice::PlayAudio(playerHitSE, false, seVolume);
 								PlayerDeath();
 							}
 						}
