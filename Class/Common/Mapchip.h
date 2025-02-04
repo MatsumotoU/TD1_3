@@ -30,6 +30,7 @@ public:
 	int GetMapNum(Vector2 pos);
 	int GetEnemyNum();
 	int GetIsFromToVisionClear(Vector2 from, Vector2 to);
+	int GetIsInBlocks(Vector2 pos);
 
 	void SetCamera(Camera* set);
 	void SetPlayer(Player* set);
@@ -45,6 +46,7 @@ public:
 	void SetMap(int setMap[kMapSizeY][kMapSizeX]);
 	void Draw();
 	void Update();
+	void DrawTile();
 
 	void ImGuiUpdate();
 
