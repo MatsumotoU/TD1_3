@@ -15,6 +15,9 @@ void SceneTransition::Init() {
 
 	cnt = 1;
 
+	playSEHandle[0] = -1;
+	playSEHandle[1] = -1;
+
 	frameCount = 0;
 
 	isTransition = false;
@@ -29,6 +32,9 @@ void SceneTransition::Init() {
 	*cameraPos = { 640.0f,360.0f };
 
 	shutterGraphHandle = Novice::LoadTexture("./Resources/Images/shutter.png");
+
+	sEHandle[0] = Novice::LoadAudio("./Resources/Sounds/shutterM.mp3");
+	sEHandle[1] = Novice::LoadAudio("./Resources/Sounds/shutterC.mp3");
 }
 
 void SceneTransition::Update() {
@@ -40,9 +46,22 @@ void SceneTransition::Update() {
 					if (transitionTime <= transitionEndTime) {
 						transitionTime++;
 
+						if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
+							playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.7f);
+						}
+
 						for (int i = 0; i < cnt; ++i) {
 							t[i] += 1.0f / 30.0f;
 							t[i] = std::clamp(t[i], 0.0f, 1.0f);
+
+							if (t[i] >= 1.0f) {
+								Novice::SetAudioVolume(playSEHandle[0], 0.0f);
+								Novice::StopAudio(playSEHandle[0]);
+							}
+						}
+
+						if (transitionTime == 28) {
+							playSEHandle[1] = Novice::PlayAudio(sEHandle[1], false, 0.7f);
 						}
 
 					} else {
@@ -60,6 +79,9 @@ void SceneTransition::Update() {
 
 							isTransition = false;
 							isTransitionClosed = false;
+
+							Novice::SetAudioVolume(playSEHandle[0], 0.0f);
+							Novice::StopAudio(playSEHandle[0]);
 						}
 					}
 
@@ -73,6 +95,14 @@ void SceneTransition::Update() {
 							t[i] = std::clamp(t[i], 0.0f, 1.0f);
 						}
 
+						if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
+							playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.7f);
+						}
+
+						if (transitionTime == 23) {
+							playSEHandle[1] = Novice::PlayAudio(sEHandle[1], false, 0.7f);
+						}
+
 					} else {
 
 						if (!isTransitionClosed) {
@@ -82,6 +112,9 @@ void SceneTransition::Update() {
 							for (int i = 0; i < 3; ++i) {
 								t[i] = 0.0f;
 							}
+
+							Novice::SetAudioVolume(playSEHandle[0], 0.0f);
+							Novice::StopAudio(playSEHandle[0]);
 						}
 					}
 				}

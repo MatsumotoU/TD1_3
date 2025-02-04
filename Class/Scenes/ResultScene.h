@@ -50,6 +50,7 @@ private:
 	int movingOrder;
 
 	int playSEHandle[10];
+	int playBGMHandle;
 
 	int shouldClearedMission[starTotalCount];
 
@@ -71,6 +72,7 @@ private:
 	unsigned int flashAlpha;
 
 	int sEHandle[10];
+	int bGMHandle;
 
 	Vector2 cameraZoom;
 	Vector2* cameraPos[2];
