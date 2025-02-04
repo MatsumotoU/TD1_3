@@ -57,11 +57,13 @@ Enemy::Enemy() {
 }
 
 void Enemy::Init() {
+	transform.angle = 0.0f;
+
 	attackRange = 0.0f;
 	stunFrame = 0;
 	type = ENM::None;
 	isAttacking = false;
-	attackCoolDown = 0;
+	attackCoolDown = 30;
 	isHitAttack = false;
 	isExprosion = false;
 	isActive = false;
