@@ -67,6 +67,7 @@ void Enemy::Init() {
 	isActive = false;
 	isAlive = false;
 	isSpawning = false;
+	canAttack = false;
 	oldTransform = transform;
 
 	exprosionRadius = 0.0f;

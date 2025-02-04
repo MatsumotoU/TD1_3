@@ -31,8 +31,10 @@ public:
 
 private:
 
+	Camera* camera;
 	Enemy enemyes[EMG::kMaxEnemy];
 	int enemyGH;
 	int shotEnemyGH;
-
+	int arrowGH;
+	Transform arrowTransform;
 };

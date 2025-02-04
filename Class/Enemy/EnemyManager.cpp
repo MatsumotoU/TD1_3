@@ -4,10 +4,14 @@
 EnemyManager::EnemyManager() {
 	enemyGH = Novice::LoadTexture("./Resources/Images/enemy.png");
 	shotEnemyGH = Novice::LoadTexture("./Resources/Images/shotEnemy.png");
+	arrowGH = Novice::LoadTexture("./Resources/Images/enemyTargetArrow.png");
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		enemyes[i].Init();
 		enemyes[i].SetGH(&enemyGH);
 	}
+	camera = nullptr;
+	arrowTransform = { 0.0f };
+	
 }
 
 void EnemyManager::Init() {
@@ -30,7 +34,12 @@ void EnemyManager::Draw() {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		if (enemyes[i].GetIsActive()) {
 
-			enemyes[i].Draw();
+			if (camera->IsInScreen(enemyes[i].GetPos(), enemyes[i].GetSize())) {
+				enemyes[i].Draw();
+			} else {
+				
+				//Render::DrawSprite()
+			}
 		}
 	}
 }
@@ -39,6 +48,7 @@ void EnemyManager::SetCamera(Camera* set) {
 	for (int i = 0; i < EMG::kMaxEnemy; i++) {
 		enemyes[i].SetCamera(set);
 	}
+	camera = set;
 }
 
 void EnemyManager::SetMapchip(Mapchip* set) {
