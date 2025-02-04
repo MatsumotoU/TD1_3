@@ -1,5 +1,6 @@
 #pragma once
 #include "Enemy.h"
+#include "Class/Common/ParticlManager.h"
 
 namespace EMG {
 	const int kMaxEnemy = 64;
@@ -37,4 +38,5 @@ private:
 	int shotEnemyGH;
 	int arrowGH;
 	Transform arrowTransform;
+	ParticlManager particleManager;
 };

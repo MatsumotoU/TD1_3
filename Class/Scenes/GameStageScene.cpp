@@ -240,8 +240,8 @@ void GameStageScene::Init() {
 
 	//stageStartGH = Novice::LoadTexture("./Resources/Images/StageStart.png");
 
-	//gameTime = 3600;
-	gameTime = 1200;
+	gameTime = 3600;
+	//gameTime = 1200;
 	timeNum.Init();
 	timeNum.SetSize({ 128.0f,128.0f });
 	timeNum.SetPos({ 0.0f,0.0f });
