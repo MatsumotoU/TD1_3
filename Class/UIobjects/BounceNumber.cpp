@@ -14,6 +14,8 @@ BounceNumber::BounceNumber() {
 	transform.angle = 0.0f;
 	color = 0;
 	frameCount = 0;
+
+	se = Novice::LoadAudio("./Resources/Sounds/numberSE.mp3");
 }
 
 void BounceNumber::Init() {
@@ -37,8 +39,10 @@ void BounceNumber::Update() {
 
 			if (number - targetNumber < 0) {
 				number += ((targetNumber - number) / 2) + 1;
+				Novice::PlayAudio(se, false, 0.1f);
 			} else {
 				number += ((targetNumber - number) / 2) - 1;
+				Novice::PlayAudio(se, false, 0.1f);
 			}
 		}
 	}

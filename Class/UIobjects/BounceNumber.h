@@ -37,5 +37,7 @@ private:
 	Transform transform;
 	Vector2 localScale;
 
+	int se;
+
 };
 
