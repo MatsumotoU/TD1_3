@@ -565,8 +565,8 @@ void GameStageScene::WaveManager() {
 			targetScoreNum.Init();
 			targetScoreNum.SetTargetNum(1000000);
 
-			comboRemainFrame = 0;
-			exprosionComboCount = 0;
+			/*comboRemainFrame = 0;
+			exprosionComboCount = 0;*/
 		}
 	}
 

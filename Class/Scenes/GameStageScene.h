@@ -17,7 +17,7 @@
 
 namespace GMScene {
 	const int maxClearStageTimeBuffer = 150;
-	const int maxComboRemainFrame = 150;
+	const int maxComboRemainFrame = 180;
 	const float exprodeRange = 256.0f;
 
 	const int maxPlayerAttackStopFrame = 120;
