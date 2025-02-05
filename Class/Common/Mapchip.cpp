@@ -162,6 +162,14 @@ void Mapchip::SetBulletManager(BulletManager* set) {
 }
 
 void Mapchip::PlayerMapCollision() {
+
+	if (player->GetPos().x / kMapChipSize.x > static_cast<float>(kMapSizeX) ||
+		player->GetPos().y / kMapChipSize.y > static_cast<float>(kMapSizeY) ||
+		player->GetPos().x < 0.0f || player->GetPos().y < 0.0f) {
+
+		return;
+	}
+
 	if (player == nullptr) {
 		return;
 	}
@@ -227,21 +235,35 @@ void Mapchip::EnemyMapCollision() {
 	for (int e = 0; e < EMG::kMaxEnemy; e++) {
 		if (enemyManager->GetEnemyes()[e].GetIsAlive()) {
 
-			for (int y = 0; y < kMapSizeY; y++) {
-				for (int x = 0; x < kMapSizeX; x++) {
+			if (enemyManager->GetEnemyes()[e].GetPos().x / kMapChipSize.x > static_cast<float>(kMapSizeX) ||
+				enemyManager->GetEnemyes()[e].GetPos().y / kMapChipSize.y > static_cast<float>(kMapSizeY) ||
+				enemyManager->GetEnemyes()[e].GetPos().x < 0.0f || enemyManager->GetEnemyes()[e].GetPos().y < 0.0f) {
 
-					Vector2 blockPos = {
-						(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x),
-						(kMapChipSize.y * 0.5f) + kMapChipSize.y * static_cast<float>(y) };
+			} else {
 
-					// 計算量を減らす
-					if (Length(enemyManager->GetEnemyes()[e].GetPos() - blockPos) <= Length(enemyManager->GetEnemyes()[e].GetSize()) + Length(kMapChipSize)) {
+				int count = 0;
+				for (int y = 0; y < kMapSizeY; y++) {
+					for (int x = 0; x < kMapSizeX; x++) {
+						count++;
 
-						if (map[y][x] == 1) {
-							if (IsHitRectangle(enemyManager->GetEnemyes()[e].GetPos(), enemyManager->GetEnemyes()[e].GetSize(), blockPos, kMapChipSize)) {
+						Vector2 blockPos = {
+							(kMapChipSize.x * 0.5f) + kMapChipSize.x * static_cast<float>(x),
+							(kMapChipSize.y * 0.5f) + kMapChipSize.y * static_cast<float>(y) };
 
-								CollisionRectangle(enemyManager->GetEnemyes()[e].GetPosPtr(), enemyManager->GetEnemyes()[e].GetSize(), blockPos, kMapChipSize, true, true);
+						// 計算量を減らす
+						if (Length(enemyManager->GetEnemyes()[e].GetPos() - blockPos) <= Length(enemyManager->GetEnemyes()[e].GetSize()) + Length(kMapChipSize)) {
 
+							if (map[y][x] == 1) {
+								if (IsHitRectangle(enemyManager->GetEnemyes()[e].GetPos(), enemyManager->GetEnemyes()[e].GetSize(), blockPos, kMapChipSize)) {
+
+									CollisionRectangle(enemyManager->GetEnemyes()[e].GetPosPtr(), enemyManager->GetEnemyes()[e].GetSize(), blockPos, kMapChipSize, true, true);
+
+									if (enemyManager->GetEnemyes()[e].GetIsAttack()) {
+
+										drawPos[count] += enemyManager->GetEnemyes()[e].GetPhysics()->GetVelocity();
+									}
+
+								}
 							}
 						}
 					}
