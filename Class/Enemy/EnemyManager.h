@@ -39,4 +39,6 @@ private:
 	int arrowGH;
 	Transform arrowTransform;
 	ParticlManager particleManager;
+	int findGH[3];
+	int findSE;
 };

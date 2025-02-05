@@ -12,6 +12,10 @@ EnemyManager::EnemyManager() {
 	camera = nullptr;
 	arrowTransform = { 0.0f };
 	
+	findGH[0] = Novice::LoadTexture("./Resources/Images/find1.png");
+	findGH[1] = Novice::LoadTexture("./Resources/Images/find2.png");
+	findGH[2] = Novice::LoadTexture("./Resources/Images/find3.png");
+	findSE = Novice::LoadAudio("./Resources/Sounds/select.mp3");
 }
 
 void EnemyManager::Init() {
@@ -26,6 +30,12 @@ void EnemyManager::Update() {
 		if (enemyes[i].GetIsActive()) {
 
 			enemyes[i].Update();
+
+			if (enemyes[i].GetIsFindPlayer()) {
+				enemyes[i].SetIsFindPlayer(false);
+				particleManager.AnimEffect({ enemyes[i].GetPos().x,enemyes[i].GetPos().y + 64.0f }, {64.0f,64.0f}, 0.0f, 3, 5, false, findGH);
+				Novice::PlayAudio(findSE,false, 0.2f);
+			}
 		}
 	}
 	EnemyCollision();

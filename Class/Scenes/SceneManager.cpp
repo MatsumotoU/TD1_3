@@ -17,6 +17,8 @@ void SceneManager::Init() {
 	//scene = new GameStageScene();
 	//scene = new ResultScene();
 
+	//ssss
+
 	scene->SetSceneObj(&sceneObject);
 	scene->Init();
 	sceneTransition.Init();
