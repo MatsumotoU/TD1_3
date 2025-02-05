@@ -16,6 +16,8 @@ public:
 
 	int stageHighScore[3];
 
+	int targetScore[3];
+
 private:
 
 	SJN::json scoreData;
