@@ -43,7 +43,7 @@ void ContorolTutorialUI::Init() {
 	isHideUI = false;
 	isInScreeenUI = true;
 	enemyManager = nullptr;
-	tutorialStep = 0;
+	tutorialStep = 2;
 	frameCount = 0;
 	isActive = true;
 }

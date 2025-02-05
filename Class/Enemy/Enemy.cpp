@@ -54,6 +54,8 @@ Enemy::Enemy() {
 	map = nullptr;
 
 	isSpawning = false;
+
+	isFindPlayer = false;
 }
 
 void Enemy::Init() {
@@ -70,6 +72,7 @@ void Enemy::Init() {
 	isAlive = false;
 	isSpawning = false;
 	canAttack = false;
+	isFindPlayer = false;
 	oldTransform = transform;
 
 	exprosionRadius = 0.0f;
@@ -83,6 +86,8 @@ void Enemy::Init() {
 	spawnFrame = 60;
 
 	spawnScale = { 0.0f,0.0f };
+	findEllipesRadius = 0.0f;
+
 }
 
 void Enemy::Update() {
@@ -138,6 +143,8 @@ void Enemy::Update() {
 			cosf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * 170.0f,
 			sinf((6.28f / static_cast<float>(ENM::kCircleResolution)) * static_cast<float>(i)) * 170.0f };
 	}
+
+	Eas::SimpleEaseIn(&findEllipesRadius, 0.0f, 0.1f);
 }
 
 void Enemy::Draw() {
@@ -169,6 +176,9 @@ void Enemy::Draw() {
 		}
 
 		if (isAlive) {
+
+			Render::DrawEllipse(transform.pos,{ findEllipesRadius,findEllipesRadius },0.0f, *camera, 0xEEEEEE23, kFillModeSolid);
+
 			Render::DrawSprite(drawTransform, *camera, color, *enemyGH);
 		}
 	}
@@ -254,6 +264,10 @@ void Enemy::SetIsSpawning(int set) {
 	isSpawning = set;
 }
 
+void Enemy::SetIsFindPlayer(int set) {
+	isFindPlayer = set;
+}
+
 int Enemy::GetIsAlive() {
 	return isAlive;
 }
@@ -304,6 +318,10 @@ int Enemy::GetIsSpawning() {
 	return isSpawning;
 }
 
+int Enemy::GetIsFindPlayer() {
+	return isFindPlayer;
+}
+
 void Enemy::Move() {
 
 
@@ -314,10 +332,23 @@ void Enemy::Move() {
 	// 攻撃範囲内なら止まる
 	if (isSeePlayer) {
 		if (attackRange >= Length(transform.pos - *playerPos)) {
-			canAttack = true;
+
+			if (!canAttack) {
+				canAttack = true;
+
+				if (!isFindPlayer) {
+					isFindPlayer = true;
+					findEllipesRadius = attackRange;
+				}
+			}
+
 			return;
 		} else {
 			canAttack = false;
+
+			if (isFindPlayer) {
+				isFindPlayer = false;
+			}
 		}
 	}
 

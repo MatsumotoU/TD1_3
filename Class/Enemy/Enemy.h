@@ -46,6 +46,7 @@ public:
 	void SetMapchip(Mapchip* set);
 	void SetStunFrame(int set);
 	void SetIsSpawning(int set);
+	void SetIsFindPlayer(int set);
 
 	int GetIsAlive();
 	int GetIsHitAttack();
@@ -59,6 +60,7 @@ public:
 	int GetIsReqestExprosion();
 	Vector2 GetScreenPos();
 	int GetIsSpawning();
+	int GetIsFindPlayer();
 
 	void Move();
 	void LockOn();
@@ -122,4 +124,7 @@ private:
 	int isSpawning;
 	int spawnFrame;
 	Vector2 spawnScale;
+
+	int isFindPlayer;
+	float findEllipesRadius;
 };

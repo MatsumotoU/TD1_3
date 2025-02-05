@@ -331,6 +331,9 @@ void GameStageScene::Update() {
 	scoreUIManager.Update();
 	gameScore.Update();
 	gameScore.SetTargetNum(score);
+	if (sceneObj->targetScore[sceneObj->gameStage] <= score) {
+		gameScore.SetColor(0xD65A31FF);
+	}
 
 	scoreRatio.Update();
 	scoreRatio.SetTargetNum(static_cast<int>(slowFrameScoreRatio));
