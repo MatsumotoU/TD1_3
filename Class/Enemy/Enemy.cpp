@@ -177,7 +177,7 @@ void Enemy::Draw() {
 
 		if (isAlive) {
 
-			Render::DrawEllipse(transform.pos,{ findEllipesRadius,findEllipesRadius },0.0f, *camera, 0xEEEEEE23, kFillModeSolid);
+			Render::DrawEllipse(transform.pos,{ findEllipesRadius,findEllipesRadius },0.0f, *camera, 0xEEEEEE13, kFillModeSolid);
 
 			Render::DrawSprite(drawTransform, *camera, color, *enemyGH);
 		}
