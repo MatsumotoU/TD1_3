@@ -36,8 +36,8 @@ void ResultScene::Init() {
 	for (int i = 0; i < starTotalCount; ++i) {
 		missionUI[i] = {
 			{ -640.0f,160.0f + i * 200.0f }, // 位置
-			{ 720.0f, 80.0f }, // 大きさ
-			{ 1.0f, 1.0f }, // 比率
+			{ 800.0f, 80.0f }, // 大きさ
+			{ 0.9f, 0.9f }, // 比率
 			0.0f // 角度
 		};
 
@@ -75,23 +75,98 @@ void ResultScene::Init() {
 		shouldPressedLeft = true;
 	}
 
-	if (sceneObj->score >= 10000) {
-		shouldClearedMission[1] = true;
+	// ステージごとの目標スコア
+	switch (sceneObj->gameStage) {
+		case 0:
 
-		if (!sceneObj->shouldClearedMission[sceneObj->gameStage][1]) {
-			sceneObj->shouldClearedMission[sceneObj->gameStage][1] = true;
-		}
+			// 真ん中
+			if (sceneObj->score >= 40000) {
+				shouldClearedMission[1] = true;
 
-	} else {
-		shouldClearedMission[1] = false;
-	}
-	if (shouldClearedMission[0] && shouldClearedMission[1]) {
-		shouldClearedMission[2] = true;
-		if (!sceneObj->shouldClearedMission[sceneObj->gameStage][2]) {
-			sceneObj->shouldClearedMission[sceneObj->gameStage][2] = true;
-		}
-	} else {
-		shouldClearedMission[2] = false;
+				if (!sceneObj->shouldClearedMission[sceneObj->gameStage][1]) {
+					sceneObj->shouldClearedMission[sceneObj->gameStage][1] = true;
+				}
+
+			} else {
+				shouldClearedMission[1] = false;
+			}
+
+			// 上
+			if (sceneObj->score >= 80000) {
+				shouldClearedMission[2] = true;
+				if (!sceneObj->shouldClearedMission[sceneObj->gameStage][2]) {
+					sceneObj->shouldClearedMission[sceneObj->gameStage][2] = true;
+				}
+
+			} else {
+				shouldClearedMission[2] = false;
+			}
+
+			missionUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/mission40000.png");
+			missionUIGraphHandle[2] = Novice::LoadTexture("./Resources/Images/mission80000.png");
+
+			break;
+
+		case 1:
+
+			// 真ん中
+			if (sceneObj->score >= 40000) {
+				shouldClearedMission[1] = true;
+
+				if (!sceneObj->shouldClearedMission[sceneObj->gameStage][1]) {
+					sceneObj->shouldClearedMission[sceneObj->gameStage][1] = true;
+				}
+
+
+			} else {
+				shouldClearedMission[1] = false;
+			}
+
+			// 上
+			if (sceneObj->score >= 70000) {
+				shouldClearedMission[2] = true;
+				if (!sceneObj->shouldClearedMission[sceneObj->gameStage][2]) {
+					sceneObj->shouldClearedMission[sceneObj->gameStage][2] = true;
+				}
+
+			} else {
+				shouldClearedMission[2] = false;
+			}
+
+			missionUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/mission40000.png");
+			missionUIGraphHandle[2] = Novice::LoadTexture("./Resources/Images/mission70000.png");
+
+			break;
+
+		case 2:
+
+			// 真ん中
+			if (sceneObj->score >= 120000) {
+				shouldClearedMission[1] = true;
+
+				if (!sceneObj->shouldClearedMission[sceneObj->gameStage][1]) {
+					sceneObj->shouldClearedMission[sceneObj->gameStage][1] = true;
+				}
+
+
+			} else {
+				shouldClearedMission[1] = false;
+			}
+
+			// 上
+			if (sceneObj->score >= 180000) {
+				shouldClearedMission[2] = true;
+				if (!sceneObj->shouldClearedMission[sceneObj->gameStage][2]) {
+					sceneObj->shouldClearedMission[sceneObj->gameStage][2] = true;
+				}
+			} else {
+				shouldClearedMission[2] = false;
+			}
+
+			missionUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/mission120000.png");
+			missionUIGraphHandle[2] = Novice::LoadTexture("./Resources/Images/mission180000.png");
+
+			break;
 	}
 
 	spaceUI = {
@@ -156,8 +231,6 @@ void ResultScene::Init() {
 	starGraphHandle = Novice::LoadTexture("./Resources/Images/missionStar.png");
 
 	missionUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/mission1.png");
-	missionUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/mission2.png");
-	missionUIGraphHandle[2] = Novice::LoadTexture("./Resources/Images/mission3.png");
 
 	nextSceneUIGraphHandle[0] = Novice::LoadTexture("./Resources/Images/retry.png");
 	nextSceneUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/select.png");
@@ -339,7 +412,6 @@ void ResultScene::Update() {
 		}
 
 		// 星の縮小の処理
-
 		if (isStarMoving[i]) {
 			if (movingOrder < 7) {
 				// tに値を加算
@@ -530,8 +602,8 @@ void ResultScene::Update() {
 
 				bgColor[i] = ColorGradation(0x2228310f, 0xffffff0a, missionUIT[i]);
 
-				missionUI[i].scale.x = Eas::EaseInOutQuart(missionUIT[i], 1.0f, 0.8f);
-				missionUI[i].scale.y = Eas::EaseInOutQuart(missionUIT[i], 1.0f, 0.8f);
+				missionUI[i].scale.x = Eas::EaseInOutQuart(missionUIT[i], 0.9f, 0.8f);
+				missionUI[i].scale.y = Eas::EaseInOutQuart(missionUIT[i], 0.9f, 0.8f);
 				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 270.0f + i * 160.0f);
 			} else {
 				if (movingOrder == 10) {
