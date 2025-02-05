@@ -183,6 +183,13 @@ void ResultScene::Init() {
 		0.0f
 	};
 
+	scoreTrans = {
+		{480.0f,-128.0f},
+		{512.0f,128.0f},
+		{0.63f,0.63f},
+		0.0f
+	};
+
 	isBgDrawn = false;
 
 	for (int i = 0; i < 3; ++i) {
@@ -263,7 +270,7 @@ void ResultScene::Init() {
 	score.Init();
 	score.SetPos({ 640.0f + 128.0f - 248.0f,670.0f + highScorePos.y });
 	score.SetSize({ 128.0f,128.0f });
-	score.SetLocalScale({ 0.5f,0.5f });
+	score.SetLocalScale({ 0.63f,0.63f });
 	score.SetIsFillZero(true);
 
 	numGH[0] = Novice::LoadTexture("./Resources/Images/Number1.png");
@@ -276,13 +283,16 @@ void ResultScene::Init() {
 	numGH[7] = Novice::LoadTexture("./Resources/Images/Number8.png");
 	numGH[8] = Novice::LoadTexture("./Resources/Images/Number9.png");
 	numGH[9] = Novice::LoadTexture("./Resources/Images/Number10.png");
+
+	scoreGH = Novice::LoadTexture("./Resources/Images/ScoreTitle.png");
+
 	bGMHandle = Novice::LoadAudio("./Resources/Sounds/sceneBGM.mp3");
 }
 
 void ResultScene::Update() {
-  highScore.Update();
+	highScore.Update();
 	score.Update();
-  
+
 	if (!Novice::IsPlayingAudio(playBGMHandle) || playBGMHandle == -1) {
 		playBGMHandle = Novice::PlayAudio(bGMHandle, true, 0.1f);
 	}
@@ -349,12 +359,12 @@ void ResultScene::Update() {
 			for (int i = 0; i < starTotalCount; ++i) {
 				starT[i] = 1.0f;
 				star[i].pos.x = Eas::EaseInOutQuart(starT[i], 1728.0f, 1008.0f);
-				star[i].pos.y = Eas::EaseInOutQuart(starT[i], i * 360.0f, 270.0f + i * 160.0f);
+				star[i].pos.y = Eas::EaseInOutQuart(starT[i], i * 360.0f, 255.0f + i * 135.0f);
 				star[i].scale = { 0.8f,0.8f };
 
 				missionUIT[i] = 1.0f;
 				missionUI[i].pos.x = Eas::EaseInOutQuart(missionUIT[i], -640.0f, 384.0f);
-				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 270.0f + i * 160.0f);
+				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 255.0f + i * 135.0f);
 				missionUI[i].scale = { 0.8f,0.8f };
 			}
 
@@ -475,7 +485,7 @@ void ResultScene::Update() {
 				star[i].angle += 1.0f / 180.0f * static_cast<float>(M_PI);
 				star[i].scale.x = Eas::EaseInOutQuart(starT[i], 1.0f, 0.8f);
 				star[i].scale.y = Eas::EaseInOutQuart(starT[i], 1.0f, 0.8f);
-				star[i].pos.y = Eas::EaseInOutQuart(starT[i], 160.0f + i * 200.0f, 270.0f + i * 160.0f);
+				star[i].pos.y = Eas::EaseInOutQuart(starT[i], 160.0f + i * 200.0f, 255.0f + i * 135.0f);
 			}
 		} else {
 			star[i].angle += 1.0f / 180.0f * static_cast<float>(M_PI);
@@ -488,7 +498,7 @@ void ResultScene::Update() {
 					movingOrder++;
 				}
 			} else {
-				star[i].pos.y = (270.0f + i * 160.0f) + sinf(star[i].angle * 3.0f) * 8.0f;
+				star[i].pos.y = (255.0f + i * 135.0f) + sinf(star[i].angle * 3.0f) * 8.0f;
 			}
 		}
 
@@ -604,7 +614,7 @@ void ResultScene::Update() {
 
 				missionUI[i].scale.x = Eas::EaseInOutQuart(missionUIT[i], 0.9f, 0.8f);
 				missionUI[i].scale.y = Eas::EaseInOutQuart(missionUIT[i], 0.9f, 0.8f);
-				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 270.0f + i * 160.0f);
+				missionUI[i].pos.y = Eas::EaseInOutQuart(missionUIT[i], 160.0f + i * 200.0f, 255.0f + i * 135.0f);
 			} else {
 				if (movingOrder == 10) {
 					missionUIT[i] = 0.0f;
@@ -666,8 +676,9 @@ void ResultScene::Update() {
 		score.SetTargetNum(sceneObj->score);
 
 		Eas::SimpleEaseIn(&highScorePos.y, 0.0f, 0.5f);
-		highScore.SetPos({ 640.0f + 128.0f + 164.0f,670.0f + highScorePos.y });
-		score.SetPos({ 640.0f + 128.0f - 164.0f,670.0f + highScorePos.y });
+		//highScore.SetPos({ 640.0f + 128.0f + 164.0f,670.0f + highScorePos.y });
+		score.SetPos({ 620.0f + 128.0f + 164.0f,650.0f + highScorePos.y });
+		scoreTrans.pos.y = 650.0f + highScorePos.y;
 	}
 
 	mainCamera.SetScale(cameraZoom);
@@ -720,7 +731,9 @@ void ResultScene::Draw() {
 		Render::DrawSprite(cracker[i], subCamera, 0xffffff00 | crackerAlpha[i], crackerGraphHandle[i]);
 	}
 
-	highScore.Draw(&mainCamera,numGH);
+	Render::DrawSprite(scoreTrans, mainCamera, 0xffffffff, scoreGH);
+
+	//highScore.Draw(&mainCamera, numGH);
 	score.Draw(&mainCamera, numGH);
 
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xffffff00 | flashAlpha, kFillModeSolid);
