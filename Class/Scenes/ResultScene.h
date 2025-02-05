@@ -85,6 +85,8 @@ private:
 	BounceNumber highScore;
 	BounceNumber score;
 	int numGH[10];
+	int scoreGH;
+	Transform scoreTrans;
 	Vector2 highScorePos;
 };
 
