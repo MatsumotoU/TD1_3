@@ -138,10 +138,38 @@ void SelectScene::Init() {
 	sEHandle[0] = Novice::LoadAudio("./Resources/Sounds/dicision.mp3");
 	sEHandle[1] = Novice::LoadAudio("./Resources/Sounds/slide.mp3");
 
+	numGH[0] = Novice::LoadTexture("./Resources/Images/Number1.png");
+	numGH[1] = Novice::LoadTexture("./Resources/Images/Number2.png");
+	numGH[2] = Novice::LoadTexture("./Resources/Images/Number3.png");
+	numGH[3] = Novice::LoadTexture("./Resources/Images/Number4.png");
+	numGH[4] = Novice::LoadTexture("./Resources/Images/Number5.png");
+	numGH[5] = Novice::LoadTexture("./Resources/Images/Number6.png");
+	numGH[6] = Novice::LoadTexture("./Resources/Images/Number7.png");
+	numGH[7] = Novice::LoadTexture("./Resources/Images/Number8.png");
+	numGH[8] = Novice::LoadTexture("./Resources/Images/Number9.png");
+	numGH[9] = Novice::LoadTexture("./Resources/Images/Number10.png");
+
+	highScore.Init();
+	highScore.SetPos({ 246.0f + 64.0f + 32.0f,64.0f });
+	highScore.SetSize({ 128.0f,128.0f });
+	highScore.SetLocalScale({ 0.5f,0.5f });
+	highScore.SetIsFillZero(true);
+
+	crownGH = Novice::LoadTexture("./Resources/Images/crown.png");
+	crownTransform = { 0.0f };
+	crownTransform.pos = { 64.0f,70.0f };
+	crownTransform.size = { 64.0f,64.0f };
+	crownTransform.scale = { 1.0f,1.0f };
+	crownTransform.angle = 0.0f;
+
 	bGMHandle = Novice::LoadAudio("./Resources/Sounds/sceneBGM.mp3");
 }
 
 void SelectScene::Update() {
+  
+	highScore.Update();
+	highScore.SetTargetNum(sceneObj->stageHighScore[gameStage]);
+  
 	if (!Novice::IsPlayingAudio(playBGMHandle) || playBGMHandle == -1) {
 		playBGMHandle = Novice::PlayAudio(bGMHandle, true, 0.2f);
 	}
@@ -486,6 +514,10 @@ void SelectScene::Draw() {
 			Render::DrawSprite(spaceUI, mainCamera, 0xEEEEEEFF, aUIGraphHandle[0]);
 		}
 	}
+
+	// ハイスコア表示
+	highScore.Draw(&mainCamera, numGH);
+	Render::DrawSprite(crownTransform, mainCamera, WHITE, crownGH);
 }
 
 IScene* SelectScene::GetNextScene() {
