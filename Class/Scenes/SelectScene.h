@@ -49,6 +49,7 @@ private:
 	float bgTheta[3];
 
 	int playSEHandle[10];
+	int playBGMHandle;
 
 	int shouldClearedMission[stageTotalCount][starTotalCount];
 
@@ -74,6 +75,7 @@ private:
 	int tempGH;
 
 	int sEHandle[10];
+	int bGMHandle;
 
 	Vector2* cameraPos;
 	Vector2 cameraZoom;

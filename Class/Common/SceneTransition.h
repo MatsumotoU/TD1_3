@@ -38,6 +38,10 @@ private:
 	int isTransition;
 	int isTransitionClosed;
 
+	int playSEHandle[2];
+
+	int sEHandle[2];
+
 	ParticlManager particle;
 
 	Camera mainCamera;

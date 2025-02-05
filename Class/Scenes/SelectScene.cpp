@@ -94,6 +94,8 @@ void SelectScene::Init() {
 		playSEHandle[i] = -1;
 	}
 
+	playBGMHandle = -1;
+
 	// 左右キーを押したときステージアイコンなどが動く時間
 	movingFrameCount = 25.0f;
 
@@ -159,11 +161,18 @@ void SelectScene::Init() {
 	crownTransform.size = { 64.0f,64.0f };
 	crownTransform.scale = { 1.0f,1.0f };
 	crownTransform.angle = 0.0f;
+
+	bGMHandle = Novice::LoadAudio("./Resources/Sounds/sceneBGM.mp3");
 }
 
 void SelectScene::Update() {
+  
 	highScore.Update();
 	highScore.SetTargetNum(sceneObj->stageHighScore[gameStage]);
+  
+	if (!Novice::IsPlayingAudio(playBGMHandle) || playBGMHandle == -1) {
+		playBGMHandle = Novice::PlayAudio(bGMHandle, true, 0.2f);
+	}
 
 	frameCount++;
 	if (frameCount >= 60) {
@@ -444,6 +453,7 @@ void SelectScene::Update() {
 
 		if (zoomT >= 1.0f) {
 			zoomT = 1.0f;
+			Novice::StopAudio(playBGMHandle);
 			nextScene = new GameStageScene();
 			isTransition = true;
 			sceneObj->gameStage = gameStage;
