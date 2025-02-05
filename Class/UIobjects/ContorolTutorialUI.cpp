@@ -11,7 +11,7 @@ void ContorolTutorialUI::Init() {
 	transform.pos = { -900.0f,-260.0f };
 	transform.scale = { 0.8f,0.8f };
 	transform.size = { 480.0f,192.0f };
-	tutorialCount = 0;
+	tutorialCount = 2;
 
 	hintTransform = transform;
 	hintTransform.scale = { 0.5f,0.5f };
