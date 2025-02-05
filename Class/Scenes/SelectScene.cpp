@@ -84,9 +84,14 @@ void SelectScene::Init() {
 	}
 
 	// ミッションをクリアしたか
+	starCount = 0;
 	for (int i = 0; i < stageTotalCount; ++i) {
 		for (int j = 0; j < starTotalCount; ++j) {
 			shouldClearedMission[i][j] = sceneObj->shouldClearedMission[i][j];
+
+			if (shouldClearedMission[i][j]) {
+				starCount++;
+			}
 		}
 	}
 
@@ -116,6 +121,9 @@ void SelectScene::Init() {
 	stageIconGraphHandle[0] = Novice::LoadTexture("./Resources/Images/stageIcon1.png");
 	stageIconGraphHandle[1] = Novice::LoadTexture("./Resources/Images/stageIcon2.png");
 	stageIconGraphHandle[2] = Novice::LoadTexture("./Resources/Images/stageIcon3.png");
+
+	lockIconGraphHandle[0] = Novice::LoadTexture("./Resources/Images/lockStageIcon1.png");
+	lockIconGraphHandle[1] = Novice::LoadTexture("./Resources/Images/lockStageIcon2.png");
 
 	starGraphHandle = Novice::LoadTexture("./Resources/Images/missionStar.png");
 
@@ -161,12 +169,15 @@ void SelectScene::Init() {
 	crownTransform.size = { 64.0f,64.0f };
 	crownTransform.scale = { 1.0f,1.0f };
 	crownTransform.angle = 0.0f;
+	IconShakeRange = 0.0f;
 
 	bGMHandle = Novice::LoadAudio("./Resources/Sounds/sceneBGM.mp3");
 }
 
 void SelectScene::Update() {
-  
+	
+	mainCamera.Update();
+
 	highScore.Update();
 	highScore.SetTargetNum(sceneObj->stageHighScore[gameStage]);
   
@@ -243,11 +254,21 @@ void SelectScene::Update() {
 
 	// 決定キーを押してシーンを遷移させる
 	if (input->GetControl(ENTER, Press)) {
-		// ステージに遷移する
-		if (!isZoom) {
-			isZoom = true;
-			if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
-				playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.8f);
+
+		// ステージロック
+		if (gameStage == 1 && starCount < 2 || gameStage == 2 && starCount < 5) {
+			
+			mainCamera.shakeRange = { 10.0f,0.0f };
+			IconShakeRange = 10.0f;
+
+		} else {
+
+			// ステージに遷移する
+			if (!isZoom) {
+				isZoom = true;
+				if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
+					playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.8f);
+				}
 			}
 		}
 	}
@@ -378,7 +399,7 @@ void SelectScene::Update() {
 		}
 	}
 
-	spaceUI.pos.y = 64.0f + cosf(stageIconTheta) * 1.0f;
+	spaceUI.pos.y = 64.0f + cosf(stageIconTheta) * 1.0f; 
 
 	//================================================================
 	// 星の更新処理
@@ -480,7 +501,26 @@ void SelectScene::Draw() {
 	particleManager.Draw();
 
 	for (int i = 0; i < stageTotalCount; ++i) {
-		Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, stageIconGraphHandle[i]);
+
+		if (i == 0) {
+			Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, stageIconGraphHandle[i]);
+		}
+		if (i == 1) {
+			if (starCount >= 2) {
+				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, stageIconGraphHandle[i]);
+			} else {
+				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, lockIconGraphHandle[0]);
+			}
+			
+		}
+		if (i == 2) {
+			if (starCount >= 5) {
+				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, stageIconGraphHandle[i]);
+			} else {
+				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, lockIconGraphHandle[1]);
+			}
+		}
+		
 	}
 
 	for (int i = 0; i < starTotalCount; ++i) {

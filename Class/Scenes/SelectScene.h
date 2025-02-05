@@ -71,6 +71,7 @@ private:
 	int aUIGraphHandle[2];
 	int bgGraphHandle[3];
 	int stageIconGraphHandle[3];
+	int lockIconGraphHandle[2];
 
 	int tempGH;
 
@@ -86,5 +87,8 @@ private:
 	int numGH[10];
 	int crownGH;
 	Transform crownTransform;
+	float IconShakeRange;
+
+	int starCount;
 };
 
