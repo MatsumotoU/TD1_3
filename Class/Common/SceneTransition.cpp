@@ -46,18 +46,21 @@ void SceneTransition::Update() {
 					if (transitionTime <= transitionEndTime) {
 						transitionTime++;
 
-						if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
-							playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.7f);
+						if (transitionTime == 1) {
+							if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
+								playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.7f);
+							}
 						}
+
+						if (transitionTime >= 29) {
+							Novice::SetAudioVolume(playSEHandle[0], 0.0f);
+							Novice::StopAudio(playSEHandle[0]);
+						}
+
 
 						for (int i = 0; i < cnt; ++i) {
 							t[i] += 1.0f / 30.0f;
 							t[i] = std::clamp(t[i], 0.0f, 1.0f);
-
-							if (t[i] >= 1.0f) {
-								Novice::SetAudioVolume(playSEHandle[0], 0.0f);
-								Novice::StopAudio(playSEHandle[0]);
-							}
 						}
 
 						if (transitionTime == 28) {
@@ -80,6 +83,9 @@ void SceneTransition::Update() {
 							isTransition = false;
 							isTransitionClosed = false;
 
+							playSEHandle[0] = -1;
+							playSEHandle[1] = -1;
+
 							Novice::SetAudioVolume(playSEHandle[0], 0.0f);
 							Novice::StopAudio(playSEHandle[0]);
 						}
@@ -95,8 +101,15 @@ void SceneTransition::Update() {
 							t[i] = std::clamp(t[i], 0.0f, 1.0f);
 						}
 
-						if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
-							playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.7f);
+						if (transitionTime == 1) {
+							if (!Novice::IsPlayingAudio(playSEHandle[0]) || playSEHandle[0] == -1) {
+								playSEHandle[0] = Novice::PlayAudio(sEHandle[0], false, 0.7f);
+							}
+						}
+
+						if (transitionTime >= 24) {
+							Novice::SetAudioVolume(playSEHandle[0], 0.0f);
+							Novice::StopAudio(playSEHandle[0]);
 						}
 
 						if (transitionTime == 23) {
