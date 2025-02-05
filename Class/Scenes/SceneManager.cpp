@@ -14,8 +14,8 @@ void SceneManager::Init() {
 	// シーン読み込み
 	//scene = new TitleScene();
 	//scene = new SelectScene();
-	scene = new GameStageScene();
-	//scene = new ResultScene();
+	//scene = new GameStageScene();
+	scene = new ResultScene();
 
 	scene->SetSceneObj(&sceneObject);
 	scene->Init();

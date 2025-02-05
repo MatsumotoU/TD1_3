@@ -1,6 +1,7 @@
 #pragma once
 #include "IScene.h"
 #include "Class/Common/ParticlManager.h"
+#include "Class/UIobjects/BounceNumber.h"
 
 class ResultScene : public IScene {
 public:
@@ -78,5 +79,10 @@ private:
 	Camera subCamera;
 
 	ParticlManager particleManager;
+
+	BounceNumber highScore;
+	BounceNumber score;
+	int numGH[10];
+	Vector2 highScorePos;
 };
 

@@ -304,6 +304,11 @@ void GameStageScene::Update() {
 			isTransition = true;
 			nextScene = new ResultScene();
 			Novice::StopAudio(playHandleBgm);
+
+			if (sceneObj->stageHighScore[sceneObj->gameStage] < score) {
+				sceneObj->stageHighScore[sceneObj->gameStage] = score;
+			}
+			sceneObj->SaveScore();
 		}
 		return;
 	}
@@ -333,7 +338,7 @@ void GameStageScene::Update() {
 	// 時間制限遷移
 	if (gameTime <= 0) {
 
-		Novice::ConsolePrintf("----------TimeTransition!----------\n");
+		//Novice::ConsolePrintf("----------TimeTransition!----------\n");
 		isTimeUp = true;
 		timeUpTransitionFrame = 120;
 		return;
@@ -576,7 +581,11 @@ void GameStageScene::WaveManager() {
 						isTransition = true;
 						nextScene = new ResultScene();
 						Novice::StopAudio(playHandleBgm);
-						Novice::ConsolePrintf("----------StageClearTransition!----------\n");
+						//Novice::ConsolePrintf("----------StageClearTransition!----------\n");
+						if (sceneObj->stageHighScore[sceneObj->gameStage] < score) {
+							sceneObj->stageHighScore[sceneObj->gameStage] = score;
+						}
+						sceneObj->SaveScore();
 						return;
 					}
 				}
@@ -588,7 +597,11 @@ void GameStageScene::WaveManager() {
 					isTransition = true;
 					nextScene = new ResultScene();
 					Novice::StopAudio(playHandleBgm);
-					Novice::ConsolePrintf("----------PlayerDeathTransition!----------\n");
+					//Novice::ConsolePrintf("----------PlayerDeathTransition!----------\n");
+					if (sceneObj->stageHighScore[sceneObj->gameStage] < score) {
+						sceneObj->stageHighScore[sceneObj->gameStage] = score;
+					}
+					sceneObj->SaveScore();
 					return;
 				}
 
@@ -730,7 +743,11 @@ void GameStageScene::WaveManager() {
 				nextScene = new ResultScene();
 				Novice::StopAudio(playHandleBgm);
 				score += 200 * gameTime;
-				Novice::ConsolePrintf("----------EnemyDeathTransition!----------\n");
+				//Novice::ConsolePrintf("----------EnemyDeathTransition!----------\n");
+				if (sceneObj->stageHighScore[sceneObj->gameStage] < score) {
+					sceneObj->stageHighScore[sceneObj->gameStage] = score;
+				}
+				sceneObj->SaveScore();
 				return;
 			}
 		}

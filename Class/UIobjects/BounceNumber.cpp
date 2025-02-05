@@ -32,10 +32,10 @@ void BounceNumber::Update() {
 	frameCount++;
 
 	if (number != targetNumber) {
-		if (transform.scale.x > 0.8f && transform.scale.x < 1.2f) {
+		if (transform.scale.y < 1.2f) {
 
 			transform.scale.y = 2.0f;
-			transform.scale.x = 0.3f;
+			//transform.scale.x = 0.3f;
 
 			if (number - targetNumber < 0) {
 				number += ((targetNumber - number) / 2) + 1;

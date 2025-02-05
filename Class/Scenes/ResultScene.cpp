@@ -177,9 +177,36 @@ void ResultScene::Init() {
 	sEHandle[1] = Novice::LoadAudio("./Resources/Sounds/cracker.mp3");
 	sEHandle[2] = Novice::LoadAudio("./Resources/Sounds/select.mp3");
 	sEHandle[3] = Novice::LoadAudio("./Resources/Sounds/slide.mp3");
+
+	highScorePos = { 0.0f,150.0f };
+	highScore.Init();
+	highScore.SetPos({ 640.0f + 128.0f + 248.0f,670.0f + highScorePos.y });
+	highScore.SetSize({ 128.0f,128.0f });
+	highScore.SetLocalScale({ 0.5f,0.5f });
+	highScore.SetIsFillZero(true);
+
+	score.Init();
+	score.SetPos({ 640.0f + 128.0f - 248.0f,670.0f + highScorePos.y });
+	score.SetSize({ 128.0f,128.0f });
+	score.SetLocalScale({ 0.5f,0.5f });
+	score.SetIsFillZero(true);
+
+	numGH[0] = Novice::LoadTexture("./Resources/Images/Number1.png");
+	numGH[1] = Novice::LoadTexture("./Resources/Images/Number2.png");
+	numGH[2] = Novice::LoadTexture("./Resources/Images/Number3.png");
+	numGH[3] = Novice::LoadTexture("./Resources/Images/Number4.png");
+	numGH[4] = Novice::LoadTexture("./Resources/Images/Number5.png");
+	numGH[5] = Novice::LoadTexture("./Resources/Images/Number6.png");
+	numGH[6] = Novice::LoadTexture("./Resources/Images/Number7.png");
+	numGH[7] = Novice::LoadTexture("./Resources/Images/Number8.png");
+	numGH[8] = Novice::LoadTexture("./Resources/Images/Number9.png");
+	numGH[9] = Novice::LoadTexture("./Resources/Images/Number10.png");
 }
 
 void ResultScene::Update() {
+	highScore.Update();
+	score.Update();
+
 	frameCount++;
 	if (frameCount >= 30) {
 		if (movingOrder == 0) {
@@ -548,6 +575,16 @@ void ResultScene::Update() {
 		}
 	}
 
+	// ハイスコアの処理
+	if (movingOrder >= 18) {
+		highScore.SetTargetNum(sceneObj->stageHighScore[sceneObj->gameStage]);
+		score.SetTargetNum(sceneObj->score);
+
+		Eas::SimpleEaseIn(&highScorePos.y, 0.0f, 0.5f);
+		highScore.SetPos({ 640.0f + 128.0f + 164.0f,670.0f + highScorePos.y });
+		score.SetPos({ 640.0f + 128.0f - 164.0f,670.0f + highScorePos.y });
+	}
+
 	mainCamera.SetScale(cameraZoom);
 
 	particleManager.Update();
@@ -597,6 +634,9 @@ void ResultScene::Draw() {
 	for (int i = 0; i < 2; ++i) {
 		Render::DrawSprite(cracker[i], subCamera, 0xffffff00 | crackerAlpha[i], crackerGraphHandle[i]);
 	}
+
+	highScore.Draw(&mainCamera,numGH);
+	score.Draw(&mainCamera, numGH);
 
 	Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xffffff00 | flashAlpha, kFillModeSolid);
 

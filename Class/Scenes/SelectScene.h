@@ -1,6 +1,7 @@
 #pragma once
 #include "IScene.h"
 #include "Class/Common/ParticlManager.h"
+#include "Class/UIobjects/BounceNumber.h"
 
 // ステージの総数
 const int stageTotalCount = 3;
@@ -78,5 +79,10 @@ private:
 	Vector2 cameraZoom;
 
 	ParticlManager particleManager;
+
+	BounceNumber highScore;
+	int numGH[10];
+	int crownGH;
+	Transform crownTransform;
 };
 
