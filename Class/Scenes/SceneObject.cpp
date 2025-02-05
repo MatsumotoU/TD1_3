@@ -24,6 +24,10 @@ SceneObject::SceneObject() {
 	 stageHighScore[0] = static_cast<int>(scoreData["stage1"]);
 	 stageHighScore[1] = static_cast<int>(scoreData["stage2"]);
 	 stageHighScore[2] = static_cast<int>(scoreData["stage3"]);
+
+	 targetScore[0] = 40000;
+	 targetScore[1] = 40000;
+	 targetScore[2] = 120000;
 }
 
 void SceneObject::SaveScore() {

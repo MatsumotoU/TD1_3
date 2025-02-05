@@ -660,7 +660,7 @@ void GameStageScene::WaveManager() {
 			}
 
 			targetScoreNum.Init();
-			targetScoreNum.SetTargetNum(1000000);
+			targetScoreNum.SetTargetNum(sceneObj->targetScore[sceneObj->gameStage]);
 
 			/*comboRemainFrame = 0;
 			exprosionComboCount = 0;*/
