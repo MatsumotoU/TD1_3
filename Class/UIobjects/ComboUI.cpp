@@ -44,7 +44,7 @@ void ComboUI::Update() {
 		isActive = false;
 	}
 
-	comboCount.SetPos(transform.pos);
+	comboCount.SetPos({ transform.pos .x + 32.0f * static_cast<float>(comboCount.GetDigit() - 1),transform.pos .y});
 	comboCount.SetScale(transform.scale);
 	comboCount.SetTargetNum(*combo);
 	comboCount.Update();
