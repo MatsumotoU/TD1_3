@@ -1434,7 +1434,7 @@ void GameStageScene::PlayerDeath() {
 	if (player.GetHp() <= 0) {
 		stopObjectUpdateFrame = 60;
 		player.GetPhysics()->SetResistance(1.0f);
-		player.GetPhysics()->AddForce({ Random(10.0f,-10.0f),Random(10.0f,-10.0f) }, IMPACT);
+		player.GetPhysics()->SetVelocity({ 10.0f,10.0f });
 
 		flashScreenFrame = 30;
 		mainCamera.angleShakeRange = 10.0f;
@@ -1502,13 +1502,27 @@ void GameStageScene::ControlInfoDraw() {
 
 		if (isStartingGame) {
 			
-			if (startGameBufferFrame > 30) {
-				if (frameCount % 2) {
-					Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, rcContorolInfoGH[3]);
-				} else {
-					Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xFFFFFF23, rcContorolInfoGH[3]);
+			if (Novice::GetNumberOfJoysticks() > 0) {
+
+				if (startGameBufferFrame > 30) {
+					if (frameCount % 2) {
+						Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, rcContorolInfoGH[3]);
+					} else {
+						Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xFFFFFF23, rcContorolInfoGH[3]);
+					}
+				}
+			} else {
+
+				if (startGameBufferFrame > 30) {
+					if (frameCount % 2) {
+						Render::DrawSprite(contorolInfoTransform[2], uiCamera, WHITE, contorolInfoGH[3]);
+					} else {
+						Render::DrawSprite(contorolInfoTransform[2], uiCamera, 0xFFFFFF23, contorolInfoGH[3]);
+					}
 				}
 			}
+
+			
 			
 		} else {
 			if (Novice::GetNumberOfJoysticks() > 0) {
