@@ -58,7 +58,7 @@ void Camera::CameraMoveLimit(Vector2 min, Vector2 max) {
 	}
 }
 
-Matrix3x3 Camera::GetWvpVpMatrix(Vector2 setPos, Vector2 setScale, float setAngle) {
+Matrix3x3 Camera::GetWvpVpMatrix(Vector2 setPos, Vector2 setScale, float setAngle) const {
 	Matrix3x3 result = { 0 };
 	Matrix3x3 objWorldMatrix = MakeAffineMatrix(setScale, setAngle, setPos);
 
