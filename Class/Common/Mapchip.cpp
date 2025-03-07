@@ -235,9 +235,13 @@ void Mapchip::EnemyMapCollision() {
 	for (int e = 0; e < EMG::kMaxEnemy; e++) {
 		if (enemyManager->GetEnemyes()[e].GetIsAlive()) {
 
-			if (enemyManager->GetEnemyes()[e].GetPos().x / kMapChipSize.x > static_cast<float>(kMapSizeX) ||
-				enemyManager->GetEnemyes()[e].GetPos().y / kMapChipSize.y > static_cast<float>(kMapSizeY) ||
-				enemyManager->GetEnemyes()[e].GetPos().x < 0.0f || enemyManager->GetEnemyes()[e].GetPos().y < 0.0f) {
+			if (enemyManager->GetEnemyes()[e].GetPos().x / kMapChipSize.x >= static_cast<float>(kMapSizeX) ||
+				enemyManager->GetEnemyes()[e].GetPos().y / kMapChipSize.y >= static_cast<float>(kMapSizeY) ||
+				enemyManager->GetEnemyes()[e].GetPos().x <= 0.0f || enemyManager->GetEnemyes()[e].GetPos().y <= 0.0f) {
+
+				enemyManager->GetEnemyes()[e].SetIsAlive(false);
+				enemyManager->GetEnemyes()[e].SetIsActive(false);
+				assert(false);
 
 			} else {
 

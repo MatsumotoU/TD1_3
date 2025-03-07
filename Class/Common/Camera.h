@@ -13,7 +13,7 @@ public:
 	void Update() override;
 	void Draw()override;
 
-	Matrix3x3 GetWvpVpMatrix(Vector2 setPos, Vector2 setScale, float setAngle);
+	Matrix3x3 GetWvpVpMatrix(Vector2 setPos, Vector2 setScale, float setAngle) const;
 	Vector2 GetScreenSize();
 	Vector2* GetPosPtr();
 	Transform* GetTransformPtr();

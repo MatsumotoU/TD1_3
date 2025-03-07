@@ -1,6 +1,6 @@
 #include "Render.h"
 
-void Render::DrawLine(Vector2 pos1, Vector2 pos2, Camera camera, unsigned int color) {
+void Render::DrawLine(Vector2 pos1, Vector2 pos2, const Camera& camera, unsigned int color) {
 	// ローカル座標計算
 	Vector2 zero = { 0 };
 	// スクリーン座標計算
@@ -13,7 +13,7 @@ void Render::DrawLine(Vector2 pos1, Vector2 pos2, Camera camera, unsigned int co
 		static_cast<int>(to.x), static_cast<int>(to.y), color);
 }
 
-void Render::DrawBox(Transform transform, Camera camera, unsigned int color, FillMode fillMode) {
+void Render::DrawBox(Transform transform, const Camera& camera, unsigned int color, FillMode fillMode) {
 	// ローカル座標計算
 	Vector2 leftTopPos = {
 		-(transform.size.x  * 0.5f),
@@ -30,7 +30,7 @@ void Render::DrawBox(Transform transform, Camera camera, unsigned int color, Fil
 		-transform.angle, color, fillMode);
 }
 
-void Render::DrawEllipse(Vector2 pos, Vector2 radius, float angle, Camera camera, unsigned int color, FillMode fillMode) {
+void Render::DrawEllipse(Vector2 pos, Vector2 radius, float angle, const Camera& camera, unsigned int color, FillMode fillMode) {
 	// ローカル座標計算
 	Vector2 zero = { 0 };
 	// スクリーン座標計算
@@ -42,7 +42,7 @@ void Render::DrawEllipse(Vector2 pos, Vector2 radius, float angle, Camera camera
 		static_cast<int>(radius.x), static_cast<int>(radius.y), angle, color, fillMode);
 }
 
-void Render::DrawTriangle(Vector2 pos1, Vector2 pos2, Vector2 pos3, Camera camera, unsigned int color, FillMode fillMode) {
+void Render::DrawTriangle(Vector2 pos1, Vector2 pos2, Vector2 pos3, const Camera& camera, unsigned int color, FillMode fillMode) {
 
 	Vector2 resultPos[3] = { 0 };
 	resultPos[0] = pos1* camera.GetWvpVpMatrix({ 0.0f,0.0f }, { 1.0f,1.0f }, 0.0f);
@@ -56,7 +56,7 @@ void Render::DrawTriangle(Vector2 pos1, Vector2 pos2, Vector2 pos3, Camera camer
 		color, fillMode);
 }
 
-void Render::DrawSprite(Transform transform, Camera camera, unsigned int color, int gh) {
+void Render::DrawSprite(Transform transform, const Camera& camera, unsigned int color, int gh) {
 
 	// 画像が差し込まれているか
 	if (gh == 0) {
@@ -108,7 +108,7 @@ void Render::DrawSprite(Transform transform, Camera camera, unsigned int color, 
 	}
 }
 
-void Render::DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Camera camera, int num, int* gh, unsigned int color) {
+void Render::DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, const Camera& camera, int num, int* gh, unsigned int color) {
 	Transform tempTransform = { 0 };
 	tempTransform.pos = pos;
 	tempTransform.scale = scale;
@@ -141,7 +141,7 @@ void Render::DrawNum(Vector2 pos, Vector2 size, Vector2 scale, float angle, Came
 	}
 }
 
-void Render::DrawScore(Vector2 pos, Vector2 size, Vector2 scale, float angle, Camera camera, int num, int digit, int* gh, unsigned int color) {
+void Render::DrawScore(Vector2 pos, Vector2 size, Vector2 scale, float angle, const Camera& camera, int num, int digit, int* gh, unsigned int color) {
 	Transform tempTransform = { 0 };
 	tempTransform.pos = pos;
 	tempTransform.scale = scale;
