@@ -375,7 +375,7 @@ void Player::LockOn() {
 
 void Player::Dash() {
 	// ダッシュをする処理
-	if (input->GetControl(DASH, Triger)) {
+	if (input->GetTriger(DIK_SPACE) || Novice::IsTriggerButton(0, kPadButton10)) {
 		if (dashCoolDown <= 0) {
 
 			dashCoolDown = PLR::kMaxDashCoolDown;

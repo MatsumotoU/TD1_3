@@ -710,7 +710,7 @@ void GameStageScene::WaveManager() {
 		contorolTutorialUI.SetIsActive(false);
 
 		// ウェーブ管理処理演出終了
-		if (wave >= 4 || (input->GetControl(ENTER, Triger) && frameCount >= 60)) {
+		if (wave >= 4 || (input->GetTriger(DIK_SPACE) || Novice::IsTriggerButton(0,kPadButton10) && frameCount >= 60)) {
 			
 			if (!isStartingGame) {
 				isStartingGame = true;
