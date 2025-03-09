@@ -123,7 +123,7 @@ void ContorolTutorialUI::Draw() {
 
 	if (Novice::GetNumberOfJoysticks() > 0) {
 
-		if (input->GetControl(DASH, Press)) {
+		if (Novice::IsPressButton(0, kPadButton10)) {
 			Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), controllerTutorialPushGH[1]);
 		}
 
@@ -152,7 +152,7 @@ void ContorolTutorialUI::Draw() {
 			Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), keyTutorialPushGH[0]);
 		}
 
-		if (input->GetControl(DASH, Press)) {
+		if (input->GetPress(DIK_SPACE)) {
 			Render::DrawSprite(transform, *camera, ColorFade(WHITE, alpha), keyTutorialPushGH[1]);
 		}
 
