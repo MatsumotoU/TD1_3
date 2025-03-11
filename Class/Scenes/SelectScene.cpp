@@ -11,7 +11,7 @@
 void SelectScene::Init() {
 	frameCount = 0;
 	isTransition = false;
-	gameStage = 0;
+	gameStage = sceneObj->gameStage;
 
 	mainCamera.Init();
 
@@ -37,7 +37,7 @@ void SelectScene::Init() {
 	notSelectedStageScale = 0.6f;
 	for (int i = 0; i < stageTotalCount; ++i) {
 		stageIcon[i] = {
-			{ 640.0f + i * 640.0f, 288.0f },
+			{ 640.0f + i * 640.0f - gameStage * 640.0f, 288.0f },
 			{ 256.0f, 256.0f },
 			{ 1.0f, 1.0f },
 			0.0f
@@ -175,12 +175,12 @@ void SelectScene::Init() {
 }
 
 void SelectScene::Update() {
-	
+
 	mainCamera.Update();
 
 	highScore.Update();
 	highScore.SetTargetNum(sceneObj->stageHighScore[gameStage]);
-  
+
 	if (!Novice::IsPlayingAudio(playBGMHandle) || playBGMHandle == -1) {
 		playBGMHandle = Novice::PlayAudio(bGMHandle, true, 0.2f);
 	}
@@ -257,7 +257,7 @@ void SelectScene::Update() {
 
 		// ステージロック
 		if (gameStage == 1 && starCount < 2 || gameStage == 2 && starCount < 5) {
-			
+
 			mainCamera.shakeRange = { 10.0f,0.0f };
 			IconShakeRange = 10.0f;
 
@@ -399,7 +399,7 @@ void SelectScene::Update() {
 		}
 	}
 
-	spaceUI.pos.y = 64.0f + cosf(stageIconTheta) * 1.0f; 
+	spaceUI.pos.y = 64.0f + cosf(stageIconTheta) * 1.0f;
 
 	//================================================================
 	// 星の更新処理
@@ -511,7 +511,7 @@ void SelectScene::Draw() {
 			} else {
 				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, lockIconGraphHandle[0]);
 			}
-			
+
 		}
 		if (i == 2) {
 			if (starCount >= 5) {
@@ -520,7 +520,7 @@ void SelectScene::Draw() {
 				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, lockIconGraphHandle[1]);
 			}
 		}
-		
+
 	}
 
 	for (int i = 0; i < starTotalCount; ++i) {
