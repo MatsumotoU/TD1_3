@@ -80,7 +80,7 @@ void ResultScene::Init() {
 		case 0:
 
 			// 真ん中
-			if (sceneObj->score >= 40000) {
+			if (sceneObj->score >= 30000) {
 				shouldClearedMission[1] = true;
 
 				if (!sceneObj->shouldClearedMission[sceneObj->gameStage][1]) {
