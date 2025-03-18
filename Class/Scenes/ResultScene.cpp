@@ -102,7 +102,7 @@ void ResultScene::Init() {
 				shouldClearedMission[2] = false;
 			}
 
-			missionUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/mission40000.png");
+			missionUIGraphHandle[1] = Novice::LoadTexture("./Resources/Images/mission30000.png");
 			missionUIGraphHandle[2] = Novice::LoadTexture("./Resources/Images/mission80000.png");
 
 			break;
