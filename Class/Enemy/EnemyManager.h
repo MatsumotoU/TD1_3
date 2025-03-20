@@ -41,4 +41,5 @@ private:
 	ParticlManager particleManager;
 	int findGH[3];
 	int findSE;
+	int attackSE;
 };

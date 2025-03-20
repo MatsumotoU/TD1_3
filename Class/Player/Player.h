@@ -140,6 +140,9 @@ private:
 	int lockOnGH;
 	int isDrawLockOn;
 
+	int damageOpBg;
+	int deathSE;
+
 	Camera* camera;
 
 	ParticlManager particleManager;

@@ -25,6 +25,7 @@ public:
 
 private:
 
+	int attackSE;
 	int framecount;
 	Camera* camera;
 	Bullet bullets[BMG::kBulletMax];

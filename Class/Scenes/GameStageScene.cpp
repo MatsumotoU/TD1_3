@@ -291,6 +291,9 @@ void GameStageScene::Init() {
 	 bgGraphHandle[0] = Novice::LoadTexture("./Resources/Images/bg1.png");
 	 bgGraphHandle[1] = Novice::LoadTexture("./Resources/Images/bg2.png");
 	 bgGraphHandle[2] = Novice::LoadTexture("./Resources/Images/bg3.png");
+
+	 deathSE = Novice::LoadAudio("./Resources/Sounds/Death.mp3");
+	 timeUpSE = Novice::LoadAudio("./Resources/Sounds/timeUp.mp3");
 }
 
 void GameStageScene::Update() {
@@ -344,6 +347,7 @@ void GameStageScene::Update() {
 		//Novice::ConsolePrintf("----------TimeTransition!----------\n");
 		isTimeUp = true;
 		timeUpTransitionFrame = 120;
+		Novice::PlayAudio(timeUpSE, false, 0.2f);
 		return;
 	}
 
@@ -810,7 +814,6 @@ void GameStageScene::ObjectUpdate() {
 	}
 
 	player.Update();
-
 
 	PlayerLockOn();
 
@@ -1444,6 +1447,8 @@ void GameStageScene::PlayerDeath() {
 		mainCamera.panRange -= 0.5f;
 
 		mainCamera.shakeRange += {100.0f, 100.0f};
+
+		Novice::PlayAudio(deathSE, false, 0.2f);
 	}
 }
 

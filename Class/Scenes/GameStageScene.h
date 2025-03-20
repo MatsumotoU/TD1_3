@@ -72,6 +72,7 @@ public:
 
 private:
 
+	int timeUpSE;
 	float seVolume;
 
 	int flashScreenFrame;
@@ -191,6 +192,7 @@ private:
 
 	int selectSE;
 	int playerHitSE;
+	int deathSE;
 
 	int bgGraphHandle[3];
 };
