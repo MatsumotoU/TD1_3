@@ -117,7 +117,7 @@ void SelectScene::Init() {
 	}
 
 	isUnlocking = false;
-	unlockingInterval = 180;
+	unlockingInterval = 150;
 	unlockingTimes = 0;
 
 	isZoom = false;
@@ -208,6 +208,15 @@ void SelectScene::Update() {
 		frameCount = 0;
 	}
 
+	if (isUnlocking) {
+		unlockingInterval--;
+		if (unlockingInterval <= 0) {
+			isUnlocking = false;
+			unlockingInterval = 150;
+			unlockingTimes = 0;
+		}
+	}
+
 	if (input->GetControl(RIGHT, Press)) {
 		if (!shouldPressedRight) {
 			if (!shouldPressedLeft) {
@@ -283,20 +292,14 @@ void SelectScene::Update() {
 
 			if (!isUnlocking) {
 				isUnlocking = true;
-				unlockingInterval = 120;
+				unlockingInterval = 150;
 				unlockingTimes = 0;
 			}
 
 			if (isUnlocking) {
-				unlockingInterval--;
 				unlockingTimes++;
 
-				if (unlockingInterval <= 0) {
-					isUnlocking = false;
-					unlockingInterval = 120;
-					unlockingTimes = 0;
-					playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.1f);
-				} else {
+				if (unlockingInterval >= 0) {
 					if (unlockingTimes >= 10) {
 						if (gameStage == 1) {
 							unlocking[0] = true;
@@ -313,7 +316,35 @@ void SelectScene::Update() {
 							playSEHandle[3] = Novice::PlayAudio(sEHandle[3], false, 0.4f);
 						}
 					} else {
-						playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.1f);
+#pragma region point
+						/*if (gameStage == 1) {
+							for (int i = 0; i < 24; ++i) {
+								particleManager.PointEffect(
+									{ stageIcon[1].pos.x + Random(140.0f,-140.0f) ,
+									  stageIcon[1].pos.y + Random(140.0f,-140.0f) },
+									Random(20, 5), 0, 0xeeeeeeff
+								);
+							}
+						} else if (gameStage == 2) {
+							for (int i = 0; i < 24; ++i) {
+								particleManager.PointEffect(
+									{ stageIcon[2].pos.x + Random(140.0f,-140.0f) ,
+									  stageIcon[2].pos.y + Random(140.0f,-140.0f) },
+									Random(20, 5), 0, 0xeeeeeeff
+								);
+							}
+						}*/
+#pragma endregion
+
+#pragma region explosion	
+						if (gameStage == 1) {
+							particleManager.SlashEffect({ stageIcon[1].pos.x, stageIcon[1].pos.y }, { 24.0f,24.0f }, { 1.0f,1.0f }, 5.0f, 100, 25, 32, 0);
+						} else if (gameStage == 2) {
+							particleManager.SlashEffect({ stageIcon[2].pos.x, stageIcon[2].pos.y }, { 24.0f,24.0f }, { 1.0f,1.0f }, 5.0f, 100, 25, 32, 0);
+						}
+#pragma endregion
+
+						playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.2f);
 					}
 				}
 			}
