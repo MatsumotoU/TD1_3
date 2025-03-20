@@ -78,6 +78,11 @@ private:
 	int sEHandle[10];
 	int bGMHandle;
 
+	bool unlocking[2];
+	bool isUnlocking;
+	int unlockingInterval;
+	int unlockingTimes;
+
 	Vector2* cameraPos;
 	Vector2 cameraZoom;
 
