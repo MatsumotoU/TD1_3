@@ -104,6 +104,22 @@ void SelectScene::Init() {
 	// 左右キーを押したときステージアイコンなどが動く時間
 	movingFrameCount = 25.0f;
 
+	if (starCount >= 2) {
+		unlocking[0] = true;
+	} else {
+		unlocking[0] = false;
+	}
+
+	if (starCount >= 5) {
+		unlocking[1] = true;
+	} else {
+		unlocking[1] = false;
+	}
+
+	isUnlocking = false;
+	unlockingInterval = 180;
+	unlockingTimes = 0;
+
 	isZoom = false;
 
 	shouldPressedRight = false;
@@ -145,6 +161,8 @@ void SelectScene::Init() {
 
 	sEHandle[0] = Novice::LoadAudio("./Resources/Sounds/dicision.mp3");
 	sEHandle[1] = Novice::LoadAudio("./Resources/Sounds/slide.mp3");
+	sEHandle[2] = Novice::LoadAudio("./Resources/Sounds/lock.mp3");
+	sEHandle[3] = Novice::LoadAudio("./Resources/Sounds/break.mp3");
 
 	numGH[0] = Novice::LoadTexture("./Resources/Images/Number1.png");
 	numGH[1] = Novice::LoadTexture("./Resources/Images/Number2.png");
@@ -197,6 +215,7 @@ void SelectScene::Update() {
 					if (gameStage < stageTotalCount - 1) {
 						gameStage++;
 						shouldPressedRight = true;
+						isUnlocking = false;
 						for (int i = 0; i < starTotalCount; ++i) {
 							starT[i] = 0.0f;
 							isStarMoving[i] = true;
@@ -228,6 +247,7 @@ void SelectScene::Update() {
 					if (gameStage > 0) {
 						gameStage--;
 						shouldPressedLeft = true;
+						isUnlocking = false;
 						for (int i = 0; i < starTotalCount; ++i) {
 							starT[i] = 0.0f;
 							isStarMoving[i] = true;
@@ -253,13 +273,50 @@ void SelectScene::Update() {
 	}
 
 	// 決定キーを押してシーンを遷移させる
-	if (input->GetControl(ENTER, Press)) {
+	if (input->GetControl(ENTER, Triger)) {
 
 		// ステージロック
-		if (gameStage == 1 && starCount < 2 || gameStage == 2 && starCount < 5) {
+		if (gameStage == 1 && !unlocking[0] || gameStage == 2 && !unlocking[1]) {
 
-			mainCamera.shakeRange = { 10.0f,0.0f };
-			IconShakeRange = 10.0f;
+			mainCamera.shakeRange = { 14.0f,0.0f };
+			IconShakeRange = 14.0f;
+
+			if (!isUnlocking) {
+				isUnlocking = true;
+				unlockingInterval = 120;
+				unlockingTimes = 0;
+			}
+
+			if (isUnlocking) {
+				unlockingInterval--;
+				unlockingTimes++;
+
+				if (unlockingInterval <= 0) {
+					isUnlocking = false;
+					unlockingInterval = 120;
+					unlockingTimes = 0;
+					playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.1f);
+				} else {
+					if (unlockingTimes >= 10) {
+						if (gameStage == 1) {
+							unlocking[0] = true;
+							particleManager.SlashEffect({ stageIcon[1].pos.x, stageIcon[1].pos.y }, { 48.0f,48.0f }, { 1.0f,1.0f }, 20.0f, 100, 60, 64, 0);
+						} else if (gameStage == 2) {
+							unlocking[1] = true;
+							particleManager.SlashEffect({ stageIcon[2].pos.x, stageIcon[2].pos.y }, { 48.0f,48.0f }, { 1.0f,1.0f }, 20.0f, 100, 60, 64, 0);
+						}
+
+						mainCamera.shakeRange = { 60.0f,20.0f };
+						IconShakeRange = 60.0f;
+
+						if (!Novice::IsPlayingAudio(playSEHandle[3]) || playSEHandle[3] == -1) {
+							playSEHandle[3] = Novice::PlayAudio(sEHandle[3], false, 0.4f);
+						}
+					} else {
+						playSEHandle[2] = Novice::PlayAudio(sEHandle[2], false, 0.1f);
+					}
+				}
+			}
 
 		} else {
 
@@ -498,7 +555,6 @@ void SelectScene::Draw() {
 		Render::DrawSprite(bg, mainCamera, bgColor[i], bgGraphHandle[i]);
 	}
 
-	particleManager.Draw();
 
 	for (int i = 0; i < stageTotalCount; ++i) {
 
@@ -506,7 +562,7 @@ void SelectScene::Draw() {
 			Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, stageIconGraphHandle[i]);
 		}
 		if (i == 1) {
-			if (starCount >= 2) {
+			if (unlocking[0]) {
 				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, stageIconGraphHandle[i]);
 			} else {
 				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, lockIconGraphHandle[0]);
@@ -514,7 +570,7 @@ void SelectScene::Draw() {
 
 		}
 		if (i == 2) {
-			if (starCount >= 5) {
+			if (unlocking[1]) {
 				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, stageIconGraphHandle[i]);
 			} else {
 				Render::DrawSprite(stageIcon[i], mainCamera, 0xffffffFF, lockIconGraphHandle[1]);
@@ -522,6 +578,7 @@ void SelectScene::Draw() {
 		}
 
 	}
+	particleManager.Draw();
 
 	for (int i = 0; i < starTotalCount; ++i) {
 		// ===================================================================================//
