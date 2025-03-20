@@ -16,6 +16,7 @@ EnemyManager::EnemyManager() {
 	findGH[1] = Novice::LoadTexture("./Resources/Images/find2.png");
 	findGH[2] = Novice::LoadTexture("./Resources/Images/find3.png");
 	findSE = Novice::LoadAudio("./Resources/Sounds/select.mp3");
+	attackSE = Novice::LoadAudio("./Resources/Sounds/slide.mp3");
 }
 
 void EnemyManager::Init() {

@@ -6,6 +6,8 @@ BulletManager::BulletManager() {
 	}
 	camera = nullptr;
 	framecount = 0;
+
+	attackSE = Novice::LoadAudio("./Resources/Sounds/slide.mp3");
 }
 
 void BulletManager::Init() {
@@ -67,6 +69,8 @@ void BulletManager::ShotBullet(Vector2 pos, Vector2 size, Vector2 shotDir, float
 			bullets[i].SetTag(tag);
 			bullets[i].SetAliveFrame(aliveFrame);
 			bullets[i].SetAngle(atan2f(shotDir.y, shotDir.x));
+
+			Novice::PlayAudio(attackSE, false, 0.2f);
 			break;
 		}
 	}

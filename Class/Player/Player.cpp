@@ -101,6 +101,9 @@ Player::Player() {
 
 	playerGH = Novice::LoadTexture("./Resources/Images/player.png");
 
+	damageOpBg = Novice::LoadAudio("./Resources/Sounds/playerDamage.mp3");
+	deathSE = Novice::LoadAudio("./Resources/Sounds/Death.mp3");
+
 	seVolume = 0.5f;
 
 	rightSowrdLocalTransform = {
@@ -777,5 +780,12 @@ void Player::Damage() {
 		damageCoolDown = PLR::kMaxDamageCoolDown;
 		hpUiDrawFrame = 120;
 		camera->panRange -= 0.5f;
+
+		if (hp <= 0) {
+			Novice::PlayAudio(deathSE, false, 0.2f);
+		} else {
+			Novice::PlayAudio(damageOpBg, false, 0.2f);
+		}
+		
 	}
 }
