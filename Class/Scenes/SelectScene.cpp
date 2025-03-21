@@ -62,7 +62,11 @@ void SelectScene::Init() {
 		arrowTheta[i] = 0.0f;
 	}
 
-	arrow[0].scale = { 0.0f,0.0f };
+	if (gameStage == 0) {
+		arrow[0].scale = { 0.0f,0.0f };
+	} else if (gameStage == 2) {
+		arrow[1].scale = { 0.0f,0.0f };
+	}
 
 	spaceUI = {
 		{640.0f,64.0f},
