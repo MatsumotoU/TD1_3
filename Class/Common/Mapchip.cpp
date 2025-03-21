@@ -295,19 +295,22 @@ void Mapchip::BulletMapCollision() {
 						if (map[y][x] == 1) {
 							if (IsHitRectangle(bulletManager->GetBullets()[b].GetPos(), bulletManager->GetBullets()[b].GetSize(), blockPos, kMapChipSize)) {
 
+								drawPos[count].x = Random(16.0f, -16.0f);
+								drawPos[count].y = Random(16.0f, -16.0f);
+
 								//bulletManager->GetBullets()[b].SetIsShot(false);
 								if (bulletManager->GetBullets()[b].GetTag() == "enemy") {
 									if (frameCount % 2) {
 										particleManager.SlashEffect(bulletManager->GetBullets()[b].GetPos(), { 32.0f,32.0f }, { 1.0f,1.0f }, 5.0f, 50, 30, 1, enemyBulletEffectGH);
 									}
 
-									drawPos[count].x = Random(16.0f, -16.0f);
-									drawPos[count].y = Random(16.0f, -16.0f);
+									
 								}
 
 								if (bulletManager->GetBullets()[b].GetTag() == "exprosion") {
+
 									drawPos[count] = -Normalize(bulletManager->GetBullets()[b].GetPos() - blockPos) * 96.0f;
-									particleManager.SlashEffect(drawPos[count], { 32.0f,32.0f }, { 1.0f,1.0f }, 5.0f, 50, 30, 10, enemyBulletEffectGH);
+									//particleManager.SlashEffect(drawPos[count], { 32.0f,32.0f }, { 1.0f,1.0f }, 5.0f, 50, 30, 10, enemyBulletEffectGH);
 								}
 							}
 						}

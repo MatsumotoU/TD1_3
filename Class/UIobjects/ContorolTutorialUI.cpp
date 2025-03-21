@@ -54,7 +54,7 @@ void ContorolTutorialUI::Update() {
 
 	if (isActive) {
 
-		if (input->GetTriger(DIK_X) || Novice::IsTriggerButton(0, kPadButton12)) {
+		if (input->GetTriger(DIK_H) || Novice::IsTriggerButton(0, kPadButton12)) {
 			if (isInScreeenUI) {
 				isInScreeenUI = false;
 			} else {
