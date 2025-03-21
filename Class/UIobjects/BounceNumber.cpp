@@ -53,6 +53,10 @@ void BounceNumber::Update() {
 
 void BounceNumber::Draw(Camera* drawCamera,int* numberGH) {
 
+	if (numberGH == nullptr && drawCamera == nullptr) {
+		return;
+	}
+
 	if (isFillZero) {
 		Render::DrawScore(transform.pos, transform.size, transform.scale * localScale.y, transform.angle, *drawCamera, number,8, numberGH, color);
 	} else {
