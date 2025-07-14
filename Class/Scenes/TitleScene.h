@@ -4,6 +4,7 @@
 
 class TitleScene : public IScene {
 public:
+	~TitleScene();
 
 	// 初期化と更新と描画
 	void Init() override;

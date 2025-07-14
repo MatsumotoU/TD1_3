@@ -9,6 +9,25 @@
 #include "Class/Common/ParticlManager.h"
 #include "math.h"
 
+TitleScene::~TitleScene() {
+	// テクスチャ解放
+	for (int i = 0; i < 4; ++i) {
+		Novice::UnloadTexture(titleLogoGh[i]);
+	}
+	for (int i = 0; i < 4; ++i) {
+		Novice::UnloadTexture(buttonGh[i]);
+	}
+	for (int i = 0; i < 9; ++i) {
+		Novice::UnloadTexture(smallEfectGh[i]);
+	}
+	for (int i = 0; i < 9; ++i) {
+		Novice::UnloadTexture(bigEfectGh[i]);
+	}
+	for (int i = 0; i < 3; ++i) {
+		Novice::UnloadTexture(bgGraphHandle[i]);
+	}
+}
+
 void TitleScene::Init() {
 	frameCount = 0;
 	isTransition = false;

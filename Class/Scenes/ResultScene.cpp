@@ -8,6 +8,28 @@
 #include "Class/Common/Render.h"
 #include "Class/Common/MyEasing.h"
 
+ResultScene::~ResultScene() {
+	// テクスチャ解放
+	Novice::UnloadTexture(starGraphHandle);
+	Novice::UnloadTexture(scoreGH);
+
+	for (int i = 0; i < 3; ++i) {
+		Novice::UnloadTexture(bgGraphHandle[i]);
+	}
+	for (int i = 0; i < 2; ++i) {
+		Novice::UnloadTexture(crackerGraphHandle[i]);
+		Novice::UnloadTexture(nextSceneUIGraphHandle[i]);
+		Novice::UnloadTexture(spaceUIGraphHandle[i]);
+		Novice::UnloadTexture(aUIGraphHandle[i]);
+	}
+	for (int i = 0; i < 3; ++i) {
+		Novice::UnloadTexture(missionUIGraphHandle[i]);
+	}
+	for (int i = 0; i < 10; ++i) {
+		Novice::UnloadTexture(numGH[i]);
+	}
+}
+
 void ResultScene::Init() {
 	frameCount = 0;
 	isTransition = false;

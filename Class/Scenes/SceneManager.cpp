@@ -17,8 +17,6 @@ void SceneManager::Init() {
 	//scene = new GameStageScene();
 	//scene = new ResultScene();
 
-	//ssss
-
 	scene->SetSceneObj(&sceneObject);
 	scene->Init();
 	sceneTransition.Init();
@@ -75,6 +73,8 @@ void SceneManager::Update() {
 				scene->SetGameStage(gameStage);
 
 				scene->Update();
+			} else {
+				assert(temp != nullptr && "シーン遷移に失敗しました。次のシーンがnullptrです。");
 			}
 		}
 	}
@@ -92,6 +92,7 @@ void SceneManager::Update() {
 
 		// シーン遷移処理
 		IScene* temp = scene->GetNextScene();
+		assert(temp != nullptr && "シーン遷移に失敗しました。次のシーンがnullptrです。");
 
 		// 返り値が別のシーンだったら
 		if (temp) {
