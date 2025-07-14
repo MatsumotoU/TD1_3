@@ -29,6 +29,7 @@ namespace GMScene {
 
 class GameStageScene : public IScene {
 public:
+	~GameStageScene();
 
 	// 初期化と更新と描画
 	void Init() override;

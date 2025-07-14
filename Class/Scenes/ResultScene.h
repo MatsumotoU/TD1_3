@@ -5,6 +5,7 @@
 
 class ResultScene : public IScene {
 public:
+	~ResultScene();
 
 	// 初期化と更新と描画
 	void Init() override;

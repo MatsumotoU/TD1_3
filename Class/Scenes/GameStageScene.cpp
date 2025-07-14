@@ -10,6 +10,60 @@
 #include "Class/Common/MyEasing.h"
 #include "Class/Common/Collision2D.h"
 
+GameStageScene::~GameStageScene() {
+	// Texture
+	Novice::UnloadTexture(balanceBasketGH);
+	Novice::UnloadTexture(balancePoleGH);
+	Novice::UnloadTexture(waveStringGH);
+	Novice::UnloadTexture(playerWeightGH);
+	Novice::UnloadTexture(enemyWeightGH);
+	Novice::UnloadTexture(slashGH);
+	Novice::UnloadTexture(hitEffectGH[0]);
+	Novice::UnloadTexture(hitEffectGH[1]);
+	Novice::UnloadTexture(hitEffectGH[2]);
+	Novice::UnloadTexture(enemyRemainNumGH[0]);
+	Novice::UnloadTexture(enemyRemainNumGH[1]);
+	Novice::UnloadTexture(enemyRemainNumGH[2]);
+	Novice::UnloadTexture(enemyRemainNumGH[3]);
+	Novice::UnloadTexture(enemyRemainNumGH[4]);
+	Novice::UnloadTexture(enemyRemainNumGH[5]);
+	Novice::UnloadTexture(enemyRemainNumGH[6]);
+	Novice::UnloadTexture(enemyRemainNumGH[7]);
+	Novice::UnloadTexture(enemyRemainNumGH[8]);
+	Novice::UnloadTexture(enemyRemainNumGH[9]);
+	Novice::UnloadTexture(clossGH);
+	Novice::UnloadTexture(targetEnemyUiGH);
+	Novice::UnloadTexture(missionGH);
+	Novice::UnloadTexture(scoreTitleGH);
+	Novice::UnloadTexture(timeUpGH);
+	Novice::UnloadTexture(startGH);
+	Novice::UnloadTexture(bgGraphHandle[0]);
+	Novice::UnloadTexture(bgGraphHandle[1]);
+	Novice::UnloadTexture(bgGraphHandle[2]);
+	Novice::UnloadTexture(enemyBloodGH);
+	Novice::UnloadTexture(exprosionGH[0]);
+	Novice::UnloadTexture(exprosionGH[1]);
+	Novice::UnloadTexture(exprosionGH[2]);
+	Novice::UnloadTexture(exprosionGH[3]);
+	Novice::UnloadTexture(exprosionGH[4]);
+	Novice::UnloadTexture(exprosionGH[5]);
+	Novice::UnloadTexture(exprosionGH[6]);
+	Novice::UnloadTexture(enemyBulletGH);
+	Novice::UnloadTexture(playerHitGH[0]);
+	Novice::UnloadTexture(playerHitGH[1]);
+	Novice::UnloadTexture(playerHitGH[2]);
+	Novice::UnloadTexture(playerHitGH[3]);
+	Novice::UnloadTexture(playerHitGH[4]);
+	Novice::UnloadTexture(contorolInfoGH[0]);
+	Novice::UnloadTexture(contorolInfoGH[1]);
+	Novice::UnloadTexture(contorolInfoGH[2]);
+	Novice::UnloadTexture(contorolInfoGH[3]);
+	Novice::UnloadTexture(rcContorolInfoGH[0]);
+	Novice::UnloadTexture(rcContorolInfoGH[1]);
+	Novice::UnloadTexture(rcContorolInfoGH[2]);
+	Novice::UnloadTexture(rcContorolInfoGH[3]);
+}
+
 void GameStageScene::Init() {
 	frameCount = 0;
 	wave = 0;
@@ -895,7 +949,7 @@ void GameStageScene::ObjectCollision() {
 
 								particleManager.AnimEffect(bulletManager.GetBullets()[b].GetPos(), { 256.0f,256.0f }, Random(6.24f, 0.0f), 5, 3, false, playerHitGH);
 								particleManager.Update();
-								input->GetControllerManager()->VibrationController(60000, 60000, 10);
+								input->GetControllerManager()->VibrationController(60000, 60000, 60);
 								Novice::PlayAudio(playerHitSE, false, seVolume);
 								PlayerDeath();
 							}
@@ -1004,7 +1058,7 @@ void GameStageScene::EnemyCollision() {
 					// カメラを揺らす
 					mainCamera.shakeRange += Normalize(player.GetPos() - enemyManager.GetEnemyes()[e].GetPos()) * MakeRotateMatrix(3.14f * 0.5f) * 20.0f;
 
-					input->GetControllerManager()->VibrationController(65000, 65000, 5);
+					//input->GetControllerManager()->VibrationController(65000, 65000, 5);
 
 					particleManager.SlashEffect(
 						enemyManager.GetEnemyes()[e].GetPos(), { 32.0f,32.0f },
@@ -1102,7 +1156,7 @@ void GameStageScene::EnemyCollision() {
 								playerAttackStopFrame = GMScene::maxPlayerAttackStopFrame / (playerAttackHitCount + 1);
 							}
 
-							input->GetControllerManager()->VibrationController(65000, 65000, 10);
+							//input->GetControllerManager()->VibrationController(65000, 65000, 10);
 							return;
 						}
 					}
@@ -1190,7 +1244,7 @@ void GameStageScene::ExprodeEnemy() {
 						return;
 					}
 				}
-				input->GetControllerManager()->VibrationController(60000, 60000, 5);
+				//input->GetControllerManager()->VibrationController(60000, 60000, 5);
 				mainCamera.shakeRange += {10.0f, 10.0f};
 			}
 		}

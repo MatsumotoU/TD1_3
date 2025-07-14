@@ -8,6 +8,28 @@
 #include "Class/Common/Render.h"
 #include "Class/Common/MyEasing.h"
 
+SelectScene::~SelectScene() {
+	Novice::UnloadTexture(tempGH);
+
+	for (int i = 0; i < 3; ++i) {
+		Novice::UnloadTexture(stageIconGraphHandle[i]);
+		Novice::UnloadTexture(bgGraphHandle[i]);
+	}
+	for (int i = 0; i < 2; ++i) {
+		Novice::UnloadTexture(lockIconGraphHandle[i]);
+		Novice::UnloadTexture(arrowGraphHandle[i]);
+		Novice::UnloadTexture(arrowPadGraphHandle[i]);
+		Novice::UnloadTexture(spaceUIGraphHandle[i]);
+		Novice::UnloadTexture(aUIGraphHandle[i]);
+	}
+	Novice::UnloadTexture(starGraphHandle);
+	Novice::UnloadTexture(crownGH);
+
+	for (int i = 0; i < 10; ++i) {
+		Novice::UnloadTexture(numGH[i]);
+	}
+}
+
 void SelectScene::Init() {
 	frameCount = 0;
 	isTransition = false;
@@ -218,6 +240,14 @@ void SelectScene::Update() {
 			isUnlocking = false;
 			unlockingInterval = 150;
 			unlockingTimes = 0;
+		}
+	}
+
+	if (input->GetControl(BACK, Press)) {
+		if (!isTransition) {
+			Novice::StopAudio(playBGMHandle);
+			nextScene = new TitleScene();
+			isTransition = true;
 		}
 	}
 

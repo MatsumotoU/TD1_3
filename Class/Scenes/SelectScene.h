@@ -11,6 +11,7 @@ const int starTotalCount = 3;
 
 class SelectScene : public IScene {
 public:
+	~SelectScene();
 
 	// 初期化と更新と描画
 	void Init() override;
